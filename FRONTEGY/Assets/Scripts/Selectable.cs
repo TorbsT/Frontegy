@@ -31,10 +31,10 @@ public class Selectable : MonoBehaviour
         if (isTile) redirectTile.Hover();
         else if (isUnit) redirectUnitScript.Hover();
     }
-    public List<Tile> PlanMovement(Tile toTile)
+    public List<int> PlanMovement(int toTileId)
     {
         if (!isUnit) return null;
-        return redirectUnitScript.PlanMovement(toTile);
+        return redirectUnitScript.PlanMovement(toTileId);
     }
     public void RedirectUnHover()
     {

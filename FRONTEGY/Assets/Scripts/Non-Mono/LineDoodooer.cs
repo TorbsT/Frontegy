@@ -25,9 +25,9 @@ public class LineDoodooer : MonoBehaviour
         if (gameMaster.phase.type.name == "strategic") DrawLine(ownerUnit.SetStats().path);
     }
 
-    void DrawLine(List<Vector2Int> tilePosesToCross)
+    void DrawLine(List<int> tileIdsToCross)
     {
-        List<Tile> tilesToCross = TileTracker.GetTilesByPoses(tilePosesToCross);
+        List<Tile> tilesToCross = TileTracker.GetTilesByIds(tileIdsToCross);
 
         line = GetComponent<LineRenderer>();
 

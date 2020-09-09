@@ -18,7 +18,7 @@ public class UnitScript : MonoBehaviour
     [SerializeField] GameObject linePrefab;
     [SerializeField] Renderer renderer;
     [SerializeField] Selectable selectable;
-    public List<Tile> tilesInRange;
+    public List<int> tileIdsInRange;
     
     [SerializeField] int defaultLayer = 0;
     [SerializeField] int ignoreRaycastLayer = 2;
@@ -37,7 +37,7 @@ public class UnitScript : MonoBehaviour
         RefreshStats();
         SetLayer();
         transform.localScale = new Vector3(stats.scale, stats.scale, stats.scale);
-        if (stats.parentTile == null) return;
+        if (TileTracker.GetTileById(stats.parentTileId) == null) return;
         SetPosition();
         
     }
@@ -45,7 +45,7 @@ public class UnitScript : MonoBehaviour
     {
         if (gameMaster.phase.type.name == "strategic" || line.line.positionCount == 0)
         {
-            transform.position = stats.parentTile.GetSurfacePos();
+            transform.position = TileTracker.GetTileById(stats.parentTileId).GetSurfacePos();
             transform.position += Vector3.up * transform.localScale[1];
         }
         else if (gameMaster.phase.type.name == "weiterWeiter")
@@ -76,19 +76,20 @@ public class UnitScript : MonoBehaviour
     {
         if (!selectable.isSelected) renderer.material = gameMaster.GetTeam(stats.teamId).material;
     }
-    public List<Tile> PlanMovement(Tile toTile)
+    public List<int> PlanMovement(int toTileId)
     {
-        Debug.Log("Searching for tile with id " + toTile.geo.id + ", gridPos " + gameMaster.grid.GetGridPos(toTile.geo.id));
+        Tile toTile = TileTracker.GetTileById(toTileId);
+        Debug.Log("Searching for tile with id " + toTileId + ", gridPos " + gameMaster.grid.GetGridPos(toTileId));
 
-        List<Tile> tilesInPF = Pathfinding.GetUntardedPath(Pathfinding.GetPaths(stats.parentTile, stats.walkRange, new List<Vector2Int>(), toTile.geo.id), toTile);
+        List<int> tilesInPF = Pathfinding.GetUntardedPath(Pathfinding.GetPaths(stats.parentTileId, stats.walkRange, new List<Vector2Int>(), toTile.geo.id), toTileId);
         Debug.Log("Found " + tilesInPF.Count);
-        foreach (Tile node in tilesInPF)
+        foreach (int nodeId in tilesInPF)
         {
             //Debug.Log(gameMaster.grid.GetGridPos(node.geo.id));
         }
 
         if (tilesInPF.Count == 0) return null;
-        Tile destinationTile = tilesInPF[tilesInPF.Count - 1];
+        int destinationTileId = tilesInPF[tilesInPF.Count - 1];
         Debug.Log(gameMaster.grid.gridVers[0]);
         SetStats().path = tilesInPF;
         if (line == null) line = Instantiate(linePrefab).GetComponent<LineDoodooer>();
@@ -98,20 +99,20 @@ public class UnitScript : MonoBehaviour
     public void Select()
     {
         renderer.material = unitSelectMat;
-        tilesInRange = Pathfinding.GetTilesInRange(stats.parentTile, stats.walkRange, new List<Vector2Int>());
-        foreach (Tile bruh in tilesInRange)
+        tileIdsInRange = Pathfinding.GetTilesInRange(stats.parentTileId, stats.walkRange, new List<Vector2Int>());
+        foreach (int bruh in tileIdsInRange)
         {
             //Debug.Log(gameMaster.grid.GetGridPos(bruh.geo.id));
-            bruh.ShowPath();
+            TileTracker.GetTileById(bruh).ShowPath();
         }
     }
     public void UnSelect()
     {
-        foreach (Tile tile in tilesInRange)
+        foreach (int tileId in tileIdsInRange)
         {
-            tile.UnShowPath();
+            TileTracker.GetTileById(tileId).UnShowPath();
         }
-        tilesInRange = new List<Tile>();
+        tileIdsInRange = new List<int>();
         renderer.material = gameMaster.GetTeam(stats.teamId).material;
     }
 }

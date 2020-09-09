@@ -9,7 +9,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{B9E615C7-AA56-FD97-96A3-8F6D1AD9AB6D}</ProjectGuid>
+    <ProjectGuid>{B81F20B7-A13A-18D2-D5A7-571D7D35E871}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -67,6 +67,7 @@
     <Compile Include="Assets\PhaseType.cs" />
     <Compile Include="Assets\Building.cs" />
     <Compile Include="Assets\Scripts\GridPivotConfig.cs" />
+    <Compile Include="Assets\Scripts\Non-Mono\TileTracker.cs" />
     <Compile Include="Assets\Scripts\Tile.cs" />
     <Compile Include="Assets\Scripts\Pathfinding.cs" />
     <Compile Include="Assets\ZZZManure\TutorialInfo\Scripts\Readme.cs" />
@@ -78,9 +79,9 @@
     <Compile Include="Assets\Scripts\Non-Mono\ObjectCopier.cs" />
     <Compile Include="Assets\Maffs.cs" />
     <Compile Include="Assets\Scripts\Non-Mono\UnitStats.cs" />
-    <Compile Include="Assets\Scripts\Non-Mono\TileTracker.cs" />
   </ItemGroup>
   <ItemGroup>
+     <None Include="Assets\Concept\cards.txt" />
     <Reference Include="UnityEngine">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.1.1f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
     </Reference>

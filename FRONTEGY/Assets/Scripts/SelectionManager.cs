@@ -47,7 +47,7 @@ public class SelectionManager : MonoBehaviour
     {
         if (hoveredObj == null || selectedObj == null) return;  // hovered and selected must exist
         if (!GetSelectable(selectedObj).isUnit || !GetSelectable(hoveredObj).isTile) return;  // selected must be unit and hovered must be tile
-        List<Tile> tilesInPath = GetSelectable(selectedObj).PlanMovement(GetSelectable(hoveredObj).redirectTile);
+        List<int> tileIdsInPath = GetSelectable(selectedObj).PlanMovement(GetSelectable(hoveredObj).redirectTile.geo.id);
         // maybe turn PlanMovement() into void since path is handled on the unit
     }
     void HoverMechanic()

@@ -98,9 +98,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   walkAnimSpeed: 3.7
   stats:
-    walkRange: 10
+    walkRange: 2
     teamId: 0
     scale: 0.3
+    path: 
   unitHoverMat: {fileID: 2100000, guid: fc36d38da941cb64f9214568e225b2bf, type: 2}
   unitSelectMat: {fileID: 2100000, guid: 390ff569dd7b3ae40b23228f388d038b, type: 2}
   line: {fileID: 0}
@@ -109,7 +110,7 @@ MonoBehaviour:
     type: 3}
   renderer: {fileID: 8680780199558192520}
   selectable: {fileID: -6201504365031328977}
-  tilesInRange: []
+  tileIdsInRange: 
   defaultLayer: 0
   ignoreRaycastLayer: 2
 --- !u!136 &-8178284950772703516

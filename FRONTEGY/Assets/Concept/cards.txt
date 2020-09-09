@@ -1,5 +1,5 @@
 ---INFO---
-P = player, E = enemy
+P = player, E = enemy, N = node
 unit attributes: HP, ATK, maxATK, DEF, maxDEF
 Every round, DEF = min(DEF+1, maxDEF)
 Every round, ATK = maxATK
@@ -11,22 +11,39 @@ initialMaxATK = initialHP + initialMaxDEF
 ATK = all damage
 DEF DMG = damage to DEF
 HP DMG = damage to HP
-P/Ehit = Attacked, even when dealing 0 DEF DMG
-COMMON
+Phit/Ehit = Attacked, even when dealing 0 DEF DMG
 
+ALL APPLIED DURING TACTICAL; ACTIVADED DURING:
 
-UNKNOWN RARITY
+TACTICAL
+?: WalkRange(P, range+1)
+?: Freeze(P/E, x)
+?: Freeze(N, x)
 
-
+BATTLE
 first: Convert(P, x) & Convert(E, x)
 ?: first attack against P takes no HP
 Phit: Reflect(P)
 Ehit: Heal(P, {HP DMG})
 Pdeath, trash: Convert(E, x)
 
----STATUS EFFECTS---
-t = target, d = duration
+---SPELLS---
+t = team, u = unit, n = node
+d = duration (typically rounds), a = scalar, range, etc
 
-Heal(t, a) - Heals t with a hearts
-Reflect(t) - Reflects all incoming damage for t, to sender
-Convert(t, d) - Converts t to the opposing team for d rounds, including effects except itself
+Fog(t, n, d, a) - Covers n and surrounding nodes in a-range in t-fog for d rounds
+Cloak(u, d) - Applies CLOAKED to u for d rounds
+Freeze(u/n, d) - Applies FROZEN to u or n for d rounds.
+Heal(u, a) - u's HP increased by a
+Reflect(u) - Reflects all incoming damage for u, to sender
+Convert(u, d) - Converts u to the opposing team for d rounds, including effects except itself
+
+---STATUS EFFECTS---
+c = concept (role, stats, active cards)
+
+n FOGGED: lingering, applies CLOAKED to friendly units, hides friendly buildings
+BOGGED: dump eet
+u CLOAKED: tactical: Invisible unless conflict, battle: role never REVEALED?
+u EXPOSED: role, stats and active cards REVEALED. Overrides CLOAKED
+u FROZEN: walkRange = 0, ATK = 0, DEF = 100
+c REVEALED: concept is visible to enemy

@@ -6,7 +6,17 @@ public static class TileTracker
 {
     static GameMaster GetGameMaster()
     {
-        return GameObject.FindGameObjectWithTag("gameMaster").GetComponent<GameMaster>();
+        return GameObject.FindGameObjectWithTag("GameMaster").GetComponent<GameMaster>();
+    }
+    public static List<Tile> GetTilesByIds(List<int> ids)
+    {
+        List<Tile> tiles = new List<Tile>();
+        foreach (int id in ids)
+        {
+            Tile tile = GetTileById(id);
+            if (tile != null) tiles.Add(tile);
+        }
+        return tiles;
     }
     public static Tile GetTileById(int id)
     {

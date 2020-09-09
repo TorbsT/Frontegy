@@ -243,7 +243,7 @@ public class GameMaster : MonoBehaviour
             CurrentGrid().unitStats.Add(new UnitStats());
             UnitStats unitStatsBlueprint = CurrentGrid().unitStats[i];
 
-            unitStatsBlueprint.parentTile = availableTiles[chosenTile];
+            unitStatsBlueprint.parentTileId = chosenTile;
             unitStatsBlueprint.teamId = teams.Count-Mathf.RoundToInt(Random.value+1f);
             uS.id = i;
             grid.unitScripts.Add(uS);
