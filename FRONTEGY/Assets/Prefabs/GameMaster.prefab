@@ -1,0 +1,112 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2333952634373340429
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2333952634373340431}
+  - component: {fileID: 2333952634373340430}
+  - component: {fileID: 1573691836989527424}
+  m_Layer: 0
+  m_Name: GameMaster
+  m_TagString: GameMaster
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2333952634373340431
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2333952634373340429}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2333952634373340430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2333952634373340429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b8fc08354755014c940a85d59b59dbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  randomSeed: 1
+  seed: 0
+  displayHistory: 1
+  unitPrefab: {fileID: 8680780199558192526, guid: 03de2358d8424fc4bbcf6f0c0f56d9d0,
+    type: 3}
+  buildingPrefab: {fileID: 1665551214539260222, guid: 8ff313c6dc8e16f4d8a3f3e4b1fc90df,
+    type: 3}
+  tilePrefab: {fileID: 3898236102231413406, guid: c23a1cb9cbf0efa48a3e3befa623247d,
+    type: 3}
+  selectionManager: {fileID: 1573691836989527424}
+  uiManager: {fileID: 4992850465238964191, guid: 05b11724ea75c234a92b8718ff7081ba,
+    type: 3}
+  grid:
+    tileShape: 2
+    gridConfig: 2
+    gridSize: {x: 10, y: 10}
+    tileRatio: 0.85
+    tileGap: 0
+    tileSize: 1
+    startingUnits: 10
+    geoBlueprints: []
+    reservoirs:
+    - name: None
+      material: {fileID: 2100000, guid: 40efd55466b0c3b4aa7f62d5aec67c0a, type: 2}
+      spawnWeight: 0
+    - name: Rock
+      material: {fileID: 2100000, guid: 066d42cb4991e8943907ccd5af87f496, type: 2}
+      spawnWeight: 4
+    - name: Wood
+      material: {fileID: 2100000, guid: 2b73128622c2ca244afedac596986a40, type: 2}
+      spawnWeight: 8
+    - name: Hay
+      material: {fileID: 2100000, guid: aaf881955afcd0b4aa6fcdf2195ef879, type: 2}
+      spawnWeight: 8
+    tiles: []
+    unitScripts: []
+    gridVers: []
+  phase:
+    teamId: 0
+    round: 0
+  teams:
+  - name: Neutral
+    material: {fileID: 2100000, guid: 336b8f39c584ea54f904181e587f0399, type: 2}
+  - name: RED
+    material: {fileID: 2100000, guid: 5c41654410656924c9eec4c1b75f642a, type: 2}
+  - name: BLUE
+    material: {fileID: 2100000, guid: 5982d0e2dc3341d46b0e7792055645a7, type: 2}
+--- !u!114 &1573691836989527424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2333952634373340429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 349763eb7df96d745b5b583bb31820de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  camera: {fileID: 0}
+  linePrefab: {fileID: 7648600365356990817, guid: ebd2a8db3738d3f4194d613e25033ae5,
+    type: 3}
+  selectedObj: {fileID: 0}
+  previousSelectedObj: {fileID: 0}
+  hoveredObj: {fileID: 0}
+  previousHoveredObj: {fileID: 0}

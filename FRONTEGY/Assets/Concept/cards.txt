@@ -1,0 +1,32 @@
+---INFO---
+P = player, E = enemy
+unit attributes: HP, ATK, maxATK, DEF, maxDEF
+Every round, DEF = min(DEF+1, maxDEF)
+Every round, ATK = maxATK
+
+initialMaxATK = initialHP + initialMaxDEF
+
+
+---UP---
+ATK = all damage
+DEF DMG = damage to DEF
+HP DMG = damage to HP
+P/Ehit = Attacked, even when dealing 0 DEF DMG
+COMMON
+
+
+UNKNOWN RARITY
+
+
+first: Convert(P, x) & Convert(E, x)
+?: first attack against P takes no HP
+Phit: Reflect(P)
+Ehit: Heal(P, {HP DMG})
+Pdeath, trash: Convert(E, x)
+
+---STATUS EFFECTS---
+t = target, d = duration
+
+Heal(t, a) - Heals t with a hearts
+Reflect(t) - Reflects all incoming damage for t, to sender
+Convert(t, d) - Converts t to the opposing team for d rounds, including effects except itself
