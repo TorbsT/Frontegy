@@ -47,24 +47,24 @@ public class Grid
     [System.NonSerialized] public GridPivotConfig currentGrid;
     [System.NonSerialized] public TileShape previousTileShape;
 
-    public List<Tile> GetActiveTiles(bool useGeoBlueprints)
+    public List<int> GetActiveTiles(bool useGeoBlueprints)
     {
-        List<Tile> returnTiles = new List<Tile>();
+        List<int> returnTiles = new List<int>();
         foreach (Tile tile in tiles)
         {
+            int tileId = tile.initialGeo.id;
             bool isActive;
             if (useGeoBlueprints) isActive = tile.initialGeo.isActive;
             else isActive = tile.geo.isActive;
-            if (isActive) returnTiles.Add(tile);
+            if (isActive) returnTiles.Add(tileId);
         }
         return returnTiles;
     }
-    public int GetNodeCount() { return (gridSize[0] * gridSize[1]); }
-    public Vector2Int GetGridPos(int id)
+    public void ResetGeos()
     {
-        Vector2Int pos = new Vector2Int(0, 0);
-        pos.y = Mathf.FloorToInt(((float)id) / ((float)gridSize[0]));
-        pos.x = id - gridSize[0] * pos.y;
-        return pos;
+        foreach (Tile tile in tiles)
+        {
+            tile.geo = tile.initialGeo;
+        }
     }
 }

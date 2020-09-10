@@ -147,7 +147,6 @@ public class GameMaster : MonoBehaviour
         grid.gridVers = new List<GridContents>();
         grid.gridVers.Add(new GridContents(new List<Geo>(), new List<UnitStats>()));
 
-        Debug.Log("PØLSe");
         phase = new Phase();
         phase.teamId = 1;
         phase.type = StaticPhaseType.weiterWeiter;
@@ -159,6 +158,7 @@ public class GameMaster : MonoBehaviour
 
         if (GameObject.Find("InstantiatedObjects") == null) instantiatedObjectsParent = new GameObject("InstantiatedObjects").transform;
         grid.previousTileShape = Grid.TileShape.none;
+        //TileTracker.UpdateGridValues();
         grid.geoBlueprints = GetRandomizedGeos();
         InstantiateTiles(grid.geoBlueprints);
         InstantiateUnits(true);
@@ -221,6 +221,7 @@ public class GameMaster : MonoBehaviour
             createdTile.gameMaster = this;
             grid.tiles.Add(createdTile);
         }
+        grid.ResetGeos();
     }
     void InstantiateUnits(bool useGeoBlueprints = false)
     {
@@ -231,19 +232,20 @@ public class GameMaster : MonoBehaviour
         }
 
         grid.unitScripts = new List<UnitScript>();
-        List<Tile> availableTiles = grid.GetActiveTiles(useGeoBlueprints);
+        List<int> availableTiles = grid.GetActiveTiles(useGeoBlueprints);
+
         for (int i = 0; i < grid.startingUnits; i++)
         {
             if (availableTiles.Count == 0) break;
             float randomValue = Random.value;
-            int chosenTile = Mathf.FloorToInt(randomValue * availableTiles.Count);
-            //int tileId = availableTiles[i].geo.id;
+            int chosenTile = Mathf.FloorToInt(randomValue * availableTiles.Count);  // chosenTile is the id of the tile in collection of ALL ACtIVE TILES
+            int tileId = availableTiles[chosenTile];  // tileId is id in collection of ALL TILES, active or not
 
             UnitScript uS = Instantiate(unitPrefab, instantiatedObjectsParent).GetComponent<UnitScript>();
             CurrentGrid().unitStats.Add(new UnitStats());
             UnitStats unitStatsBlueprint = CurrentGrid().unitStats[i];
 
-            unitStatsBlueprint.parentTileId = chosenTile;
+            unitStatsBlueprint.parentTileId = tileId;
             unitStatsBlueprint.teamId = teams.Count-Mathf.RoundToInt(Random.value+1f);
             uS.id = i;
             grid.unitScripts.Add(uS);
@@ -254,8 +256,8 @@ public class GameMaster : MonoBehaviour
     List<Geo> GetRandomizedGeos()
     {
         List<Geo> blueprintGeos = new List<Geo>();
-        int remainingSpaces = grid.GetNodeCount();
-        int remainingTiles = Mathf.RoundToInt(grid.tileRatio*grid.GetNodeCount());
+        int remainingSpaces = TileTracker.GetTileCount();
+        int remainingTiles = Mathf.RoundToInt(grid.tileRatio*TileTracker.GetTileCount());
 
         int gridXPos = 0;
         int gridYPos = 0;
@@ -267,7 +269,7 @@ public class GameMaster : MonoBehaviour
         }
 
 
-        for (int i = 0; i < grid.GetNodeCount(); i++)
+        for (int i = 0; i < TileTracker.GetTileCount(); i++)
         {
             float prob = ((float)remainingTiles)/((float)remainingSpaces);
 

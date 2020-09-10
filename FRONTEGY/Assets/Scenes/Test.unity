@@ -407,6 +407,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fovLimits: {x: 25, y: 70}
+  osLimits: {x: 4, y: 6}
   horizontalAngleLimits: {x: 0, y: 359}
   verticalAngleLimits: {x: 30, y: 80}
   height: 10

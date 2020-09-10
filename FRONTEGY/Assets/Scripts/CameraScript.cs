@@ -4,6 +4,7 @@ public class CameraScript : MonoBehaviour
 {
     [Header("Variables")]
     [SerializeField] Vector2 fovLimits;
+    [SerializeField] Vector2 osLimits;
     [SerializeField] Vector2 horizontalAngleLimits;
     [SerializeField] Vector2 verticalAngleLimits;
     [SerializeField] float height;
@@ -21,6 +22,7 @@ public class CameraScript : MonoBehaviour
     Camera camera;
     float circleRadius;
     float zoomSpeed;
+    bool enableCameraMovement = true;
     
     void Start()
     {
@@ -30,44 +32,44 @@ public class CameraScript : MonoBehaviour
     {
         if (orthographic)
         {
+            enableCameraMovement = true;
             camera.orthographic = true;
-            Quaternion newRotation = Quaternion.Euler(new Vector3(90f, 0f, 0f));
-            transform.localRotation = Quaternion.Lerp(transform.localRotation, newRotation, cameraRotationSpeed);
-            Vector3 newPosition = new Vector3(0f, height, 0f);
-            transform.position = Vector3.Lerp(transform.position, newPosition, cameraPositionSpeed);
         }
         else if (!orthographic)
         {
+            enableCameraMovement = true;
             camera.orthographic = false;
+        }
+        if (enableCameraMovement)
+        {
             horizontalAngle += Time.deltaTime * -Input.GetAxis("Horizontal") * 200f;
             if (horizontalAngle < 0f) horizontalAngle += 360f;
             else if (horizontalAngle >= 360f) horizontalAngle -= 360f;
             verticalAngle += Time.deltaTime * Input.GetAxis("Vertical") * 20f;
             verticalAngle = Mathf.Clamp(verticalAngle, verticalAngleLimits[0], verticalAngleLimits[1]);
-            Quaternion newRotation = Quaternion.Euler(new Vector3(verticalAngle, horizontalAngle, 0f));
-            transform.localRotation = Quaternion.Lerp(transform.localRotation, newRotation, cameraRotationSpeed);
 
             circleRadius = AdvancedMafs(verticalAngle, transform.position.y);
-            Vector2 periferalVector = GetPeriferalVector(horizontalAngle, circleRadius);
 
+            Quaternion newRotation = Quaternion.Euler(new Vector3(verticalAngle, horizontalAngle, 0f));
+            Vector2 periferalVector = GetPeriferalVector(horizontalAngle, circleRadius);
             Vector3 newPosition = new Vector3(periferalVector[0], height, periferalVector[1]);
+
+            camera.fieldOfView = Maffs.FloatLerp(camera.fieldOfView, GetFov(), cameraFovSpeed);
+            camera.orthographicSize = Maffs.FloatLerp(camera.orthographicSize, GetOs(), cameraFovSpeed);
+            transform.localRotation = Quaternion.Lerp(transform.localRotation, newRotation, cameraRotationSpeed);
             transform.position = Vector3.Lerp(transform.position, newPosition, cameraPositionSpeed);
-            fov = GetFov();
-            camera.fieldOfView = Maffs.FloatLerp(camera.fieldOfView, fov, cameraFovSpeed);
         }
-        /*
-        zoomSpeed = zoomSpeedLimits[0];
-        zoom = (transform.position.y-zoomLimits[0]) / (zoomLimits[1] - zoomLimits[0]);
-        transform.position += new Vector3(Time.deltaTime*Input.GetAxis("Horizontal")*GetPanSpeed(), 0f, Time.deltaTime*Input.GetAxis("Vertical")*GetPanSpeed());
-        transform.position += Time.deltaTime * transform.forward * Input.GetAxis("Mouse ScrollWheel")*zoomSpeed;
-        if (transform.position.y < zoomLimits[0]) transform.position = new Vector3(transform.position.x, zoomLimits[0], transform.position.z);
-        else if (transform.position.y > zoomLimits[1]) transform.position = new Vector3(transform.position.x, zoomLimits[1], transform.position.z);
-        */
+
         if (Input.GetKeyDown("o")) orthographic = !orthographic;
     }
     float GetFov()
     {
         float x = fovLimits[0] + GetRelativeAngle()*(fovLimits[1] - fovLimits[0]);
+        return x;
+    }
+    float GetOs()
+    {
+        float x = osLimits[0] + GetRelativeAngle() * (osLimits[1] - osLimits[0]);
         return x;
     }
     float GetRelativeAngle()

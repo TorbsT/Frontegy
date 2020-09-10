@@ -79,6 +79,7 @@
     <Compile Include="Assets\Scripts\Non-Mono\ObjectCopier.cs" />
     <Compile Include="Assets\Maffs.cs" />
     <Compile Include="Assets\Scripts\Non-Mono\UnitStats.cs" />
+    <Compile Include="Assets\Scripts\Non-Mono\Breadcrumb.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\Concept\cards.txt" />

@@ -42,7 +42,7 @@ public class Tile : MonoBehaviour
     void ManualStart()
     {
         isInitialized = true;
-        geo = initialGeo;
+
         transform.parent.localScale = new Vector3(1f, 0f, 1f);
         if (swapRenderers) SwapRenderers();
         ResetAllMaterials();
@@ -139,11 +139,15 @@ public class Tile : MonoBehaviour
             ResetSideMaterial();
         }
     }
-    public void ShowPath()
+    public void ShowBreadcrumb(Breadcrumb breadcrumb)
     {
         topRenderer.material = pathableMat;
+
+        float timeOffset = ((float)breadcrumb.stepsRemaining) * 0.1f;
+        topRenderer.material.SetFloat("TimeOffset", timeOffset);
+        Debug.Log(topRenderer.material.GetFloat("TimeOffset"));
     }
-    public void UnShowPath()
+    public void UnShowBreadcrumb()
     {
         ResetTopMaterial();
     }

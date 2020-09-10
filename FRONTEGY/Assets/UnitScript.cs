@@ -18,7 +18,7 @@ public class UnitScript : MonoBehaviour
     [SerializeField] GameObject linePrefab;
     [SerializeField] Renderer renderer;
     [SerializeField] Selectable selectable;
-    public List<int> tileIdsInRange;
+    public List<Breadcrumb> breadcrumbsInRange;
     
     [SerializeField] int defaultLayer = 0;
     [SerializeField] int ignoreRaycastLayer = 2;
@@ -29,7 +29,6 @@ public class UnitScript : MonoBehaviour
         gameMaster = GameObject.FindGameObjectWithTag("GameMaster").GetComponent<GameMaster>();
         RefreshStats();
         GetComponent<Renderer>().material = gameMaster.GetTeam(stats.teamId).material;
-        Debug.Log(stats.teamId);
     }
     public void ManualUpdate()
     {
@@ -79,7 +78,7 @@ public class UnitScript : MonoBehaviour
     public List<int> PlanMovement(int toTileId)
     {
         Tile toTile = TileTracker.GetTileById(toTileId);
-        Debug.Log("Searching for tile with id " + toTileId + ", gridPos " + gameMaster.grid.GetGridPos(toTileId));
+        Debug.Log("Searching for tile with id " + toTileId + ", gridPos " + TileTracker.GetPosById(toTileId));
 
         List<int> tilesInPF = Pathfinding.GetUntardedPath(Pathfinding.GetPaths(stats.parentTileId, stats.walkRange, new List<Vector2Int>(), toTile.geo.id), toTileId);
         Debug.Log("Found " + tilesInPF.Count);
@@ -99,20 +98,19 @@ public class UnitScript : MonoBehaviour
     public void Select()
     {
         renderer.material = unitSelectMat;
-        tileIdsInRange = Pathfinding.GetTilesInRange(stats.parentTileId, stats.walkRange, new List<Vector2Int>());
-        foreach (int bruh in tileIdsInRange)
+        breadcrumbsInRange = Pathfinding.GetAllTilesInRange(new Breadcrumb(stats.parentTileId, stats.walkRange));
+        foreach (Breadcrumb breadcrumb in breadcrumbsInRange)
         {
-            //Debug.Log(gameMaster.grid.GetGridPos(bruh.geo.id));
-            TileTracker.GetTileById(bruh).ShowPath();
+            TileTracker.GetTileById(breadcrumb.tileId).ShowBreadcrumb(breadcrumb);
         }
     }
     public void UnSelect()
     {
-        foreach (int tileId in tileIdsInRange)
+        foreach (Breadcrumb breadcrumb in breadcrumbsInRange)
         {
-            TileTracker.GetTileById(tileId).UnShowPath();
+            TileTracker.GetTileById(breadcrumb.tileId).UnShowBreadcrumb();
         }
-        tileIdsInRange = new List<int>();
+        breadcrumbsInRange = new List<Breadcrumb>();
         renderer.material = gameMaster.GetTeam(stats.teamId).material;
     }
 }

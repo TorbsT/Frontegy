@@ -4,37 +4,45 @@ using UnityEngine;
 
 public static class Pathfinding
 {
-    static int id;
-    public static List<int> GetTilesInRange(int centerTileId, int range, List<Vector2Int> alreadyFoundIds)
+    static List<Breadcrumb> alreadyFoundBreadcrumbs;
+    public static List<Breadcrumb> GetAllTilesInRange(Breadcrumb breadcrumb)
     {
-        if (TileTracker.GetTileById(centerTileId) == null) return new List<int>();
-        if (range < 0) return new List<int>();
-        alreadyFoundIds.Add(new Vector2Int(centerTileId, range));
-        List<Vector2Int> offsets = new List<Vector2Int>();
-        offsets.Add(Vector2Int.up);
-        offsets.Add(Vector2Int.right);
-        offsets.Add(Vector2Int.down);
-        offsets.Add(Vector2Int.left);
+        alreadyFoundBreadcrumbs = new List<Breadcrumb>();  // A LITTLE MORE BACK AND ITS FUCXED
+        SetTilesInRange(breadcrumb);
+        Debug.Log(alreadyFoundBreadcrumbs.Count);
+        return alreadyFoundBreadcrumbs;
+    }
+    static void SetTilesInRange(Breadcrumb breadcrumb)
+    {
+        if (TileTracker.GetTileById(breadcrumb.tileId) == null) return;  // This is checked twice: One here, and one in TryAddBreadcrumb. Without here, 
+        if (breadcrumb.stepsRemaining < 0) return;
 
-        List<int> addThese = new List<int>();
-        addThese.Add(centerTileId);
-        for (int i = 0; i < offsets.Count; i++)
+        if (IsAvailableForWalking(breadcrumb.tileId))
         {
-            List<int> temp = new List<int>();
-
-            Vector2Int offset = offsets[i];
-            id = GetTileId(centerTileId, offset, alreadyFoundIds, range);
-            if (IsAvailableForWalking(centerTileId))
+            bool bestBreadcrumbSoFar = TryAddBreadcrumb(breadcrumb);
+            if (bestBreadcrumbSoFar)  // No point in spreading breadcrumbs multiple times from same tile (when breadcrumb isnt more optimal)!
             {
-                temp = GetTilesInRange(id, range - 1, alreadyFoundIds);
-                addThese.AddRange(temp);
+                List<Vector2Int> offsets = new List<Vector2Int>();
+                offsets.Add(Vector2Int.up);
+                offsets.Add(Vector2Int.right);
+                offsets.Add(Vector2Int.down);
+                offsets.Add(Vector2Int.left);
+
+
+                for (int i = 0; i < offsets.Count; i++)
+                {
+                    Vector2Int offset = offsets[i];
+                    int nextId = Foo(breadcrumb.tileId, offset);
+                    SetTilesInRange(new Breadcrumb(nextId, breadcrumb.stepsRemaining - 1));
+                }
             }
         }
 
-        return addThese;
+        return;
     }
     public static List<int> GetPaths(int centerTileId, int range, List<Vector2Int> alreadyFoundIds, int tileToFind = -1)
     {
+        /*
         if (TileTracker.GetTileById(centerTileId) == null) return new List<int>();
         if (range < 0) return new List<int>();
         alreadyFoundIds.Add(new Vector2Int(centerTileId, range));  // maybe tile.id fixes
@@ -51,8 +59,8 @@ public static class Pathfinding
             List<int> temp = new List<int>();
 
             Vector2Int offset = offsets[i];
-            id = GetTileId(centerTileId, offset, alreadyFoundIds, range);
             if (IsAvailableForWalking(centerTileId))
+            id = TryAddBreadcrumb(centerTileId, offset, range);
             {
                 temp = GetPaths(id, range - 1, alreadyFoundIds, tileToFind);
                 if (temp.Count > 0)
@@ -64,6 +72,8 @@ public static class Pathfinding
         }
         if (addThese.Count > 0 || centerTileId == tileToFind) addThese.Add(centerTileId);
         return addThese;
+        */
+        return null;
     }
     public static List<int> GetUntardedPath(List<int> pathIdList, int targetTileId)
     {
@@ -77,18 +87,18 @@ public static class Pathfinding
     }
 
 
-
-
-
     static bool IsAvailableForWalking(int centerTileId)
     {
-        if (id == -1) return false;
-        if (CrossesEdge(centerTileId, id)) return false;
+        Vector2Int gridSize = TileTracker.GetGridSize();
+        int tileCount = TileTracker.GetTileCount();
+        if (centerTileId < 0) return false;
+        if (centerTileId > tileCount - 1) return false;
+        //if (CrossesEdge(centerTileId, id, gridSize)) return false;
+        if (!TileTracker.GetTileById(centerTileId).geo.isActive) return false;
         return true;
     }
-    static bool CrossesEdge(int startId, int endId)  // true: crosses edge of the map, meaning
+    static bool CrossesEdge(int startId, int endId, Vector2Int gridSize)  // true: crosses edge of the map, meaning 1 id apart, but really far apart
     {
-        Vector2Int gridSize = GameObject.FindGameObjectWithTag("GameMaster").GetComponent<GameMaster>().grid.gridSize;
         float verticalStartSpot = ((float)startId) / ((float)gridSize[0]);
         float verticalEndSpot = ((float)endId) / ((float)gridSize[0]);
 
@@ -106,13 +116,25 @@ public static class Pathfinding
         }
         return null;
     }
-    static int GetTileId(int startTileId, Vector2Int offset, List<Vector2Int> alreadyFoundIds, int thisRange = 0)
+    static bool TryAddBreadcrumb(Breadcrumb newBreadcrumb)  // returns FALSE if a better breadcrumb existed.
     {
-        int returnId = startTileId + offset[0] + offset[1] * GameObject.FindGameObjectWithTag("GameMaster").GetComponent<GameMaster>().grid.gridSize[0];
-        foreach (Vector2Int id in alreadyFoundIds)
+        int oldBreadcrumbId = -1;
+        for (int i = 0; i < alreadyFoundBreadcrumbs.Count; i++)
         {
-            if (id[0] == returnId && thisRange <= id[1]) return -1;  // Already gone through. To prevent intinite recursion.
+            Breadcrumb oldBreadcrumb = alreadyFoundBreadcrumbs[i];
+            if (newBreadcrumb.tileId == oldBreadcrumb.tileId)  // Already gone through. To prevent intinite recursion.
+            {
+                if (newBreadcrumb.stepsRemaining <= oldBreadcrumb.stepsRemaining) return false;  // This new path is less effective and should be ignored
+                else oldBreadcrumbId = i;  // New path is faster, removes old path
+            }
         }
-        return returnId;
+        alreadyFoundBreadcrumbs.Add(newBreadcrumb);
+        if (oldBreadcrumbId != -1) alreadyFoundBreadcrumbs.RemoveAt(oldBreadcrumbId);
+        
+        return true;
+    }
+    static int Foo(int startTileId, Vector2Int offset)
+    {
+        return startTileId + offset[0] + offset[1] * TileTracker.GetGridSize()[0];
     }
 }
