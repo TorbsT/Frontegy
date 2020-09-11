@@ -620,7 +620,7 @@ PrefabInstance:
     - target: {fileID: 2333952634373340430, guid: f24a443d9ad96714482f442cc81ea6b4,
         type: 3}
       propertyPath: randomSeed
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2333952634373340430, guid: f24a443d9ad96714482f442cc81ea6b4,
         type: 3}

@@ -8,16 +8,13 @@ public static class Pathfinding
     public static List<Breadcrumb> GetAllTilesInRange(Breadcrumb breadcrumb)
     {
         alreadyFoundBreadcrumbs = new List<Breadcrumb>();  // A LITTLE MORE BACK AND ITS FUCXED
-        SetTilesInRange(breadcrumb);
+        SetTilesInRange(breadcrumb, breadcrumb);
         Debug.Log(alreadyFoundBreadcrumbs.Count);
         return alreadyFoundBreadcrumbs;
     }
-    static void SetTilesInRange(Breadcrumb breadcrumb)
+    static void SetTilesInRange(Breadcrumb breadcrumb, Breadcrumb previousBreadcrumb)
     {
-        if (TileTracker.GetTileById(breadcrumb.tileId) == null) return;  // This is checked twice: One here, and one in TryAddBreadcrumb. Without here, 
-        if (breadcrumb.stepsRemaining < 0) return;
-
-        if (IsAvailableForWalking(breadcrumb.tileId))
+        if (IsAvailableForWalking(breadcrumb, previousBreadcrumb))
         {
             bool bestBreadcrumbSoFar = TryAddBreadcrumb(breadcrumb);
             if (bestBreadcrumbSoFar)  // No point in spreading breadcrumbs multiple times from same tile (when breadcrumb isnt more optimal)!
@@ -33,7 +30,7 @@ public static class Pathfinding
                 {
                     Vector2Int offset = offsets[i];
                     int nextId = Foo(breadcrumb.tileId, offset);
-                    SetTilesInRange(new Breadcrumb(nextId, breadcrumb.stepsRemaining - 1));
+                    SetTilesInRange(new Breadcrumb(nextId, breadcrumb.stepsRemaining - 1), breadcrumb);
                 }
             }
         }
@@ -87,14 +84,16 @@ public static class Pathfinding
     }
 
 
-    static bool IsAvailableForWalking(int centerTileId)
+    static bool IsAvailableForWalking(Breadcrumb breadcrumb, Breadcrumb previousBreadcrumb)
     {
         Vector2Int gridSize = TileTracker.GetGridSize();
         int tileCount = TileTracker.GetTileCount();
-        if (centerTileId < 0) return false;
-        if (centerTileId > tileCount - 1) return false;
-        //if (CrossesEdge(centerTileId, id, gridSize)) return false;
-        if (!TileTracker.GetTileById(centerTileId).geo.isActive) return false;
+        if (breadcrumb.stepsRemaining < 0) return false;
+        if (breadcrumb.tileId < 0) return false;
+        if (breadcrumb.tileId > tileCount - 1) return false;
+        if (TileTracker.GetTileById(breadcrumb.tileId) == null) return false;  // This is checked twice: One here, and one in TryAddBreadcrumb. Without here, shit goes wild?
+        if (CrossesEdge(previousBreadcrumb.tileId, breadcrumb.tileId, gridSize)) return false;
+        if (!TileTracker.GetTileById(breadcrumb.tileId).geo.isActive) return false;
         return true;
     }
     static bool CrossesEdge(int startId, int endId, Vector2Int gridSize)  // true: crosses edge of the map, meaning 1 id apart, but really far apart
