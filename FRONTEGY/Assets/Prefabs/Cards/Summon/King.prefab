@@ -1,0 +1,102 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &7514562090657669414
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 7507151898056462369, guid: d70a2d52d893a5f498a536d346907743,
+        type: 3}
+      propertyPath: m_Name
+      value: King
+      objectReference: {fileID: 0}
+    - target: {fileID: 7507151898056462370, guid: d70a2d52d893a5f498a536d346907743,
+        type: 3}
+      propertyPath: cardData.spellCollections.Array.data[0].spells.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7507151898056462370, guid: d70a2d52d893a5f498a536d346907743,
+        type: 3}
+      propertyPath: cardData.cardName
+      value: Summon King
+      objectReference: {fileID: 0}
+    - target: {fileID: 7507151898056462370, guid: d70a2d52d893a5f498a536d346907743,
+        type: 3}
+      propertyPath: cardData.spellCollections.Array.data[0].spells.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 97932617d056e994ca3c0dac50e313db,
+        type: 2}
+    - target: {fileID: 7507151898056462370, guid: d70a2d52d893a5f498a536d346907743,
+        type: 3}
+      propertyPath: cardData.title
+      value: SUMMON KING
+      objectReference: {fileID: 0}
+    - target: {fileID: 7507151898056462370, guid: d70a2d52d893a5f498a536d346907743,
+        type: 3}
+      propertyPath: cardData.desc
+      value: Summons a King on a tile of your choosing.
+      objectReference: {fileID: 0}
+    - target: {fileID: 7507151898056462370, guid: d70a2d52d893a5f498a536d346907743,
+        type: 3}
+      propertyPath: cardData.type
+      value: PLACEABLE
+      objectReference: {fileID: 0}
+    - target: {fileID: 7507151898056462371, guid: d70a2d52d893a5f498a536d346907743,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7507151898056462371, guid: d70a2d52d893a5f498a536d346907743,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7507151898056462371, guid: d70a2d52d893a5f498a536d346907743,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7507151898056462371, guid: d70a2d52d893a5f498a536d346907743,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7507151898056462371, guid: d70a2d52d893a5f498a536d346907743,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7507151898056462371, guid: d70a2d52d893a5f498a536d346907743,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7507151898056462371, guid: d70a2d52d893a5f498a536d346907743,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7507151898056462371, guid: d70a2d52d893a5f498a536d346907743,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7507151898056462371, guid: d70a2d52d893a5f498a536d346907743,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7507151898056462371, guid: d70a2d52d893a5f498a536d346907743,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7507151898056462371, guid: d70a2d52d893a5f498a536d346907743,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d70a2d52d893a5f498a536d346907743, type: 3}

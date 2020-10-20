@@ -21,7 +21,9 @@ TACTICAL
 ?: Freeze(N, x)
 
 BATTLE
-first: Convert(P, x) & Convert(E, x)
+first: Convert(allP, x) & Convert(allE, x)
+first: Convert(strongestE, 1) & Convert(weakestP, infinite)
+first: 
 ?: first attack against P takes no HP
 Phit: Reflect(P)
 Ehit: Heal(P, {HP DMG})

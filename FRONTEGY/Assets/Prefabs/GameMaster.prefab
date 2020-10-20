@@ -46,15 +46,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   randomSeed: 1
   seed: 0
+  stepDuration: 1
   displayHistory: 1
-  unitPrefab: {fileID: 8680780199558192526, guid: 03de2358d8424fc4bbcf6f0c0f56d9d0,
-    type: 3}
+  troopPrefab: {fileID: 0}
   buildingPrefab: {fileID: 1665551214539260222, guid: 8ff313c6dc8e16f4d8a3f3e4b1fc90df,
     type: 3}
   tilePrefab: {fileID: 3898236102231413406, guid: c23a1cb9cbf0efa48a3e3befa623247d,
     type: 3}
   selectionManager: {fileID: 1573691836989527424}
-  uiManager: {fileID: 4992850465238964191, guid: 05b11724ea75c234a92b8718ff7081ba,
+  uiManager: {fileID: 6598621477207275706, guid: 05b11724ea75c234a92b8718ff7081ba,
     type: 3}
   grid:
     tileShape: 2
@@ -81,9 +81,12 @@ MonoBehaviour:
     tiles: []
     unitScripts: []
     gridVers: []
+  stepTimeLeft: 0
   phase:
     teamId: 0
     round: 0
+    step: 0
+    steps: 0
   teams:
   - name: Neutral
     material: {fileID: 2100000, guid: 336b8f39c584ea54f904181e587f0399, type: 2}
