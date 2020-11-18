@@ -1,37 +1,46 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class Selectable : MonoBehaviour
+public class Selectable
 {
-    /*
-    [System.NonSerialized] public GameObject ro;  // redirectObject
-    [SerializeField] public Tile redirectTile;
-    [SerializeField] public Troop redirectUnitScript;
+    public bool isInstantiated = false;
+    public GameMaster gameMaster;
+    public GameObject selGO;
 
     public bool isSelected;
-    public int playerId;
+    public bool isHovered;
 
-    bool isInitialized = false;
-    public bool isTile, isUnit = false;
-    void ManualStart()
-    {
-        isInitialized = true;
-        ro = gameObject;
-        if (redirectTile != null) isTile = true;
-        else if (redirectUnitScript != null) isUnit = true;
-
-        if (isTile) playerId = redirectTile.geo.playerId;
-        else if (isUnit) playerId = redirectUnitScript.stats.playerId;
+    public virtual void Instantiate()
+    {  // USE THIS when creating GO externally.
 
     }
-    public void A()
+    public void Instantiate2(System.Type type)
     {
-        if (!isInitialized) ManualStart();
+        if (selGO != null)
+        {
+            Debug.LogError("ERROR: tried creating selGO, but selGO already exists.");
+            return;
+        }
+        gameMaster = Maffs.GetGM();
+        Transform gridTrans = gameMaster.grid.gridGO;
+
+        GameObject prefab = null;
+        if (type == typeof(Troop)) prefab = gameMaster.troopGOPrefab;
+        else if (type == typeof(Card)) prefab = gameMaster.cardGOPrefab;
+        else if (type == typeof(Tile)) prefab = gameMaster.tileGOPrefab;
+
+        if (prefab == null) Debug.LogError("ERROR: Couldn't find a fitting prefab for the calling type " + type.ToString());
+        selGO = Object.Instantiate(prefab, gridTrans);
+
+        selGO.AddComponent<SelLinker>();
+        SelLinker selLink = selGO.GetComponent<SelLinker>();
+        selLink.link = this;
+        isInstantiated = true;
     }
-    */
+    // Note: Should PROBABLY be impossible to get gameobject externally
     public virtual void SelHover()
     {
-
+        isHovered = true;
     }
     public virtual void SelUnHover()
     {
@@ -46,15 +55,18 @@ public class Selectable : MonoBehaviour
         //isSelected = false;
     }
 
-    public bool SelIsTroop() { return SelGetTroop() != null; }
-    public bool SelIsTile() { return SelGetTile() != null; }
-    public bool SelIsCard() { return SelGetCard() != null; }
+    public bool IsTroop() { return SelGetTroop() != null; }
+    public bool IsTile() { return SelGetTile() != null; }
+    public bool IsCard() { return SelGetCard() != null; }
 
-    public virtual Troop SelGetTroop() { return null; }
-    public virtual Tile SelGetTile() { return null; }
-    public virtual CardEL SelGetCard() { return null; }
+    public virtual Troop SelGetTroop() { LogScriptNotFound("Troop"); return null; }
+    public virtual Tile SelGetTile() { LogScriptNotFound("Tile"); return null; }
+    public virtual Card SelGetCard() { LogScriptNotFound("Card"); return null; }
 
-
+    public void LogScriptNotFound(string scriptTypeText)
+    {
+        Debug.LogWarning("ERROR: "+scriptTypeText+" script not found");
+    }
     public virtual List<Breadcrumb> SelPlanMovement(int fromTileId, int toTileId)
     {
         return null;

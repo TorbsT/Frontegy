@@ -7,10 +7,11 @@ public class SelectionManager : MonoBehaviour
 
     [Header("System/Debug")]
     [SerializeField] GameObject linePrefab;
-    [SerializeField] GameObject selectedObj;
-    [SerializeField] GameObject previousSelectedObj;
-    [SerializeField] GameObject hoveredObj;
-    [SerializeField] GameObject previousHoveredObj;
+    [SerializeField] public GameObject selectedObj;
+    [SerializeField] public GameObject hoveredObj;
+
+    [SerializeField] private GameObject previousSelectedObj;
+    [SerializeField] private GameObject previousHoveredObj;
 
     private bool isInitialized = false;
     private void ManualStart()
@@ -46,12 +47,16 @@ public class SelectionManager : MonoBehaviour
     void SecondarySelectMechanic()
     {  // Right click
         if (hoveredObj == null || selectedObj == null) return;  // hovered and selected must exist
-        if (GetSelectable(selectedObj).SelIsCard() && GetSelectable(hoveredObj).SelIsTile()) PlaceCard();  // (sel = card, hov = tile) --> Place card
-        else if (GetSelectable(selectedObj).SelIsTroop() && GetSelectable(hoveredObj).SelIsTile()) MoveUnit();  // (sel = unit, hov = tile) --> Move unit
+        if (GetSelectable(selectedObj).IsCard() && GetSelectable(hoveredObj).IsTile()) PlaceCard();  // (sel = card, hov = tile) --> Place card
+        else if (GetSelectable(selectedObj).IsTroop() && GetSelectable(hoveredObj).IsTile()) MoveUnit();  // (sel = unit, hov = tile) --> Move unit
     }
     void PlaceCard()
     {
+        // SUPPOSES: selectedObj = CardEL
         Debug.Log("Place card now");
+
+        Card card = GetSelectable(selectedObj).SelGetCard();
+        card.Activate("summon");
     }
     void MoveUnit()
     {
@@ -98,10 +103,12 @@ public class SelectionManager : MonoBehaviour
         previousSelectedObj = selectedObj;
     }
     
-    Selectable GetSelectable(GameObject obj)
+    public Selectable GetSelectable(GameObject obj)
     {
         if (obj == null) return null;
-        Selectable hitSelectable = obj.GetComponent<Selectable>();
+        SelLinker hitLinker = obj.GetComponent<SelLinker>();
+        if (hitLinker == null) return null;
+        Selectable hitSelectable = hitLinker.link;
         return hitSelectable;
     }
     

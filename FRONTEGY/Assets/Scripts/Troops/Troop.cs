@@ -3,20 +3,17 @@ using UnityEngine;
 
 public class Troop : Selectable
 {
+    public Troop(TroopStats _stats)
+    {
+        stats = _stats;
+    }
     [Header("Variables")]
     [Range(0f, 10f)]
     [SerializeField] float walkAnimSpeed = 0.5f;
     [SerializeField] public TroopStats stats;
-    [SerializeField] Material unitHoverMat;
-    [SerializeField] Material unitSelectMat;
 
     [Header("System/Debug")]
-    public GameObject troopGO;
-    bool isInitialized = false;
-    GameMaster gameMaster;
     public LineDoodooer line;
-    bool isSelected;
-    [SerializeField] GameObject linePrefab;
     [SerializeField] Renderer rndrr;
     //[SerializeField] Selectable selectable;
     public List<Breadcrumb> breadcrumbsInRange;
@@ -24,17 +21,17 @@ public class Troop : Selectable
     [SerializeField] int defaultLayer = 0;
     [SerializeField] int ignoreRaycastLayer = 2;
 
-    void ManualStart()
+    public override void Instantiate()
     {
-        isInitialized = true;
-        gameMaster = GameObject.FindGameObjectWithTag("GameMaster").GetComponent<GameMaster>();
-        GetComponent<Renderer>().material = gameMaster.GetTeamOfPlayer(stats.playerId).material;
+        Instantiate2(this.GetType());
+        rndrr = selGO.GetComponent<Renderer>();
+        rndrr.material = gameMaster.GetPhasePlayer().mat;
     }
     public void ManualUpdate()
     {
-        if (!isInitialized) ManualStart();
+        if (!isInstantiated) Debug.LogError("ERROR: Troop is not instantiated");
         SetLayer();
-        transform.localScale = new Vector3(stats.scale, stats.scale, stats.scale);
+        selGO.transform.localScale = new Vector3(stats.scale, stats.scale, stats.scale);
         if (TileTracker.GetTileById(stats.parentTileId) == null) return;
         SetPosition();
         
@@ -43,8 +40,8 @@ public class Troop : Selectable
     {
         if (gameMaster.IsThisPhase(StaticPhaseType.strategic) || line == null || line.line.positionCount == 0)
         {
-            transform.position = TileTracker.GetTileById(stats.parentTileId).GetSurfacePos();
-            transform.position += Vector3.up * transform.localScale[1];
+            selGO.transform.position = TileTracker.GetTileById(stats.parentTileId).GetSurfacePos();
+            selGO.transform.position += Vector3.up * selGO.transform.localScale[1];
         }
         else if (gameMaster.IsThisPhase(StaticPhaseType.weiterWeiter))
         {
@@ -52,7 +49,7 @@ public class Troop : Selectable
             int step = gameMaster.phase.step;
             if (step < line.line.positionCount) index = step;
             else index = line.line.positionCount - 1;
-            transform.position = Vector3.Lerp(transform.position, line.line.GetPosition(index), walkAnimSpeed*Time.deltaTime);
+            selGO.transform.position = Vector3.Lerp(selGO.transform.position, line.line.GetPosition(index), walkAnimSpeed*Time.deltaTime);
         }
     }
     void SetLayer()
@@ -60,32 +57,34 @@ public class Troop : Selectable
         if (gameMaster.IsThisPhase(StaticPhaseType.strategic) && gameMaster.phase.playerId == stats.playerId)
         {
             // selectable
-            gameObject.layer = defaultLayer;
+            selGO.gameObject.layer = defaultLayer;
         }
-        else gameObject.layer = ignoreRaycastLayer;
+        else selGO.gameObject.layer = ignoreRaycastLayer;
     }
 
 
     public override Troop SelGetTroop() { return this; }
     public override void SelHover()
     {
-        if (!isSelected) rndrr.material = unitHoverMat;
+        if (!isSelected) rndrr.material = gameMaster.globalHoverMat;
     }
     public override void SelUnHover()
     {
-        if (!isSelected) rndrr.material = gameMaster.GetTeamOfPlayer(stats.playerId).material;
+        if (!isSelected) rndrr.material = gameMaster.GetPhasePlayer().mat;
     }
     public override void SelSelect()
     {
-        rndrr.material = unitSelectMat;
-        breadcrumbsInRange = Pathfinding.GetAllTilesInRange(new Breadcrumb(stats.parentTileId, stats.walkRange, 0));
+        rndrr.material = gameMaster.globalSelectMat;
+        breadcrumbsInRange = Pathfinding.GetAllTilesInRange(new Breadcrumb(stats.parentTileId, stats.GetWalkRange(), 0));
+
+        DebugUnits();
         foreach (Breadcrumb breadcrumb in breadcrumbsInRange)
         {
             TileTracker.GetTileById(breadcrumb.tileId).ShowBreadcrumb(breadcrumb);
         }
 
-        Conflict conflict = new Conflict(new List<TroopStats> { stats }, false);
-        conflict.DebugTroops(conflict.GetRankedTroops(new List<TroopStats> { stats }));
+        //Conflict conflict = new Conflict(new List<TroopStats> { stats }, false);
+        //conflict.DebugTroops(conflict.GetRankedTroops(new List<TroopStats> { stats }));
 
     }
     public override void SelUnSelect()
@@ -95,7 +94,7 @@ public class Troop : Selectable
             TileTracker.GetTileById(breadcrumb.tileId).UnShowBreadcrumb();
         }
         breadcrumbsInRange = new List<Breadcrumb>();
-        rndrr.material = gameMaster.GetTeamOfPlayer(stats.playerId).material;
+        rndrr.material = gameMaster.GetPhasePlayer().mat;
     }
     public override List<Breadcrumb> SelPlanMovement(int fromTileId, int toTileId)
     {
@@ -104,8 +103,16 @@ public class Troop : Selectable
 
         if (path == null) return null;
         stats.path = path;
-        if (line == null) line = Instantiate(linePrefab).GetComponent<LineDoodooer>();
+        if (line == null) line = Object.Instantiate(gameMaster.lineGOPrefab).GetComponent<LineDoodooer>();
         line.ownerUnit = this;
         return path;
+    }
+
+    public void DebugUnits()
+    { 
+        foreach (Unit unit in stats.units)
+        {
+            unit.DebugRole();
+        }
     }
 }

@@ -10,8 +10,11 @@ public static class StaticRoles
         new Role("captain", "Capt.", 4,   new UnitStats(1f, 5f, 4f)),
         new Role("colonel", "Col.", 5,    new UnitStats(1f, 6f, 5f)),
         new Role("general", "Gen.", 6,    new UnitStats(1f, 7f, 6f)),
-        new Role("king", "King", 7,       new UnitStats(2f, 8f, 7f)),
+        new Role("king", "King", 7,       new UnitStats(2f, 8f, 7f, 3)),
         new Role("spy", "Spy", 8,         new UnitStats(1f, 1f, 0f))
     };
-
+    public static Role GetRole(int id)
+    {
+        return roles[id];
+    }
 }

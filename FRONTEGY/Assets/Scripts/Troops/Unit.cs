@@ -4,18 +4,27 @@ using UnityEngine;
 
 public class Unit
 {
-    UnitStats stats;
+    public Unit(int roleId)
+    {
+        staticRoleId = roleId;
+        ResetRoleToStatic();
+    }
 
-    public Role role;
+    public int staticRoleId = -1;
+    public Role myRole;
     public bool isDead;
     //public List<ActiveCard> activeCards;
 
-    public void ResetStatsToRole()  // FIND A REALLY GOOD STURCTURE TO KEEP STATS AND ROLES AND SHIT
+    public void ResetRoleToStatic()  // FIND A REALLY GOOD STURCTURE TO KEEP STATS AND ROLES AND SHIT
     {
-
+        myRole = StaticRoles.GetRole(staticRoleId);
     }
     public void ResetStatsToStaticRole()
     {
 
+    }
+    public void DebugRole()
+    {
+        Debug.Log(myRole.name);
     }
 }

@@ -12,8 +12,6 @@ GameObject:
   - component: {fileID: 4512607643891267965}
   - component: {fileID: 8767778248624321511}
   - component: {fileID: 903912273921579296}
-  - component: {fileID: 4313184236385684498}
-  - component: {fileID: 291952248121098677}
   m_Layer: 0
   m_Name: Tile
   m_TagString: Untagged
@@ -98,71 +96,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3898236102231413406}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &4313184236385684498
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3898236102231413406}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2b8421a8c7d7b14985a795188f4d42e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  initialGeo:
-    id: 0
-    isActive: 0
-    height: 0
-    gridPos: {x: 0, y: 0}
-    reservoir:
-      name: 
-      material: {fileID: 0}
-      spawnWeight: 0
-    teamId: 0
-  geo:
-    id: 0
-    isActive: 0
-    height: 0
-    gridPos: {x: 0, y: 0}
-    reservoir:
-      name: 
-      material: {fileID: 0}
-      spawnWeight: 0
-    teamId: 0
-  lineHeight: 0.5
-  createAnimationSpeed: 10
-  swapRenderers: 0
-  hoverMat: {fileID: 2100000, guid: fc36d38da941cb64f9214568e225b2bf, type: 2}
-  selectMat: {fileID: 2100000, guid: 390ff569dd7b3ae40b23228f388d038b, type: 2}
-  pathableMat: {fileID: 2100000, guid: b8fdc65123bf5ae46a8cac480a0a77a9, type: 2}
-  tileCollider: {fileID: 4512607643891267965}
-  planeTransform: {fileID: 3233743479850838084}
-  trianglePrismMesh: {fileID: -276824456931843479, guid: 00d0d7759fab88743a8132b096fffdd6,
-    type: 3}
-  squarePrismMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  hexagonPrismMesh: {fileID: -3541893947873822521, guid: 4e39805555dbdaa4d9e82c839dacd30d,
-    type: 3}
-  sideRenderer: {fileID: 8767778248624321511}
-  topRenderer: {fileID: 525436779752349138}
---- !u!114 &291952248121098677
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3898236102231413406}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa58c05d49d2c2f44a5bd794a3199280, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  redirectTile: {fileID: 4313184236385684498}
-  redirectUnitScript: {fileID: 0}
-  isSelected: 0
-  teamId: 0
-  isTile: 0
-  isUnit: 0
 --- !u!1 &6384891349568431233
 GameObject:
   m_ObjectHideFlags: 0

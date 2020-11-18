@@ -12,5 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47fa722d2c4989a488e65a71dcfc34f3, type: 3}
   m_Name: King
   m_EditorClassIdentifier: 
-  targetTag: 
-  unitId: 0
+  unitId: 6

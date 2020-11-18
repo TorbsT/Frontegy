@@ -66,7 +66,6 @@
      <Compile Include="Assets\Scripts\Grid\GridVersion.cs" />
      <Compile Include="Assets\Scripts\Global\StaticPhaseType.cs" />
      <Compile Include="Assets\Scripts\Troops\LineDoodooer.cs" />
-     <Compile Include="Assets\Scripts\Global\Team.cs" />
      <Compile Include="Assets\Scripts\Troops\Conflict.cs" />
      <Compile Include="Assets\Scripts\Player.cs" />
      <Compile Include="Assets\Scripts\Global\PhaseType.cs" />
@@ -74,13 +73,15 @@
      <Compile Include="Assets\Scripts\Grid\GridPivotConfig.cs" />
      <Compile Include="Assets\Scripts\Troops\Role.cs" />
      <Compile Include="Assets\Scripts\Unused\Runner.cs" />
-     <Compile Include="Assets\Scripts\Cards\CardData.cs" />
+     <Compile Include="Assets\Scripts\Cards\SpellCollection.cs" />
+     <Compile Include="Assets\Scripts\Cards\Card.cs" />
      <Compile Include="Assets\Scripts\Cards\Effect.cs" />
      <Compile Include="Assets\Scripts\Grid\TileTracker.cs" />
      <Compile Include="Assets\Scripts\Troops\StaticRoles.cs" />
      <Compile Include="Assets\Scripts\Grid\Tile.cs" />
      <Compile Include="Assets\Scripts\Pathfinding\Pathfinding.cs" />
      <Compile Include="Assets\Scripts\Global\UIManager.cs" />
+     <Compile Include="Assets\Scripts\Global\SelLinker.cs" />
      <Compile Include="Assets\ZZZManure\TutorialInfo\Scripts\Readme.cs" />
      <Compile Include="Assets\Scripts\Global\SelectionManager.cs" />
      <Compile Include="Assets\Scripts\Grid\Reservoir.cs" />
@@ -88,7 +89,7 @@
      <Compile Include="Assets\Scripts\Troops\Unit.cs" />
      <Compile Include="Assets\Prefabs\Cards\Summon\SummonSpell.cs" />
      <Compile Include="Assets\Scripts\Global\Selectable.cs" />
-     <Compile Include="Assets\Scripts\Cards\CardEL.cs" />
+     <Compile Include="Assets\Scripts\Cards\CardData.cs" />
      <Compile Include="Assets\Scripts\Global\ObjectCopier.cs" />
      <Compile Include="Assets\Scripts\Global\Maffs.cs" />
      <Compile Include="Assets\Scripts\Pathfinding\Breadcrumb.cs" />

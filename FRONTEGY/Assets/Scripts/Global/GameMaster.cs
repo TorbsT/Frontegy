@@ -9,12 +9,18 @@ public class GameMaster : MonoBehaviour
     [SerializeField] private int seed;
     [SerializeField] private float stepDuration = 1f;
     [SerializeField] int playerStartingCards = 5;
+    [SerializeField] public List<CardData> cardBlueprints;
+    [SerializeField] public Material globalHoverMat;
+    [SerializeField] public Material globalSelectMat;
+    [SerializeField] public Material breadcrumbMat;
 
     [Header("System")]
     public int displayHistory = 0;
-    [SerializeField] public GameObject troopPrefab;
+    [SerializeField] public GameObject troopGOPrefab;
     [SerializeField] GameObject buildingPrefab;
-    [SerializeField] public GameObject tilePrefab;
+    [SerializeField] public GameObject tileGOPrefab;
+    [SerializeField] public GameObject cardGOPrefab;
+    [SerializeField] public GameObject lineGOPrefab;
     [SerializeField] SelectionManager selectionManager;
     [SerializeField] UIManager uiManager;
     [SerializeField] CameraScript cameraScript;
@@ -22,7 +28,6 @@ public class GameMaster : MonoBehaviour
     [SerializeField] private float stepTimeLeft;
 
     public Phase phase;
-    public List<Team> teams;
     public List<Player> players;
 
     GridPivotConfig gridNone;
@@ -81,7 +86,6 @@ public class GameMaster : MonoBehaviour
     */
     void AttemptSkip()
     {
-        Debug.Log("attempted skip!");
         if (true) NextPhase();//(phase.type.skippable) NextPhase();
     }
     void NextPhase()
@@ -96,21 +100,18 @@ public class GameMaster : MonoBehaviour
     }
     void NextStrategicPhase()
     {
-        Debug.Log("Option 1");
         phase.type = StaticPhaseType.strategic;
         phase.playerId++;
-        Debug.Log("Round " + phase.round + ": " + phase.type.name + " " + GetTeamOfPlayer(phase.playerId).name);
+        Debug.Log("Round " + phase.round + ": " + phase.type.name + " " + GetPhasePlayer().name);
     }
     void WeiterWeiter()
     {
-        Debug.Log("Option 2");
         phase.type = StaticPhaseType.weiterWeiter;
         stepTimeLeft = stepDuration;
-        Debug.Log("Round " + phase.round + ": " + phase.type.name + " " + GetTeamOfPlayer(phase.playerId).name);
+        Debug.Log("Round " + phase.round + ": " + phase.type.name + " " + GetPhasePlayer().name);
     }
     void NextRound()
     {
-        Debug.Log("Option 3");
         phase.playerId = 0;
         phase.round++;
         TileTracker.UpdateGridValues();
@@ -129,17 +130,6 @@ public class GameMaster : MonoBehaviour
         return steps;
     }
     public Player GetPhasePlayer() {return GetPlayer(phase.playerId);}
-    public int GetTeamIdOfPlayer(int id)
-    {
-        int teamId = GetPlayer(id).teamId;
-        return teamId;
-    }
-    public Team GetTeamOfPlayer(int id)
-    {
-        int teamId = GetTeamIdOfPlayer(id);
-        Team team = teams[teamId];
-        return team;
-    }
     public Player GetPlayer(int id)
     {
         if (id < 0 || id >= players.Count)
@@ -190,15 +180,40 @@ public class GameMaster : MonoBehaviour
         gridAnchored = new GridPivotConfig(0f, 0.5f);
         gridCentered = new GridPivotConfig(-0.5f, 0.5f);
 
-        //if (GameObject.Find("InstantiatedObjects") == null) instantiatedObjectsParent = new GameObject("InstantiatedObjects").transform;
-
-
         grid.previousTileShape = Grid.TileShape.none;
-        //TileTracker.UpdateGridValues()
-        //InstantiateUnits(true);
     }
+    public void StartingCards()
+    {
+        GiveEqualCards(playerStartingCards);
+    }
+    void GiveEqualCards(int count)
+    {
+        foreach (Player player in players)
+        {
+            GiveCards(player, count);
+        }
+    }
+    void GiveCards(Player player, int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            GiveCard(player, PickCard());
+        }
+    }
+    void GiveCard(Player player, Card card)
+    {
+        card.SetPlayerHolder(player);
+        grid.data.cards.Add(card);
+    }
+    Card PickCard()
+    {
+        int blueprintCount = cardBlueprints.Count;
+        int pickedCardIndex = Random.Range(0, blueprintCount);
+        CardData data = cardBlueprints[pickedCardIndex];
+        Card createdCard = grid.InstantiateCard(data);
 
-
+        return createdCard;
+    }
 
 
 

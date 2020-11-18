@@ -2,7 +2,6 @@
 
 public class Tile : Selectable
 {
-    bool isInitialized = false;
     enum SideMode
     {
         none,
@@ -19,43 +18,42 @@ public class Tile : Selectable
     public Geo initialGeo;
     public Geo geo;
     public float lineHeight;
-    [SerializeField] float createAnimationSpeed;
-    [SerializeField] bool swapRenderers = false;
-    [SerializeField] Material hoverMat;
-    [SerializeField] Material selectMat;
-    [SerializeField] Material pathableMat;
+    float createAnimationSpeed = 0.5f;
+    bool swapRenderers = false;
 
     [Header("System")]
-    public GameObject tileGO;
     SideMode sideMode = SideMode.none;
     TopMode topMode = TopMode.none;
-    [System.NonSerialized] public GameMaster gameMaster;
-    //[SerializeField] Selectable selectable;
-    [SerializeField] Collider tileCollider;
-    [SerializeField] Transform planeTransform;
-    //[SerializeField] GameObject modeller;
-    [SerializeField] Mesh trianglePrismMesh;
-    [SerializeField] Mesh squarePrismMesh;
-    [SerializeField] Mesh hexagonPrismMesh;
-    [SerializeField] Renderer sideRenderer;
-    [SerializeField] Renderer topRenderer;
+    Collider tileCollider;
+    Transform planeTransform;
+    Mesh trianglePrismMesh;
+    Mesh squarePrismMesh;
+    Mesh hexagonPrismMesh;
+    Renderer sideRenderer;
+    Renderer topRenderer;
 
-    void ManualStart()
+    public override void Instantiate()
     {
-        isInitialized = true;
-
-        transform.localScale = new Vector3(1f, 0f, 1f);
+        Instantiate2(this.GetType());
+        geo = initialGeo;
+        selGO.transform.localScale = new Vector3(1f, 0f, 1f);
+        sideRenderer = selGO.GetComponent<Renderer>();
+        topRenderer = selGO.transform.GetChild(0).GetComponentInChildren<Renderer>();  // uh oh
+        planeTransform = selGO.transform.GetChild(0);  // UH FUCKING OH
+        if (topRenderer == null) Debug.LogError("ERROR: couldn't find topRenderer using child index 0");
+        tileCollider = selGO.GetComponent<Collider>();
         if (swapRenderers) SwapRenderers();
         ResetAllMaterials();
     }
     public void ManualUpdate()
     {
-        if (!isInitialized) ManualStart();
+        if (!isInstantiated) Debug.LogError("ERROR: Tile is not instantiated");
+
         topRenderer.enabled = geo.isActive;
         sideRenderer.enabled = geo.isActive;
         tileCollider.enabled = geo.isActive;
-        transform.position = GetTilePos();
-        transform.localScale = Vector3.Lerp(transform.localScale, GetTileScale(), createAnimationSpeed*Time.deltaTime);
+        selGO.transform.position = GetTilePos();
+        selGO.transform.localScale = Vector3.Lerp(selGO.transform.localScale, GetTileScale(), createAnimationSpeed*Time.deltaTime);
         
     }
     public Vector3 GetSurfacePos()
@@ -89,15 +87,15 @@ public class Tile : Selectable
     void ResetTopMaterial()
     {
         SetMaterial(topRenderer, geo.reservoir.material);
-        SetColor(topRenderer, gameMaster.GetTeamOfPlayer(geo.playerId).material.color);
+        SetColor(topRenderer, gameMaster.GetPhasePlayer().mat.color);
     }
     void ResetSideMaterial()
     {
         SetMaterial(sideRenderer, geo.reservoir.material);
     }
-    void SetMaterial(Renderer renderer, Material mat)
+    void SetMaterial(Renderer r, Material mat)
     {
-        renderer.material = mat;
+        r.material = mat;
     }
     void SetColor(Renderer renderer, Color color)
     {
@@ -114,7 +112,7 @@ public class Tile : Selectable
         if (sideMode != SideMode.select)
         {
             sideMode = SideMode.hover;
-            sideRenderer.material = hoverMat;
+            sideRenderer.material = gameMaster.globalHoverMat;
         }
     }
     public override void SelUnHover()
@@ -130,7 +128,7 @@ public class Tile : Selectable
         if (true)
         {
             sideMode = SideMode.select;
-            sideRenderer.material = selectMat;
+            sideRenderer.material = gameMaster.globalSelectMat;
         }
     }
     public override void SelUnSelect()
@@ -143,7 +141,7 @@ public class Tile : Selectable
     }
     public void ShowBreadcrumb(Breadcrumb breadcrumb)
     {
-        topRenderer.material = pathableMat;
+        topRenderer.material = gameMaster.breadcrumbMat;
 
         float timeOffset = ((float)breadcrumb.stepsRemaining) * 0.1f;
         topRenderer.material.SetFloat("TimeOffset", timeOffset);
@@ -173,7 +171,7 @@ public class Tile : Selectable
     }
     void SetMesh(Mesh mesh)
     {
-        GetComponent<MeshFilter>().mesh = mesh;
+        //selGO.GetComponent<MeshFilter>().mesh = mesh;
     }
 
     Vector3 GetTileScale()
@@ -188,7 +186,7 @@ public class Tile : Selectable
     {
         Vector3 pos = Vector3.zero;
         pos.x = GetDimensionScalar(0);
-        pos.y = transform.localScale.y/2f;
+        pos.y = selGO.transform.localScale.y/2f;
         pos.z = GetDimensionScalar(1);
         return pos;
     }

@@ -22,7 +22,7 @@ public class Conflict
             Debug.Log("The following troop is from team "+troop.playerId);
             foreach (Unit unit in troop.units)
             {
-                Debug.Log(unit.role.displayName);
+                Debug.Log(unit.myRole.displayName);
             }
         }
     }
@@ -40,16 +40,16 @@ public class Conflict
     TroopStats GetRankedTroop(TroopStats troopToRank)  // "In rank" means sorted so:
     {
         // Spy, King, Gen., Col., Capt., Major, Ltn., Pvt.
-        TroopStats rankedTroop = new TroopStats();
+        TroopStats rankedTroop = new TroopStats(0, new List<Unit>()); // BAD BAD BAD BAD BAD BAD BAD BAD BAD
 
         foreach (Unit unitToRank in troopToRank.units)  // INSERTION SORT!
         {
-            int insertPriority = unitToRank.role.priority;
+            int insertPriority = unitToRank.myRole.priority;
             int idToInsertInto = rankedTroop.units.Count;
             for (int i = 0; i < rankedTroop.units.Count; i++)
             {
                 Unit thisUnit = rankedTroop.units[i];
-                int thisPriority = thisUnit.role.priority;
+                int thisPriority = thisUnit.myRole.priority;
                 if (thisUnit.isDead)
                 if (insertPriority >= thisPriority)
                 {

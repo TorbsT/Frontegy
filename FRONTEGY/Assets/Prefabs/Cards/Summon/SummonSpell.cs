@@ -6,11 +6,18 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SummonSpell.asset", menuName = "SummonSpell")]
 public class SummonSpell : Spell
 {
-    [SerializeField] int unitId;
-    public override void Cast(int ownerId)
+    [SerializeField] int unitId;  // Unit to spawn
+    public override void Cast(Card parent)
     {
-        base.Cast(ownerId);
-        // Find selectionmanager and shit
-        Debug.Log(unitId);
+        base.Cast(parent);
+        /*
+        Unit newUnit = new Unit(new UnitStats());
+
+        newUnit.Instantiate();
+        */
+        Troop newTroop = new Troop(new TroopStats(Maffs.GetGM().phase.playerId, new List<Unit>() { new Unit(unitId) }));
+        gameMaster.grid.data.troops.Add(newTroop);
+        newTroop.stats.parentTileId = selHover.SelGetTile().geo.id;
+        newTroop.Instantiate();
     }
 }

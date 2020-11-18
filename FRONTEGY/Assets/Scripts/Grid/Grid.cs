@@ -37,7 +37,7 @@ public class Grid
     [Header("Grid Debug")]
     public GameMaster gameMaster;
     public List<Geo> geoBlueprints;
-    Transform gridGO;
+    public Transform gridGO;
 
 
     public List<Reservoir> reservoirs;
@@ -51,12 +51,12 @@ public class Grid
 
     public void ResetGrid()
     {
-        gameMaster = GameObject.FindGameObjectWithTag("GameMaster").GetComponent<GameMaster>();
+        gameMaster = Maffs.GetGM();
         if (data != null)
         {
-            // TODO: Destroy gameObjects
+            Debug.Log("TODO: Destroy gameObjects");
         }
-        data = new GridData(new List<Tile>(), new List<Troop>());
+        data = new GridData(new List<Tile>(), new List<Troop>(), new List<Card>());
 
         if (GameObject.Find("Grid") != null)
             Object.Destroy(gridGO.gameObject);
@@ -64,28 +64,38 @@ public class Grid
 
         geoBlueprints = GetRandomizedGeos();
         InstantiateTiles(geoBlueprints);
+        gameMaster.StartingCards();
     }
     void InstantiateTiles(List<Geo> blueprints)
     {
         if (data.tiles != null)
             foreach (Tile tile in data.tiles)
             {
-                Object.Destroy(tile.gameObject);
+                Object.Destroy(tile.selGO);
             }
         List<Tile> tempTiles = new List<Tile>();
         foreach (Geo blueprint in blueprints)
         {
-            GameObject tileGO = Object.Instantiate(gameMaster.tilePrefab, gridGO);
-            Tile createdTile = tileGO.GetComponentInChildren<Tile>();
-            createdTile.initialGeo = blueprint;
-            createdTile.gameMaster = gameMaster;  // TEMPORARY
-            tempTiles.Add(createdTile);
+            tempTiles.Add(InstantiateTile(blueprint));
         }
         data.tiles = tempTiles;
-        Debug.Log("count: " + data.tiles.Count);
-        tempTiles = null;
-        Debug.Log("count: " + data.tiles.Count);
         ResetTileGeos();
+    }
+    public Card InstantiateCard(CardData data)
+    {  // UGLY UGLY UGLY
+        Card createdCard = new Card();
+        createdCard.gameMaster = gameMaster;
+        createdCard.data = data;
+        createdCard.Instantiate();
+        return createdCard;
+    }
+    Tile InstantiateTile(Geo blueprint)
+    {  // UGLY UGLY UGLY
+        Tile createdTile = new Tile();
+        createdTile.initialGeo = blueprint;
+        createdTile.gameMaster = gameMaster;  // TEMPORARY
+        createdTile.Instantiate();
+        return createdTile;
     }
     public List<int> GetActiveTiles(bool useGeoBlueprints)
     {

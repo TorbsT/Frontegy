@@ -5,6 +5,6 @@ using UnityEngine;
 [System.Serializable]
 public class Player
 {
-    public int teamId;
-    public List<CardData> handCards;
+    public string name;
+    public Material mat;
 }

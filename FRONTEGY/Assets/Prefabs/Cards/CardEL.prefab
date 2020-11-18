@@ -437,7 +437,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5407895529541383547}
-  - component: {fileID: 5407895529541383546}
   - component: {fileID: 1120973193882101630}
   m_Layer: 0
   m_Name: CardEL
@@ -462,30 +461,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5407895529541383546
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5407895529541383545}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 10dee8cea8f76e64b9bd877fd2fae0ab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cardData:
-    title: 
-    desc: 
-    type: 
-    spellCollections: []
-  hoverMat: {fileID: 2100000, guid: fc36d38da941cb64f9214568e225b2bf, type: 2}
-  selectMat: {fileID: 2100000, guid: 390ff569dd7b3ae40b23228f388d038b, type: 2}
-  cardFront: {fileID: 2852857255671796453}
-  cardBack: {fileID: 5104782696476104195}
-  titleMesh: {fileID: 4731379448601135493}
-  descMesh: {fileID: 1775403823588221773}
-  typeMesh: {fileID: 6922691021744869858}
 --- !u!64 &1120973193882101630
 MeshCollider:
   m_ObjectHideFlags: 0

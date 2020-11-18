@@ -11,9 +11,7 @@ GameObject:
   - component: {fileID: 8680780199558192522}
   - component: {fileID: 8680780199558192521}
   - component: {fileID: 8680780199558192520}
-  - component: {fileID: 8680780199558192527}
   - component: {fileID: -8178284950772703516}
-  - component: {fileID: -6201504365031328977}
   m_Layer: 0
   m_Name: Troop
   m_TagString: Untagged
@@ -84,35 +82,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &8680780199558192527
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8680780199558192526}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1cc6efd23c7d3a744b4ebf05fb64b1fb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  walkAnimSpeed: 7.6
-  stats:
-    walkRange: 10
-    teamId: 0
-    scale: 0.3
-    parentTileId: 0
-    path: []
-  unitHoverMat: {fileID: 2100000, guid: fc36d38da941cb64f9214568e225b2bf, type: 2}
-  unitSelectMat: {fileID: 2100000, guid: 390ff569dd7b3ae40b23228f388d038b, type: 2}
-  line: {fileID: 0}
-  id: 0
-  linePrefab: {fileID: 7648600365356990817, guid: ebd2a8db3738d3f4194d613e25033ae5,
-    type: 3}
-  renderer: {fileID: 8680780199558192520}
-  breadcrumbsInRange: []
-  defaultLayer: 0
-  ignoreRaycastLayer: 2
 --- !u!136 &-8178284950772703516
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -127,21 +96,3 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &-6201504365031328977
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8680780199558192526}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa58c05d49d2c2f44a5bd794a3199280, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  redirectTile: {fileID: 0}
-  redirectUnitScript: {fileID: 8680780199558192527}
-  isSelected: 0
-  teamId: 0
-  isTile: 0
-  isUnit: 0

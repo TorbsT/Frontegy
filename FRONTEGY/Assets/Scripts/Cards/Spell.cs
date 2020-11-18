@@ -2,36 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class SpellCollection
-{
-    public string triggerString;
-    public List<Spell> spells;
-
-    public void CastSpells(int ownerId)
-    { 
-        foreach (Spell spell in spells)
-        {
-            spell.Cast(ownerId);
-        }
-    }
-}
 public class Spell : ScriptableObject
 {
-    // PARAMS WILL BE DEFINED IN STATIC OBJECTS
-    public string targetTag;
+    // PARAMS WILL BE DEFINED IN STATIC OBJECTS  // ...excuse me what does that mean
 
-    public virtual void Cast(int ownerId)
-    { 
-        
-    }
-    public void LogTargetTag()
+    [System.NonSerialized] public GameMaster gameMaster;
+    [System.NonSerialized] public SelectionManager selectionManager;
+    [System.NonSerialized] public Selectable selHover;
+
+    public virtual void Cast(Card parent)
     {
-        Debug.Log(targetTag);
-    }
-    public int GetTargetId()
-    {
-        if (targetTag == "") return 1;
-        return 0;
+        gameMaster = Maffs.GetGM();
+        selectionManager = Maffs.GetSelectionManager();
+        selHover = selectionManager.GetSelectable(selectionManager.hoveredObj);
     }
 }
