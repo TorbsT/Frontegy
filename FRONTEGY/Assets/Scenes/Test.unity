@@ -665,6 +665,9 @@ MonoBehaviour:
     mat: {fileID: 2100000, guid: 5c41654410656924c9eec4c1b75f642a, type: 2}
   - name: Blue
     mat: {fileID: 2100000, guid: 5982d0e2dc3341d46b0e7792055645a7, type: 2}
+  nonePlayer:
+    name: None
+    mat: {fileID: 2100000, guid: 336b8f39c584ea54f904181e587f0399, type: 2}
 --- !u!4 &1029950687
 Transform:
   m_ObjectHideFlags: 0

@@ -29,6 +29,7 @@ public class GameMaster : MonoBehaviour
 
     public Phase phase;
     public List<Player> players;
+    public Player nonePlayer;
 
     GridPivotConfig gridNone;
     GridPivotConfig gridAnchored;
@@ -95,24 +96,26 @@ public class GameMaster : MonoBehaviour
         if (IsThisPhase(StaticPhaseType.weiterWeiter)) NextRound();
         else if (IsLastPlayer()) WeiterWeiter();
         else NextStrategicPhase();
+        Debug.Log("Round " + phase.round + ": " + phase.type.name + " " + GetPhasePlayer().name);
 
-        
+
     }
     void NextStrategicPhase()
     {
         phase.type = StaticPhaseType.strategic;
         phase.playerId++;
-        Debug.Log("Round " + phase.round + ": " + phase.type.name + " " + GetPhasePlayer().name);
+        if (phase.playerId >= players.Count) phase.playerId = 0;
     }
     void WeiterWeiter()
     {
         phase.type = StaticPhaseType.weiterWeiter;
+        phase.playerId = -1;
         stepTimeLeft = stepDuration;
-        Debug.Log("Round " + phase.round + ": " + phase.type.name + " " + GetPhasePlayer().name);
+        phase.steps = GetMaxSteps();
+        //Debug.Log("Round " + phase.round + ": " + phase.type.name + " " + GetPhasePlayer().name);
     }
     void NextRound()
     {
-        phase.playerId = 0;
         phase.round++;
         TileTracker.UpdateGridValues();
         NextStrategicPhase();
@@ -124,7 +127,7 @@ public class GameMaster : MonoBehaviour
         {
             if (troop.line != null)
             {
-                steps = Mathf.Max(steps, troop.line.line.positionCount-1);
+                steps = Mathf.Max(steps, troop.GetStepCount());  // line.line position count is usually twice as big...
             }
         }
         return steps;
@@ -132,7 +135,8 @@ public class GameMaster : MonoBehaviour
     public Player GetPhasePlayer() {return GetPlayer(phase.playerId);}
     public Player GetPlayer(int id)
     {
-        if (id < 0 || id >= players.Count)
+        if (id == -1) return nonePlayer;
+        else if (id < 0 || id >= players.Count)
         {
             Debug.LogError("ERROR: Tried to access invalid playerId "+id+", count is "+players.Count);
             return null;

@@ -9,6 +9,7 @@ public class LineDoodooer : MonoBehaviour
     [SerializeField] int endVertices;
 
     [Header("System")]
+    List<Breadcrumb> breadcrumbs;
     GameMaster gameMaster;
     public Troop ownerUnit;
     [SerializeField] public LineRenderer line;
@@ -22,10 +23,17 @@ public class LineDoodooer : MonoBehaviour
     }
     void Update()
     {
-        if (gameMaster.IsThisPhase(StaticPhaseType.strategic)) DrawLine(ownerUnit.stats.path);
+        if (gameMaster.IsThisPhase(StaticPhaseType.strategic))
+        {
+            breadcrumbs = ownerUnit.stats.path;  // WIP
+            DrawLine();
+        }
     }
-
-    void DrawLine(List<Breadcrumb> breadcrumbs)
+    void UpdateBreadcrumbs(List<Breadcrumb> newBreadcrumbs)
+    {
+        breadcrumbs = newBreadcrumbs;
+    }
+    void DrawLine()
     {
         //List<Tile> tilesToCross = TileTracker.GetTilesByIds(tileIdsToCross);
 

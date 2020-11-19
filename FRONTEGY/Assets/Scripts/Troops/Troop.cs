@@ -107,7 +107,12 @@ public class Troop : Selectable
         line.ownerUnit = this;
         return path;
     }
-
+    public int GetStepCount()
+    {
+        int steps = 0;
+        steps = line.line.positionCount - 1;
+        return steps;
+    }
     public void DebugUnits()
     { 
         foreach (Unit unit in stats.units)

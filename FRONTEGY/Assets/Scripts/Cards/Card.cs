@@ -33,11 +33,9 @@ public class Card : Selectable
     Renderer backRend;
     Material initialFrontMat;
     Material initialBackMat;
-    bool isSelected;
 
     public override void Instantiate()
     {
-        Debug.Log("Trying");
         Instantiate2(this.GetType());
         cardFront = selGO.transform.Find(frontName);
         frontRend = cardFront.GetComponent<Renderer>();
@@ -126,13 +124,10 @@ public class Card : Selectable
 
     public void Activate(string triggerTag)  // ownerId difficult when casting from tactical?
     {
-        Debug.Log("aaaaaaaaaaaaaaaa");
         foreach (SpellCollection spellCollection in data.spellCollections)
         {
-            Debug.Log("bbbbbbbbbbbb");
             if (triggerTag == spellCollection.triggerTag)
             {
-                Debug.Log("cccccccccccccccc");
                 spellCollection.CastSpells(this);
             }
         }
