@@ -8,8 +8,6 @@ public class Troop : Selectable
         stats = _stats;
     }
     [Header("Variables")]
-    [Range(0f, 10f)]
-    [SerializeField] float walkAnimSpeed = 0.5f;
     [SerializeField] public TroopStats stats;
 
     [Header("System/Debug")]
@@ -34,23 +32,54 @@ public class Troop : Selectable
         selGO.transform.localScale = new Vector3(stats.scale, stats.scale, stats.scale);
         if (TileTracker.GetTileById(stats.parentTileId) == null) return;
         SetPosition();
-        
+    }
+    public int To()
+    {
+        return TileIdByPathIndex(gameMaster.BigStep() + 1);
+    }
+    public int From()
+    {
+        return TileIdByPathIndex(gameMaster.BigStep());
+    }
+    int TileIdByPathIndex(int index)
+    {  // This id is made out of id
+        if (stats.path == null)
+        {
+            Debug.LogError("ERRORRRRRRRR HJEEØEØEØLEn");
+            return -1;
+        }
+        int breadcrumbCount = stats.path.Count - 1;
+        if (breadcrumbCount == 0)
+        {
+            Debug.LogError("ERRORRRRRRRR HJEEØEØEØLE");
+            return -1;
+        }
+        index = Mathf.Clamp(index, 0, breadcrumbCount);
+        int tileId = stats.path[index].tileId;
+        return tileId;
     }
     void SetPosition()
     {
         if (gameMaster.IsThisPhase(StaticPhaseType.strategic) || line == null || line.line.positionCount == 0)
         {
             selGO.transform.position = TileTracker.GetTileById(stats.parentTileId).GetSurfacePos();
-            selGO.transform.position += Vector3.up * selGO.transform.localScale[1];
         }
         else if (gameMaster.IsThisPhase(StaticPhaseType.weiterWeiter))
         {
-            int index;
+            int nextIndex;
+            int previousIndex;
             int step = gameMaster.phase.step;
-            if (step < line.line.positionCount) index = step;
-            else index = line.line.positionCount - 1;
-            selGO.transform.position = Vector3.Lerp(selGO.transform.position, line.line.GetPosition(index), walkAnimSpeed*Time.deltaTime);
+            int stepCount = line.line.positionCount;
+            nextIndex = Mathf.Clamp(step+1, 0, stepCount-1);
+            previousIndex = Mathf.Clamp(step, 0, stepCount - 1);
+
+            selGO.transform.position = Vector3.Lerp(line.line.GetPosition(previousIndex), line.line.GetPosition(nextIndex), Mathf.Sqrt(gameMaster.GetStepTimeScalar()));
         }
+        AdjustYByHeight();
+    }
+    void AdjustYByHeight()
+    {
+        selGO.transform.position += Vector3.up * selGO.transform.localScale[1];
     }
     void SetLayer()
     {

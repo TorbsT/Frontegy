@@ -8,6 +8,9 @@ public class GameMaster : MonoBehaviour
     [SerializeField] private bool randomSeed;
     [SerializeField] private int seed;
     [SerializeField] private float stepDuration = 1f;
+    [SerializeField] public float heightScalar = 1f;
+    [SerializeField] public float tileLineHeight = 1f;
+    [SerializeField] public float tileCreateAnimationSpeed = 1f;
     [SerializeField] int playerStartingCards = 5;
     [SerializeField] public List<CardData> cardBlueprints;
     [SerializeField] public Material globalHoverMat;
@@ -25,10 +28,12 @@ public class GameMaster : MonoBehaviour
     [SerializeField] UIManager uiManager;
     [SerializeField] CameraScript cameraScript;
     public Grid grid;
-    [SerializeField] private float stepTimeLeft;
+    [SerializeField] public float stepTimeLeft;
 
     public Phase phase;
     public List<Player> players;
+    public List<Conflict> conflicts = new List<Conflict>();
+    public List<Merge> merges = new List<Merge>();
     public Player nonePlayer;
 
     GridPivotConfig gridNone;
@@ -61,14 +66,143 @@ public class GameMaster : MonoBehaviour
             stepTimeLeft -= Time.deltaTime;
             if (stepTimeLeft <= 0f)
             {
-                stepTimeLeft = stepDuration;
-                phase.step++;
-                if (phase.step > phase.steps)
+                HandleEncounters();
+                if (conflicts.Count > 0 || merges.Count > 0)
+                {   // Make a conflict when:
+                    // Let x and y be troops from different teams.
+                    // x.to = y.from & x.from = y.to
+                    // x.to = y.to
+                    // ...but what about troops moving multiple tiles at once? Make them move multiple in one step, or make them skip?
+
+                    foreach (Merge merge in merges)
+                    {
+                        
+                    }
+                    foreach (Conflict conflict in conflicts)
+                    {
+                        conflict.AutoResolve();
+                    }
+                }
+                else
                 {
-                    NextPhase();
+                    stepTimeLeft = stepDuration;
+                    phase.step++;
+                    if (phase.step > phase.steps)
+                    {
+                        NextPhase();
+                    }
                 }
             }
         }
+    }
+    public int BigStep() { return Mathf.FloorToInt(phase.step / 2); }
+    public float GetStepTimeScalar()  // [0, 1]
+    { return 1 - Mathf.Clamp01(stepTimeLeft / stepDuration); }
+    void HandleEncounters()
+    {
+        conflicts = new List<Conflict>();
+        merges = new List<Merge>();
+        AddEncountersToList();
+        Debug.Log("Finished! With " + conflicts.Count + " conflicts and " + merges.Count + " merges");
+    }
+    void AddEncountersToList()
+    {
+        foreach (Troop a in grid.data.troops)
+        {
+            foreach (Troop b in grid.data.troops)
+            {
+                if (a == b) continue;
+                bool team = false;
+                bool passing = false;
+                bool gathering = false;
+                if (a.stats.playerId == b.stats.playerId)
+                {
+                    team = true;
+                }
+                if (a.To() == b.From() && a.From() == b.To())
+                {
+                    passing = true;  // meet implies the troops meet on a border
+                }
+                else if (a.To() == b.To())
+                {
+                    gathering = true;  // gather implies the troops gather in the middle of a tile
+                }
+
+                bool isMerge = false;
+                bool isConflict = false;
+                if (team && gathering) isMerge = true;
+                else if (!team && passing) isConflict = true;
+                else if (!team && gathering) isConflict = true;
+                else continue;
+
+                bool isDuplicate = false;
+                if (isConflict)
+                {
+                    foreach (Conflict conflict in conflicts)  // keep far down, increases time complexity
+                    {
+                        if ((a == conflict.a || a == conflict.b) && (b == conflict.a || b == conflict.b))
+                        {
+                            // already handled
+                            isDuplicate = true;
+                            break;
+                        }
+
+                    }
+                    if (isDuplicate) continue;
+                    conflicts.Add(new Conflict(a, b));
+                }
+                else if (isMerge)
+                {
+                    Debug.Log("is Merge");
+                    foreach (Merge merge in merges)
+                    {
+                        if ((a == merge.a || a == merge.b) && (b == merge.a || b == merge.b))
+                        {
+                            // already handled
+                            isDuplicate = true;
+                            break;
+                        }
+                    }
+                    if (isDuplicate) continue;
+                    Merge newMerge = new Merge(a, b);
+                    merges.Add(newMerge);
+                    conflicts = new List<Conflict>();
+                    newMerge.DoMerge();
+                    AddEncountersToList();  // I think this has like n^3 time complexity
+                    return;
+                }
+            }
+        }
+        /*
+        handleEncounters():
+            for every a in troops:
+                for every b in troops:
+                    if a.player == b.player:
+                        team = true
+                    if a.to == b.from and a.from == b.to:
+                        passing = true  // meet implies the troops meet on a border
+                    else if a.to == b.to:
+                        gathering = true  // gather implies the troops gather in the middle of a tile
+
+                    if team and gathering: merge = true
+                    else if not team and gathering: conflict = true
+                    else if not team and gathering: conflict = true
+
+                    if conflict:
+                        for every conflict in conflicts:  // keep far down, increases time complexity
+                            if (a == conflict.a or a == conflict.b) and (b == conflict.a or b == conflict.b):
+                                // already handled
+                                continue to next b
+                        createconflict(a, b)
+                    else if merge:
+                        for every merge in merges:
+                            if (a == merge.a or a == merge.b) and (b == merge.a or b == merge.b):
+                                // already handled
+                                continue to next b
+                        createmerge(a, b)
+                        handleEncounters()
+                        return
+        */
     }
     void GridShit()
     {

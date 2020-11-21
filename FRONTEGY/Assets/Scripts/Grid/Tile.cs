@@ -17,8 +17,6 @@ public class Tile : Selectable
     [Header("Variables")]
     public Geo initialGeo;
     public Geo geo;
-    public float lineHeight;
-    float createAnimationSpeed = 0.5f;
     bool swapRenderers = false;
 
     [Header("System")]
@@ -53,20 +51,20 @@ public class Tile : Selectable
         sideRenderer.enabled = geo.isActive;
         tileCollider.enabled = geo.isActive;
         selGO.transform.position = GetTilePos();
-        selGO.transform.localScale = Vector3.Lerp(selGO.transform.localScale, GetTileScale(), createAnimationSpeed*Time.deltaTime);
+        selGO.transform.localScale = Vector3.Lerp(selGO.transform.localScale, GetTileScale(), gameMaster.tileCreateAnimationSpeed*Time.deltaTime*60f);
         
     }
     public Vector3 GetSurfacePos()
-    {
+    {  // Returns the position if this tile's surface
         return planeTransform.position;
     }
     public Vector3 GetPosAtHeightOf(Tile t)
-    {
+    {  // Returns the position if this tile's surface, but at the height of another tile's surface
         return new Vector3(GetSurfacePos().x, t.GetSurfacePos().y, GetSurfacePos().z);
     }
     public Vector3 GetLinePosAtHeightOf(Tile t)
     {
-        return new Vector3(GetPosAtHeightOf(t).x, GetPosAtHeightOf(t).y+lineHeight, GetPosAtHeightOf(t).z);
+        return new Vector3(GetPosAtHeightOf(t).x, GetPosAtHeightOf(t).y+gameMaster.tileLineHeight, GetPosAtHeightOf(t).z);
     }
     void SwapRenderers()
     {

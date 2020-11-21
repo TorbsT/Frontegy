@@ -3,17 +3,33 @@ using UnityEngine;
 
 public class Conflict
 {
-    public List<TroopStats> originalTroops;
+    public Conflict(Troop _a, Troop _b)
+    {
+        a = _a;
+        b = _b;
+    }
+    //public List<TroopStats> originalTroops;
+    // Use an easier structure, not working at NASA here:
+    public Troop a;
+    public Troop b;
     public bool isBorderBattle;
 
-    public Conflict(List<TroopStats> _originalTroops, bool _isBorderBattle)
-    {
-        originalTroops = _originalTroops;
-        isBorderBattle = _isBorderBattle;
-    }
     public void ManualUpdate()
     {
 
+    }
+    public void AutoResolve()
+    {
+        int winnerPlayerId;
+
+        float aPower = a.stats.units[0].myRole.stats.ATK;
+        float bPower = b.stats.units[0].myRole.stats.ATK;
+        if (aPower > bPower)
+        {
+            winnerPlayerId = a.stats.playerId;
+        }
+        else winnerPlayerId = b.stats.playerId;
+        Debug.Log("Winner: " + winnerPlayerId);
     }
     public void DebugTroops(List<TroopStats> troops)
     {

@@ -147,7 +147,7 @@ public class Grid
 
 
             remainingSpaces--;
-            blueprintGeo.height = 1f + Mathf.Round(Random.value * 10f) / 10f;
+            blueprintGeo.height = 1f + gameMaster.heightScalar*Mathf.Round(Random.value * 10f) / 10f;
             blueprintGeo.id = i;
             blueprintGeo.gridPos = new Vector2Int(gridXPos, gridYPos);
             blueprintGeos.Add(blueprintGeo);
