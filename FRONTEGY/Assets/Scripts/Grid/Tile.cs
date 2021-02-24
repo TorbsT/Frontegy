@@ -141,7 +141,7 @@ public class Tile : Selectable
     {
         topRenderer.material = gameMaster.breadcrumbMat;
 
-        float timeOffset = ((float)breadcrumb.stepsRemaining) * 0.1f;
+        float timeOffset = ((float)breadcrumb.GetStepsRemaining()) * 0.1f;
         topRenderer.material.SetFloat("TimeOffset", timeOffset);
     }
     public void UnShowBreadcrumb()

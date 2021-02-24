@@ -21,34 +21,36 @@ public static class Pathfinding
                 List<int> neighborTiles = GetNeighborTiles(breadcrumb);
                 foreach (int neighborId in neighborTiles)
                 {
-                    SetTilesInRange(new Breadcrumb(neighborId, breadcrumb.stepsRemaining - 1, breadcrumb.stepId + 1), breadcrumb);
+                    SetTilesInRange(new Breadcrumb(neighborId, breadcrumb.GetStepsRemaining() - 1, breadcrumb.GetStepId() + 1), breadcrumb);
                 }
             }
         }
         return;
     }
-    public static List<Breadcrumb> GetBreadcrumbPath(int originTile, int destinationTile)
+    public static Paf GetPathFromTo(int originTile, int destinationTile)
     {
         Breadcrumb currentBreadcrumb = TryFindBreadcrumb(destinationTile);
-        if (currentBreadcrumb.tileId == -1) return null;
-        List<Breadcrumb> path = new List<Breadcrumb>();
+        if (currentBreadcrumb.IsInvalidTile()) return null;
+        List<Breadcrumb> bcs = new List<Breadcrumb>();
 
         while (true)
         {
-            path.Add(currentBreadcrumb);
-            if (currentBreadcrumb.tileId == originTile) break;
+            bcs.Add(currentBreadcrumb);
+            if (currentBreadcrumb.GetTileId() == originTile) break;
 
             List<int> neighborTiles = GetNeighborTiles(currentBreadcrumb);
             Breadcrumb bestBreadcrumb = currentBreadcrumb;
             foreach (int neighbor in neighborTiles)  // See which one has the highest stepsRemaining => closer to origin!
             {
                 Breadcrumb neighborBreadcrumb = TryFindBreadcrumb(neighbor);
-                if (neighborBreadcrumb.tileId == -1) continue;
-                if (neighborBreadcrumb.stepsRemaining >= bestBreadcrumb.stepsRemaining) bestBreadcrumb = neighborBreadcrumb;
+                if (neighborBreadcrumb.IsInvalidTile()) continue;
+                if (neighborBreadcrumb.GetStepsRemaining() >= bestBreadcrumb.GetStepsRemaining()) bestBreadcrumb = neighborBreadcrumb;
             }
-            if (bestBreadcrumb.tileId == currentBreadcrumb.tileId) { Debug.LogError("This shouldn't happen. Portal involved?"); break; }
+            if (bestBreadcrumb.GetTileId() == currentBreadcrumb.GetTileId()) { Debug.LogError("This shouldn't happen. Portal involved?"); break; }
             currentBreadcrumb = bestBreadcrumb;
         }
+
+        Paf path = new Paf(bcs);
         return path;
     }
     public static List<int> GetNeighborTiles(Breadcrumb breadcrumb)
@@ -63,7 +65,7 @@ public static class Pathfinding
 
         foreach (Vector2Int offset in offsets)
         {
-            int nextId = JumpFromTile(breadcrumb.tileId, offset);
+            int nextId = JumpFromTile(breadcrumb.GetTileId(), offset);
             tileIdsFound.Add(nextId);
         }
         return tileIdsFound;
@@ -80,18 +82,18 @@ public static class Pathfinding
         // (yes, misleading name. deal with it)
         foreach (Breadcrumb breadcrumb in foundBreadcrumbs)
         {
-            if (breadcrumb.tileId == tileId) return breadcrumb;
+            if (breadcrumb.GetTileId() == tileId) return breadcrumb;
         }
         return new Breadcrumb(-1, -1, -1);
     }
-    public static List<Breadcrumb> GetUntardedPath(List<Breadcrumb> path)
-    {
-        List<Breadcrumb> returnPath = new List<Breadcrumb>();
-        for (int i = path.Count-1; i >= 0; i--)
+    public static void UntardPath(Paf path)
+    {  // 
+        List<Breadcrumb> bcs = new List<Breadcrumb>();
+        for (int i = path.GetBreadcrumbCount()-1; i >= 0; i--)
         {
-            returnPath.Add(path[i]);
+            bcs.Add(path.GetBreadcrumb(i));
         }
-        return returnPath;
+        path.ReplaceBreadcrumbs(bcs);
     }
 
 
@@ -99,12 +101,11 @@ public static class Pathfinding
     {
         Vector2Int gridSize = TileTracker.GetGridSize();
         int tileCount = TileTracker.GetTileCount();
-        if (breadcrumb.stepsRemaining < 0) return false;
-        if (breadcrumb.tileId < 0) return false;
-        if (breadcrumb.tileId > tileCount - 1) return false;
-        if (TileTracker.GetTileById(breadcrumb.tileId) == null) return false;  // This is checked twice: One here, and one in TryAddBreadcrumb. Without here, shit goes wild?
-        if (CrossesEdge(previousBreadcrumb.tileId, breadcrumb.tileId, gridSize)) return false;
-        if (!TileTracker.GetTileById(breadcrumb.tileId).geo.isActive) return false;
+        if (breadcrumb.GetStepsRemaining() < 0) return false;
+        if (breadcrumb.IsInvalidTile()) return false;
+        if (breadcrumb.GetTile() == null) return false;  // This is checked twice: One here, and one in TryAddBreadcrumb. Without here, shit goes wild?
+        if (CrossesEdge(previousBreadcrumb.GetTileId(), breadcrumb.GetTileId(), gridSize)) return false;
+        if (!breadcrumb.GetTile().geo.isActive) return false;
         return true;
     }
     static bool CrossesEdge(int startId, int endId, Vector2Int gridSize)  // true: crosses edge of the map, meaning 1 id apart, but really far apart
@@ -123,9 +124,9 @@ public static class Pathfinding
         for (int i = 0; i < foundBreadcrumbs.Count; i++)
         {
             Breadcrumb oldBreadcrumb = foundBreadcrumbs[i];
-            if (newBreadcrumb.tileId == oldBreadcrumb.tileId)  // Already gone through. To prevent intinite recursion.
+            if (newBreadcrumb.GetTileId() == oldBreadcrumb.GetTileId())  // Already gone through. To prevent intinite recursion.
             {
-                if (newBreadcrumb.stepsRemaining <= oldBreadcrumb.stepsRemaining) return false;  // This new path is less effective and should be ignored
+                if (newBreadcrumb.GetStepsRemaining() <= oldBreadcrumb.GetStepsRemaining()) return false;  // This new path is less effective and should be ignored
                 else oldBreadcrumbId = i;  // New path is faster, removes old path
             }
         }

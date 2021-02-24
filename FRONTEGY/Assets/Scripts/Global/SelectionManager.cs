@@ -62,7 +62,7 @@ public class SelectionManager : MonoBehaviour
     {
         int fromTileId = GetSelectable(selectedObj).SelGetTroop().stats.parentTileId;
         int toTileId = GetSelectable(hoveredObj).SelGetTile().geo.id;
-        List<Breadcrumb> breadcrumbsInPath = GetSelectable(selectedObj).SelPlanMovement(fromTileId, toTileId);
+        GetSelectable(selectedObj).SelPlanMovement(fromTileId, toTileId);
         // maybe turn PlanMovement() into void since path is handled on the unit
     }
     void HoverMechanic()

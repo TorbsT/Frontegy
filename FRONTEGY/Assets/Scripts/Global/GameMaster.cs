@@ -95,7 +95,7 @@ public class GameMaster : MonoBehaviour
             }
         }
     }
-    public int BigStep() { return Mathf.FloorToInt(phase.step / 2); }
+    public int GetStep() { return phase.step; }
     public float GetStepTimeScalar()  // [0, 1]
     { return 1 - Mathf.Clamp01(stepTimeLeft / stepDuration); }
     void HandleEncounters()
@@ -107,11 +107,12 @@ public class GameMaster : MonoBehaviour
     }
     void AddEncountersToList()
     {
-        foreach (Troop a in grid.data.troops)
+        foreach (Troop a in grid.data.GetTroops())
         {
-            foreach (Troop b in grid.data.troops)
+            foreach (Troop b in grid.data.GetTroops())
             {
                 if (a == b) continue;
+
                 bool team = false;
                 bool passing = false;
                 bool gathering = false;
@@ -121,7 +122,7 @@ public class GameMaster : MonoBehaviour
                 }
                 if (a.To() == b.From() && a.From() == b.To())
                 {
-                    passing = true;  // meet implies the troops meet on a border
+                    passing = true;  // pass implies the troops pass on a border
                 }
                 else if (a.To() == b.To())
                 {
@@ -251,13 +252,16 @@ public class GameMaster : MonoBehaviour
     void NextRound()
     {
         phase.round++;
+        phase.step = 0;
         TileTracker.UpdateGridValues();
+        Debug.Log("next round!");
+        grid.UpdateTroopTiles();
         NextStrategicPhase();
     }
     int GetMaxSteps()
     {
         int steps = 0;
-        foreach (Troop troop in grid.data.troops)
+        foreach (Troop troop in grid.data.GetTroops())
         {
             if (troop.line != null)
             {
@@ -290,7 +294,7 @@ public class GameMaster : MonoBehaviour
         {
             tile.ManualUpdate();
         }
-        foreach (Troop troop in grid.data.troops)
+        foreach (Troop troop in grid.data.GetTroops())
         {
             troop.ManualUpdate();
         }

@@ -16,7 +16,7 @@ public class SummonSpell : Spell
         newUnit.Instantiate();
         */
         Troop newTroop = new Troop(new TroopStats(Maffs.GetGM().phase.playerId, new List<Unit>() { new Unit(unitId) }));
-        gameMaster.grid.data.troops.Add(newTroop);
+        gameMaster.grid.data.GetTroops().Add(newTroop);
         newTroop.stats.parentTileId = selHover.SelGetTile().geo.id;
         newTroop.Instantiate();
     }

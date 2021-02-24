@@ -35,28 +35,22 @@ public class Troop : Selectable
     }
     public int To()
     {
-        return TileIdByPathIndex(gameMaster.BigStep() + 1);
+        return TileIdByPathIndex(gameMaster.GetStep()+1);
     }
     public int From()
     {
-        return TileIdByPathIndex(gameMaster.BigStep());
+        return TileIdByPathIndex(gameMaster.GetStep());
     }
     int TileIdByPathIndex(int index)
     {  // This id is made out of id
-        if (stats.path == null)
+        // if id is out of range, chooses first or last breadcrumb-tile
+        // if path = null or path empty, chooses parent tile
+        if (stats.NoPaf()) return stats.parentTileId;
+        if (stats.GetPaf().IsOutOfRange(index))
         {
-            Debug.LogError("ERRORRRRRRRR HJEEØEØEØLEn");
-            return -1;
+            index = stats.GetPaf().GetIndexInRange(index);  // If there aren't enough breadcrumbs in this path
         }
-        int breadcrumbCount = stats.path.Count - 1;
-        if (breadcrumbCount == 0)
-        {
-            Debug.LogError("ERRORRRRRRRR HJEEØEØEØLE");
-            return -1;
-        }
-        index = Mathf.Clamp(index, 0, breadcrumbCount);
-        int tileId = stats.path[index].tileId;
-        return tileId;
+        return stats.GetPaf().GetTileId(index);
     }
     void SetPosition()
     {
@@ -109,7 +103,7 @@ public class Troop : Selectable
         DebugUnits();
         foreach (Breadcrumb breadcrumb in breadcrumbsInRange)
         {
-            TileTracker.GetTileById(breadcrumb.tileId).ShowBreadcrumb(breadcrumb);
+            breadcrumb.GetTile().ShowBreadcrumb(breadcrumb);
         }
 
         //Conflict conflict = new Conflict(new List<TroopStats> { stats }, false);
@@ -120,20 +114,20 @@ public class Troop : Selectable
     {
         foreach (Breadcrumb breadcrumb in breadcrumbsInRange)
         {
-            TileTracker.GetTileById(breadcrumb.tileId).UnShowBreadcrumb();
+            TileTracker.GetTileById(breadcrumb.GetTileId()).UnShowBreadcrumb();
         }
         breadcrumbsInRange = new List<Breadcrumb>();
         rndrr.material = gameMaster.GetPhasePlayer().mat;
     }
-    public override List<Breadcrumb> SelPlanMovement(int fromTileId, int toTileId)
+    public override Paf SelPlanMovement(int fromTileId, int toTileId)
     {
-        List<Breadcrumb> path = Pathfinding.GetBreadcrumbPath(fromTileId, toTileId);
-        path = Pathfinding.GetUntardedPath(path);
+        Paf path = Pathfinding.GetPathFromTo(fromTileId, toTileId);
+        Pathfinding.UntardPath(path);
 
         if (path == null) return null;
-        stats.path = path;
+        stats.SetPaf(path);
         if (line == null) line = Object.Instantiate(gameMaster.lineGOPrefab).GetComponent<LineDoodooer>();
-        line.ownerUnit = this;
+        line.ownerTroop = this;
         return path;
     }
     public int GetStepCount()

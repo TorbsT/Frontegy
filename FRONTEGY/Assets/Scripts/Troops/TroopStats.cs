@@ -13,7 +13,7 @@ public class TroopStats  // "Must" be class since SetStats() should be able to m
     public int playerId;
     public float scale = 0.5f;
     public int parentTileId;
-    public List<Breadcrumb> path;
+    private Paf path = null;
     public List<Unit> units;
 
     public int GetWalkRange()
@@ -29,5 +29,19 @@ public class TroopStats  // "Must" be class since SetStats() should be able to m
             if (myRange > range) range = myRange;
         }
         return range;
+    }
+    public void UpdateParentTile()
+    {
+        if (NoPaf()) return;
+        parentTileId = path.GetFinalTileId();
+        path = null;
+    }
+    public void SetPaf(Paf newPaf) { path = newPaf; }
+    public Paf GetPaf() { return path; }
+    public bool NoPaf()
+    {
+        if (GetPaf() == null) return true;
+        if (GetPaf().IsEmpty()) return true;
+        return false;
     }
 }

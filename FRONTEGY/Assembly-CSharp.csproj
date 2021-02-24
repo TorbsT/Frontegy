@@ -68,6 +68,7 @@
     <Compile Include="Assets\Scripts\Troops\LineDoodooer.cs" />
     <Compile Include="Assets\Scripts\Troops\Conflict.cs" />
     <Compile Include="Assets\Scripts\Global\Player.cs" />
+    <Compile Include="Assets\Scripts\Troops\Merge.cs" />
     <Compile Include="Assets\Scripts\Global\PhaseType.cs" />
     <Compile Include="Assets\Scripts\Unused\Building.cs" />
     <Compile Include="Assets\Scripts\Grid\GridPivotConfig.cs" />
@@ -93,7 +94,7 @@
     <Compile Include="Assets\Scripts\Global\ObjectCopier.cs" />
     <Compile Include="Assets\Scripts\Global\Maffs.cs" />
     <Compile Include="Assets\Scripts\Pathfinding\Breadcrumb.cs" />
-    <Compile Include="Assets\Scripts\Troops\Merge.cs" />
+    <Compile Include="Assets\Scripts\Troops\Paf.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

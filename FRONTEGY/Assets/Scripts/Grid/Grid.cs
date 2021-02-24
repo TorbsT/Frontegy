@@ -189,4 +189,8 @@ public class Grid
             tile.geo = tile.initialGeo;
         }
     }
+    public void UpdateTroopTiles()
+    {
+        data.UpdateTroopTiles();
+    }
 }

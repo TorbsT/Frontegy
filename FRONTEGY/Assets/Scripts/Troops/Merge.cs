@@ -18,7 +18,7 @@ public class Merge
         {
             a.stats.units.Add(unit);
         }
-        a.gameMaster.grid.data.troops.Remove(b);
+        a.gameMaster.grid.data.GetTroops().Remove(b);
         GameObject.Destroy(b.selGO);
     }
 }

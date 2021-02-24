@@ -67,7 +67,7 @@ public class Selectable
     {
         Debug.LogWarning("ERROR: "+scriptTypeText+" script not found");
     }
-    public virtual List<Breadcrumb> SelPlanMovement(int fromTileId, int toTileId)
+    public virtual Paf SelPlanMovement(int fromTileId, int toTileId)
     {
         return null;
     }
