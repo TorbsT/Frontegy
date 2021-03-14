@@ -60,10 +60,19 @@ public class SelectionManager : MonoBehaviour
     }
     void MoveUnit()
     {
-        int fromTileId = GetSelectable(selectedObj).SelGetTroop().stats.parentTileId;
+        Troop troop = GetSelectable(selectedObj).SelGetTroop();
+        int fromTileId = troop.stats.parentTileId;
         int toTileId = GetSelectable(hoveredObj).SelGetTile().geo.id;
-        GetSelectable(selectedObj).SelPlanMovement(fromTileId, toTileId);
+
+        bool canMove = troop.tileIsInRange(toTileId);
+        if (canMove) troop.SelPlanMovement(fromTileId, toTileId);
+        else FailedMoveUnit();
+        
         // maybe turn PlanMovement() into void since path is handled on the unit
+    }
+    void FailedMoveUnit()
+    {
+
     }
     void HoverMechanic()
     {

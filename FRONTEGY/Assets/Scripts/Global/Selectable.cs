@@ -59,16 +59,12 @@ public class Selectable
     public bool IsTile() { return SelGetTile() != null; }
     public bool IsCard() { return SelGetCard() != null; }
 
-    public virtual Troop SelGetTroop() { LogScriptNotFound("Troop"); return null; }
-    public virtual Tile SelGetTile() { LogScriptNotFound("Tile"); return null; }
-    public virtual Card SelGetCard() { LogScriptNotFound("Card"); return null; }
+    public virtual Troop SelGetTroop() { return null; }
+    public virtual Tile SelGetTile() { return null; }
+    public virtual Card SelGetCard() { return null; }
 
     public void LogScriptNotFound(string scriptTypeText)
     {
         Debug.LogWarning("ERROR: "+scriptTypeText+" script not found");
-    }
-    public virtual Paf SelPlanMovement(int fromTileId, int toTileId)
-    {
-        return null;
     }
 }

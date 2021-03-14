@@ -570,6 +570,9 @@ MonoBehaviour:
   randomSeed: 1
   seed: 1235
   stepDuration: 1
+  heightScalar: 0
+  tileLineHeight: 1
+  tileCreateAnimationSpeed: 1
   playerStartingCards: 5
   cardBlueprints:
   - title: Spy
@@ -632,7 +635,7 @@ MonoBehaviour:
     tileShape: 2
     gridConfig: 2
     gridSize: {x: 7, y: 12}
-    tileRatio: 0.85
+    tileRatio: 1
     tileGap: 0
     tileSize: 1
     startingTroops: 0

@@ -14,7 +14,7 @@ public class Troop : Selectable
     public LineDoodooer line;
     [SerializeField] Renderer rndrr;
     //[SerializeField] Selectable selectable;
-    public List<Breadcrumb> breadcrumbsInRange;
+    private List<Breadcrumb> breadcrumbsInRange;
     
     [SerializeField] int defaultLayer = 0;
     [SerializeField] int ignoreRaycastLayer = 2;
@@ -119,7 +119,7 @@ public class Troop : Selectable
         breadcrumbsInRange = new List<Breadcrumb>();
         rndrr.material = gameMaster.GetPhasePlayer().mat;
     }
-    public override Paf SelPlanMovement(int fromTileId, int toTileId)
+    public Paf SelPlanMovement(int fromTileId, int toTileId)
     {
         Paf path = Pathfinding.GetPathFromTo(fromTileId, toTileId);
         Pathfinding.UntardPath(path);
@@ -143,4 +143,14 @@ public class Troop : Selectable
             unit.DebugRole();
         }
     }
+    public bool tileIsInRange(int tileId)
+    {
+        if (breadcrumbsInRange == null) return false;
+        foreach (Breadcrumb bc in breadcrumbsInRange)
+        {
+            if (bc.GetTileId() == tileId) return true;
+        }
+        return false;
+    }
+    public List<Breadcrumb> GetBreadcrumbsInRange() { return breadcrumbsInRange; }
 }

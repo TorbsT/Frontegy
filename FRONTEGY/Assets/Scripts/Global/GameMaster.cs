@@ -132,8 +132,7 @@ public class GameMaster : MonoBehaviour
                 bool isMerge = false;
                 bool isConflict = false;
                 if (team && gathering) isMerge = true;
-                else if (!team && passing) isConflict = true;
-                else if (!team && gathering) isConflict = true;
+                else if (!team) isConflict = true;
                 else continue;
 
                 bool isDuplicate = false;
