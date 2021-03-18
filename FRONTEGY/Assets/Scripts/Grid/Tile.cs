@@ -85,7 +85,7 @@ public class Tile : Selectable
     void ResetTopMaterial()
     {
         SetMaterial(topRenderer, geo.reservoir.material);
-        SetColor(topRenderer, gameMaster.GetPhasePlayer().mat.color);
+        SetColor(topRenderer, gameMaster.getCurrentPlayer().mat.color);
     }
     void ResetSideMaterial()
     {

@@ -12,8 +12,8 @@ public class Spell : ScriptableObject
 
     public virtual void Cast(Card parent)
     {
-        gameMaster = Maffs.GetGM();
-        selectionManager = Maffs.GetSelectionManager();
+        gameMaster = GameMaster.GetGM();
+        selectionManager = GameMaster.GetSelectionManager();
         selHover = selectionManager.GetSelectable(selectionManager.hoveredObj);
     }
 }

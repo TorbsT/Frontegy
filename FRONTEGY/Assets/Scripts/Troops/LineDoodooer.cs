@@ -9,7 +9,7 @@ public class LineDoodooer : MonoBehaviour
     [SerializeField] int endVertices;
 
     [Header("System")]
-    GameMaster gameMaster;
+    GameMaster gm;
     public Troop ownerTroop;
     [SerializeField] public LineRenderer line;
     int vertexCount;
@@ -18,11 +18,11 @@ public class LineDoodooer : MonoBehaviour
 
     void Start()
     {
-        gameMaster = GameObject.FindGameObjectWithTag("GameMaster").GetComponent<GameMaster>();
+        gm = GameMaster.GetGM();
     }
     void Update()
     {
-        if (gameMaster.IsThisPhase(StaticPhaseType.strategic))
+        if (gm.isThisPhase(StaticPhaseType.strategic))
         {
             DrawLine();
         }

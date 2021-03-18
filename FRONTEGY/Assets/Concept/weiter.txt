@@ -1,0 +1,54 @@
+WeiterPhase: 1 n :weiterFrame
+WeiterFrame: 1 n :
+
+remove troop. have multiple units on a tile.
+
+battle. every weiterFrame should have a method that returns a list of battles that result from that frame.
+
+
+weiterobserver.
+weiterobserver should handle everything. gamemaster should only instantiate and update it?
+weiterobserver.update returns true => it is done.
+
+VISUALLY:
+non-conflicting units: go to their next tile.
+conflicting units: go into special position. if moving & not gathering, go to border
+idea: make teams move turn-based, only good in PvE (which game should be)
+
+Show conflict areas
+
+
+
+
+IDEA (maybe a good one for once):
+Make class View. This class contains a certain event in wobs, like movement to next tile, showing conflict areas, and actual battle.
+
+View state:
+
+bool update: bool do_virtual_tick
+virtual bool do_virtual_tick: return true
+
+virtual Vector3 camPos
+virtual Quaternion camRot
+
+
+GameMaster:
+BattlePhase bf
+bf.update():
+if index >= bf.views.length return true
+if bf.views[index].update() index++
+return false
+bf.views:
+View weiterRed
+View weiterBlue
+View showConflicts
+View battle0
+View battle1
+View battle2
+...
+View summary
+return true on update.
+
+
+Cam should maybe have static configurations? Maybe static interpolations to those as well?
+

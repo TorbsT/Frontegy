@@ -25,7 +25,7 @@ public class UIManager : MonoBehaviour
     }
     void UpdateHeader()
     {
-        Player phasePlayer = gameMaster.GetPhasePlayer();
+        Player phasePlayer = gameMaster.getCurrentPlayer();
         string txt = phasePlayer.name;
         Color color = phasePlayer.mat.color;
 
@@ -41,7 +41,7 @@ public class UIManager : MonoBehaviour
     }
     void DisplayPhaseHand()
     {
-        DisplayHandOf(gameMaster.GetPhasePlayer());
+        DisplayHandOf(gameMaster.getCurrentPlayer());
     }
     void DisplayHandOf(Player player)
     {

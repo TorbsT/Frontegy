@@ -23,7 +23,7 @@ public class Troop : Selectable
     {
         Instantiate2(this.GetType());
         rndrr = selGO.GetComponent<Renderer>();
-        rndrr.material = gameMaster.GetPhasePlayer().mat;
+        rndrr.material = gameMaster.getCurrentPlayer().mat;
     }
     public void ManualUpdate()
     {
@@ -35,11 +35,13 @@ public class Troop : Selectable
     }
     public int To()
     {
-        return TileIdByPathIndex(gameMaster.GetStep()+1);
+        return 1; // CRITICAL
+        //return TileIdByPathIndex(gameMaster.GetStep()+1);
     }
     public int From()
     {
-        return TileIdByPathIndex(gameMaster.GetStep());
+        return 1;  // CRITICAL
+        //return TileIdByPathIndex(gameMaster.GetStep());
     }
     int TileIdByPathIndex(int index)
     {  // This id is made out of id
@@ -54,12 +56,12 @@ public class Troop : Selectable
     }
     void SetPosition()
     {
-        if (gameMaster.IsThisPhase(StaticPhaseType.strategic) || line == null || line.line.positionCount == 0)
+        if (gameMaster.isThisPhase(StaticPhaseType.strategic) || line == null || line.line.positionCount == 0)
         {
             selGO.transform.position = TileTracker.GetTileById(stats.parentTileId).GetSurfacePos();
         }
-        else if (gameMaster.IsThisPhase(StaticPhaseType.weiterWeiter))
-        {
+        else if (gameMaster.isThisPhase(StaticPhaseType.weiterWeiter))
+        { /* CRITICAL
             int nextIndex;
             int previousIndex;
             int step = gameMaster.phase.step;
@@ -68,6 +70,7 @@ public class Troop : Selectable
             previousIndex = Mathf.Clamp(step, 0, stepCount - 1);
 
             selGO.transform.position = Vector3.Lerp(line.line.GetPosition(previousIndex), line.line.GetPosition(nextIndex), Mathf.Sqrt(gameMaster.GetStepTimeScalar()));
+            */
         }
         AdjustYByHeight();
     }
@@ -77,7 +80,7 @@ public class Troop : Selectable
     }
     void SetLayer()
     {
-        if (gameMaster.IsThisPhase(StaticPhaseType.strategic) && gameMaster.phase.playerId == stats.playerId)
+        if (gameMaster.isThisPhase(StaticPhaseType.strategic) && gameMaster.currentPlayerIdIs(stats.playerId))
         {
             // selectable
             selGO.gameObject.layer = defaultLayer;
@@ -93,7 +96,7 @@ public class Troop : Selectable
     }
     public override void SelUnHover()
     {
-        if (!isSelected) rndrr.material = gameMaster.GetPhasePlayer().mat;
+        if (!isSelected) rndrr.material = gameMaster.getCurrentPlayer().mat;
     }
     public override void SelSelect()
     {
@@ -117,7 +120,7 @@ public class Troop : Selectable
             TileTracker.GetTileById(breadcrumb.GetTileId()).UnShowBreadcrumb();
         }
         breadcrumbsInRange = new List<Breadcrumb>();
-        rndrr.material = gameMaster.GetPhasePlayer().mat;
+        rndrr.material = gameMaster.getCurrentPlayer().mat;
     }
     public Paf SelPlanMovement(int fromTileId, int toTileId)
     {
@@ -153,4 +156,5 @@ public class Troop : Selectable
         return false;
     }
     public List<Breadcrumb> GetBreadcrumbsInRange() { return breadcrumbsInRange; }
+
 }

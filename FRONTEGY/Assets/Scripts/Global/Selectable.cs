@@ -21,7 +21,7 @@ public class Selectable
             Debug.LogError("ERROR: tried creating selGO, but selGO already exists.");
             return;
         }
-        gameMaster = Maffs.GetGM();
+        gameMaster = GameMaster.GetGM();
         Transform gridTrans = gameMaster.grid.gridGO;
 
         GameObject prefab = null;

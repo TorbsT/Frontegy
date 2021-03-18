@@ -51,7 +51,7 @@ public class Grid
 
     public void ResetGrid()
     {
-        gameMaster = Maffs.GetGM();
+        gameMaster = GameMaster.GetGM();
         if (data != null)
         {
             Debug.Log("TODO: Destroy gameObjects");

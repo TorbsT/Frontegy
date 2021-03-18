@@ -24,13 +24,13 @@ public class GameMaster : MonoBehaviour
     [SerializeField] public GameObject tileGOPrefab;
     [SerializeField] public GameObject cardGOPrefab;
     [SerializeField] public GameObject lineGOPrefab;
-    [SerializeField] SelectionManager selectionManager;
+    [SerializeField] public SelectionManager selectionManager;
     [SerializeField] UIManager uiManager;
     [SerializeField] CameraScript cameraScript;
     public Grid grid;
     [SerializeField] public float stepTimeLeft;
 
-    public Phase phase;
+    private PhaseManager pm;
     public List<Player> players;
     public List<Conflict> conflicts = new List<Conflict>();
     public List<Merge> merges = new List<Merge>();
@@ -41,6 +41,14 @@ public class GameMaster : MonoBehaviour
     GridPivotConfig gridCentered;
 
     Conflict currentConflict;
+
+    public static GameObject GetGMGO() { return GameObject.FindGameObjectWithTag("GameMaster"); }
+    public static GameMaster GetGM()
+    { return GetGMGO().GetComponent<GameMaster>(); }
+    public static SelectionManager GetSelectionManager()
+    { return GetGM().selectionManager; }
+    public static CameraScript getCameraScript()
+    { return GetGM().cameraScript; }
 
     void Start()
     {
@@ -57,45 +65,11 @@ public class GameMaster : MonoBehaviour
         ExecuteManualUpdates();
         
         HandlePlayerInput();
-
     }
     void CountDown()
     {
-        if (IsThisPhase(StaticPhaseType.weiterWeiter))
-        {
-            stepTimeLeft -= Time.deltaTime;
-            if (stepTimeLeft <= 0f)
-            {
-                HandleEncounters();
-                if (conflicts.Count > 0 || merges.Count > 0)
-                {   // Make a conflict when:
-                    // Let x and y be troops from different teams.
-                    // x.to = y.from & x.from = y.to
-                    // x.to = y.to
-                    // ...but what about troops moving multiple tiles at once? Make them move multiple in one step, or make them skip?
 
-                    foreach (Merge merge in merges)
-                    {
-                        
-                    }
-                    foreach (Conflict conflict in conflicts)
-                    {
-                        conflict.AutoResolve();
-                    }
-                }
-                else
-                {
-                    stepTimeLeft = stepDuration;
-                    phase.step++;
-                    if (phase.step > phase.steps)
-                    {
-                        NextPhase();
-                    }
-                }
-            }
-        }
     }
-    public int GetStep() { return phase.step; }
     public float GetStepTimeScalar()  // [0, 1]
     { return 1 - Mathf.Clamp01(stepTimeLeft / stepDuration); }
     void HandleEncounters()
@@ -219,43 +193,9 @@ public class GameMaster : MonoBehaviour
         }
     }
     */
-    void AttemptSkip()
+    public bool isThisPhase(PhaseType t)
     {
-        if (true) NextPhase();//(phase.type.skippable) NextPhase();
-    }
-    void NextPhase()
-    {
-        selectionManager.ResetSelections();
-        
-        if (IsThisPhase(StaticPhaseType.weiterWeiter)) NextRound();
-        else if (IsLastPlayer()) WeiterWeiter();
-        else NextStrategicPhase();
-        Debug.Log("Round " + phase.round + ": " + phase.type.name + " " + GetPhasePlayer().name);
-
-
-    }
-    void NextStrategicPhase()
-    {
-        phase.type = StaticPhaseType.strategic;
-        phase.playerId++;
-        if (phase.playerId >= players.Count) phase.playerId = 0;
-    }
-    void WeiterWeiter()
-    {
-        phase.type = StaticPhaseType.weiterWeiter;
-        phase.playerId = -1;
-        stepTimeLeft = stepDuration;
-        phase.steps = GetMaxSteps();
-        //Debug.Log("Round " + phase.round + ": " + phase.type.name + " " + GetPhasePlayer().name);
-    }
-    void NextRound()
-    {
-        phase.round++;
-        phase.step = 0;
-        TileTracker.UpdateGridValues();
-        Debug.Log("next round!");
-        grid.UpdateTroopTiles();
-        NextStrategicPhase();
+        return pm.isThisPhase(t);
     }
     int GetMaxSteps()
     {
@@ -269,7 +209,12 @@ public class GameMaster : MonoBehaviour
         }
         return steps;
     }
-    public Player GetPhasePlayer() {return GetPlayer(phase.playerId);}
+    public Player getCurrentPlayer()
+    {
+        int id = getCurrentPlayerId();
+        Player p = GetPlayer(id);
+        return p;
+    }
     public Player GetPlayer(int id)
     {
         if (id == -1) return nonePlayer;
@@ -280,15 +225,21 @@ public class GameMaster : MonoBehaviour
         }
         return players[id];
     }
-    bool IsLastPlayer() { return (phase.playerId >= players.Count-1); }
-    public bool IsThisPhase(PhaseType spt) { return (phase.type.name == spt.name); }
+    public bool currentPlayerIdIs(int id) { return getCurrentPlayerId() == id; }
+    public int getCurrentPlayerId() { if (pm == null) return -1; return pm.getPlayerId(); }
+    public int getPlayersCount()
+    {
+        if (players == null) return 0;
+        return players.Count;
+    }
     void HandlePlayerInput()
     {
         if (Input.GetKeyDown("r")) Restart();
-        else if (Input.GetKeyDown("space")) AttemptSkip();
+        else if (Input.GetKeyDown("space")) pm.attemptSkip();
     }
     void ExecuteManualUpdates()  // Replacement for mono update
     {
+        updatePhase();
         foreach (Tile tile in grid.data.tiles)
         {
             tile.ManualUpdate();
@@ -298,9 +249,14 @@ public class GameMaster : MonoBehaviour
             troop.ManualUpdate();
         }
         selectionManager.ManualUpdate();
-        cameraScript.ManualUpdate();
         uiManager.ManualUpdate();
+        //cameraScript.ManualUpdate();
 
+    }
+    void updatePhase()
+    {
+        if (pm == null) return;
+        pm.update();
     }
     void Restart()
     {
@@ -312,10 +268,7 @@ public class GameMaster : MonoBehaviour
 
         grid.ResetGrid();
 
-        phase = new Phase();
-        phase.playerId = 0;
-        phase.type = StaticPhaseType.strategic;
-        phase.round = 0;
+        pm = new PhaseManager();
 
         gridNone = new GridPivotConfig(0f, 0f);
         gridAnchored = new GridPivotConfig(0f, 0.5f);
