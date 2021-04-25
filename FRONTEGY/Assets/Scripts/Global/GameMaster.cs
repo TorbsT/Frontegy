@@ -62,8 +62,8 @@ public class GameMaster : MonoBehaviour
     public static TilePhy sgetUnstagedTilePhy() { return sgetRooster().getUnstagedTilePhy(); }
     public static TroopPhy sgetUnstagedTroopPhy() { return sgetRooster().getUnstagedTroopPhy(); }
     public static PafPhy sgetUnstagedPafPhy() { return sgetRooster().getUnstagedPafPhy(); }
-    public static Rooster sgetRooster() { return GetGM().rooster; }
-    public Rooster getRooster() { return rooster; }
+    public static Rooster sgetRooster() { return GetGM().getRooster(); }
+    public Rooster getRooster() { if (rooster == null) Debug.LogError("Rooster should never be null"); return rooster; }
     public static SelectionManager GetSelectionManager()
     { return GetGM().selectionManager; }
     public static CameraScript getCameraScript()
@@ -74,6 +74,7 @@ public class GameMaster : MonoBehaviour
     private AllTiile internalGetAllTiile() { return grid.data.getAllTiile(); }
     void Start()
     {
+        rooster = new Rooster(20, 10, 200);
         Restart();
     }
     void Update()

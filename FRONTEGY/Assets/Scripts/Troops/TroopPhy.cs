@@ -5,7 +5,6 @@ public class TroopPhy : Selectable
 {  // never delete a Troop object, reuse.
     public TroopPhy(Roster roster) : base(roster)
     {
-        instantiateGO(getGM().troopGOPrefab);
         rndrr = getGO().GetComponent<Renderer>();
         rndrr.material = getGM().getCurrentPlayer().getMat();
     }
@@ -113,5 +112,10 @@ public class TroopPhy : Selectable
     protected override Chy getChy()
     {
         return troop;
+    }
+
+    protected override GameObject getPrefab()
+    {
+        return getGM().troopGOPrefab;
     }
 }
