@@ -6,7 +6,10 @@ public class Caard
 {
     private List<Card> cards;
 
-    public Caard() { }
+    public Caard()
+    {
+        this.cards = new List<Card>();
+    }
     public Caard(List<Card> cards)
     {
         this.cards = cards;

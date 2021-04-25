@@ -79,4 +79,9 @@ public class PafPhy : Phy
     {
         pafChy = (PafChy)chy;  // god this is dirty
     }
+
+    protected override GameObject getPrefab()
+    {
+        return getGM().lineGOPrefab;
+    }
 }

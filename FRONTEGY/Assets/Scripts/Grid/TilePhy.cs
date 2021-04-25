@@ -38,7 +38,6 @@ public class TilePhy : Selectable
         if (topRenderer == null) Debug.LogError("ERROR: couldn't find topRenderer using child index 0");
         tileCollider = getGO().GetComponent<Collider>();
         if (swapRenderers) SwapRenderers();
-        ResetAllMaterials();
     }
 
     public void ManualUpdate()
@@ -169,15 +168,21 @@ public class TilePhy : Selectable
         */
     }
 
-    private Tile getTile() { return tile; }
+    private Tile getTile() { if (tile == null) Debug.LogError("TilePhy has no Tile"); return tile; }
 
     protected override void setChy(Chy chy)
     {
         tile = (Tile)chy;
+        ResetAllMaterials();
     }
 
     protected override Chy getChy()
     {
-        return tile;
+        return getTile();
+    }
+
+    protected override GameObject getPrefab()
+    {
+        return getGM().tileGOPrefab;
     }
 }

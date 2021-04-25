@@ -13,6 +13,7 @@ public abstract class Phy
         this.roster = roster;
         pos = new Pos3();
         go = null;  // only temporary, subclasses should instantiate
+        instantiateGO();
     }
 
     public void updatePos()
@@ -20,9 +21,11 @@ public abstract class Phy
         getGO().transform.position = getPos().getV3();
     }
 
-    protected void instantiateGO(GameObject prefab)
+    protected void instantiateGO()
     {
         if (hasGO()) { Debug.LogError("Tried creating multiple GOs for one Phy"); return; }
+        GameObject prefab = getPrefab();
+        if (prefab == null) Debug.LogError("subclass returned null as its prefab");
         go = GameObject.Instantiate(prefab);
         InsPhy ip = go.AddComponent<InsPhy>();
         ip.set(this);
@@ -49,4 +52,5 @@ public abstract class Phy
 
     protected abstract void setChy(Chy chy);  // must cast
     protected abstract Chy getChy();
+    protected abstract GameObject getPrefab();
 }

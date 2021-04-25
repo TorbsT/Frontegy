@@ -114,4 +114,9 @@ public class CardPhy : Selectable
     {
         return cardChy;
     }
+
+    protected override GameObject getPrefab()
+    {
+        return getGM().cardGOPrefab;
+    }
 }
