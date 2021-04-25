@@ -1,202 +1,64 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-public class Tile : Selectable
+public class Tile : Chy
 {
-    enum SideMode
-    {
-        none,
-        hover,
-        select
-    }
-    enum TopMode
-    {
-        none,
-        path
-    }
 
-    [Header("Variables")]
-    public Geo initialGeo;
-    public Geo geo;
-    bool swapRenderers = false;
+    private TilePhy tilePhy;
+    private GameMaster gm;
+    private TileLoc loc;
+    private bool active;
+    public float height;
+    public Reservoir reservoir;
+    public int playerId;
 
-    [Header("System")]
-    SideMode sideMode = SideMode.none;
-    TopMode topMode = TopMode.none;
-    Collider tileCollider;
-    Transform planeTransform;
-    Mesh trianglePrismMesh;
-    Mesh squarePrismMesh;
-    Mesh hexagonPrismMesh;
-    Renderer sideRenderer;
-    Renderer topRenderer;
-
-    public override void Instantiate()
+    public Tile(bool instantiate, TileLoc loc)
     {
-        Instantiate2(this.GetType());
-        geo = initialGeo;
-        selGO.transform.localScale = new Vector3(1f, 0f, 1f);
-        sideRenderer = selGO.GetComponent<Renderer>();
-        topRenderer = selGO.transform.GetChild(0).GetComponentInChildren<Renderer>();  // uh oh
-        planeTransform = selGO.transform.GetChild(0);  // UH FUCKING OH
-        if (topRenderer == null) Debug.LogError("ERROR: couldn't find topRenderer using child index 0");
-        tileCollider = selGO.GetComponent<Collider>();
-        if (swapRenderers) SwapRenderers();
-        ResetAllMaterials();
-    }
-    public void ManualUpdate()
-    {
-        if (!isInstantiated) Debug.LogError("ERROR: Tile is not instantiated");
-
-        topRenderer.enabled = geo.isActive;
-        sideRenderer.enabled = geo.isActive;
-        tileCollider.enabled = geo.isActive;
-        selGO.transform.position = GetTilePos();
-        selGO.transform.localScale = Vector3.Lerp(selGO.transform.localScale, GetTileScale(), gameMaster.tileCreateAnimationSpeed*Time.deltaTime*60f);
-        
-    }
-    public Vector3 GetSurfacePos()
-    {  // Returns the position if this tile's surface
-        return planeTransform.position;
-    }
-    public Vector3 GetPosAtHeightOf(Tile t)
-    {  // Returns the position if this tile's surface, but at the height of another tile's surface
-        return new Vector3(GetSurfacePos().x, t.GetSurfacePos().y, GetSurfacePos().z);
-    }
-    public Vector3 GetLinePosAtHeightOf(Tile t)
-    {
-        return new Vector3(GetPosAtHeightOf(t).x, GetPosAtHeightOf(t).y+gameMaster.tileLineHeight, GetPosAtHeightOf(t).z);
-    }
-    void SwapRenderers()
-    {
-        Renderer temp = sideRenderer;
-        sideRenderer = topRenderer;
-        topRenderer = temp;
+        this.loc = loc;
+        gm = GameMaster.GetGM();
+        if (instantiate) tilePhy = TileRoster.sgetUnstagedPhy();
     }
 
 
-    /// <summary>
-    /// defaq
-    /// </summary>
-    void ResetAllMaterials()
+    public Pos2 getPos()
     {
-        ResetSideMaterial();
-        ResetTopMaterial();
+        float x = getLoc().getL();
+        float z = getLoc().getW();
+        return new Pos2(x, z);
     }
-    void ResetTopMaterial()
+    public bool isActive() { return active; }
+    public TileLoc getLoc() { return loc; }
+    public bool sameTile(Tile t) { return getLoc().sameLoc(t.getLoc()); }
+    private GameMaster getGM() { if (gm == null) Debug.LogError("Should never happen"); return gm; }
+    public Tiile getNeigTiile()
     {
-        SetMaterial(topRenderer, geo.reservoir.material);
-        SetColor(topRenderer, gameMaster.GetPhasePlayer().mat.color);
+        return getLoc().getNeigTiile();
     }
-    void ResetSideMaterial()
-    {
-        SetMaterial(sideRenderer, geo.reservoir.material);
-    }
-    void SetMaterial(Renderer r, Material mat)
-    {
-        r.material = mat;
-    }
-    void SetColor(Renderer renderer, Color color)
-    {
-        renderer.material.color = color;
-    }
-    /// <summary>
-    /// dafaq
-    /// </summary>
+    public bool isNeigOfTile(Tile t) { return isNeigOfTileLoc(t.getLoc()); }
+    public bool isNeigOfTileLoc(TileLoc tl) { return getLoc().isNeigOfTileLoc(tl); }
+    public void showMark(Breadcrumb bc) { getTilePhy().showMark(bc); }  // OH NO
+    public void hideMark() { getTilePhy().hideMark(); }
 
 
-    public override Tile SelGetTile() {return this;}
-    public override void SelHover()
+    private TilePhy getTilePhy()
     {
-        if (sideMode != SideMode.select)
-        {
-            sideMode = SideMode.hover;
-            sideRenderer.material = gameMaster.globalHoverMat;
-        }
-    }
-    public override void SelUnHover()
-    {
-        if (sideMode != SideMode.select)
-        {
-            sideMode = SideMode.none;
-            ResetSideMaterial();
-        }
-    }
-    public override void SelSelect()
-    {
-        if (true)
-        {
-            sideMode = SideMode.select;
-            sideRenderer.material = gameMaster.globalSelectMat;
-        }
-    }
-    public override void SelUnSelect()
-    {
-        if (true)
-        {
-            sideMode = SideMode.none;
-            ResetSideMaterial();
-        }
-    }
-    public void ShowBreadcrumb(Breadcrumb breadcrumb)
-    {
-        topRenderer.material = gameMaster.breadcrumbMat;
-
-        float timeOffset = ((float)breadcrumb.GetStepsRemaining()) * 0.1f;
-        topRenderer.material.SetFloat("TimeOffset", timeOffset);
-    }
-    public void UnShowBreadcrumb()
-    {
-        ResetTopMaterial();
+        if (tilePhy == null) tilePhy = (TilePhy)getPhy();  // OH LORD THIS IS BAD TODO
+        return tilePhy;
     }
 
-    public void VerifyMesh()  // CONSUMES A LOT OF PROCESSING POWER!
+    protected override Phy getPhy()
     {
-        switch (gameMaster.grid.tileShape)
-        {
-            case Grid.TileShape.none:
-                SetMesh(null);
-                break;
-            case Grid.TileShape.trianglePrism:
-                SetMesh(trianglePrismMesh);
-                break;
-            case Grid.TileShape.squarePrism:
-                SetMesh(squarePrismMesh);
-                break;
-            case Grid.TileShape.hexagonPrism:
-                SetMesh(hexagonPrismMesh);
-                break;
-        }
-    }
-    void SetMesh(Mesh mesh)
-    {
-        //selGO.GetComponent<MeshFilter>().mesh = mesh;
+        return tilePhy;
     }
 
-    Vector3 GetTileScale()
+    protected override void connect()
     {
-        Vector3 scale = Vector3.one;
-        scale.x = gameMaster.grid.tileSize;
-        scale.y = geo.height;
-        scale.z = gameMaster.grid.tileSize;
-        return scale;
+        tilePhy = TileRoster.sgetUnstagedPhy();
     }
-    Vector3 GetTilePos()
+
+    protected override void disconnect()
     {
-        Vector3 pos = Vector3.zero;
-        pos.x = GetDimensionScalar(0);
-        pos.y = selGO.transform.localScale.y/2f;
-        pos.z = GetDimensionScalar(1);
-        return pos;
-    }
-    float GetDimensionScalar(int dimension)
-    {
-        float scalar;
-        scalar = 0;
-        float realGapSize = (gameMaster.grid.tileSize * gameMaster.grid.tileGap);
-        float extendedTileSize = (gameMaster.grid.tileSize + realGapSize);
-        scalar += gameMaster.grid.gridSize[dimension] * extendedTileSize * gameMaster.grid.currentGrid.offset; // sets to expand from bottom left or expand from center. relative to grid size
-        scalar += geo.gridPos[dimension] * extendedTileSize; // places tiles on different parts of the grid. relative to grid position
-        scalar += extendedTileSize * gameMaster.grid.currentGrid.globalOffset;  // moves all tiles relative to tile size
-        return scalar;
+        tilePhy = null;
     }
 }

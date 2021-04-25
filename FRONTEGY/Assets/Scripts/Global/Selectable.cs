@@ -1,46 +1,29 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class Selectable
+public abstract class Selectable : Phy
 {
-    public bool isInstantiated = false;
-    public GameMaster gameMaster;
-    public GameObject selGO;
 
-    public bool isSelected;
-    public bool isHovered;
+    private bool selected;
+    private bool hovered;
 
-    public virtual void Instantiate()
-    {  // USE THIS when creating GO externally.
-
-    }
-    public void Instantiate2(System.Type type)
+    public Selectable(Roster roster) : base(roster)
     {
-        if (selGO != null)
-        {
-            Debug.LogError("ERROR: tried creating selGO, but selGO already exists.");
-            return;
-        }
-        gameMaster = Maffs.GetGM();
-        Transform gridTrans = gameMaster.grid.gridGO;
+        Transform gridTrans = getGM().grid.gridGO;
 
-        GameObject prefab = null;
-        if (type == typeof(Troop)) prefab = gameMaster.troopGOPrefab;
-        else if (type == typeof(Card)) prefab = gameMaster.cardGOPrefab;
-        else if (type == typeof(Tile)) prefab = gameMaster.tileGOPrefab;
+        //selGO = Object.Instantiate(prefab, gridTrans);  \\ MAYBUG
 
-        if (prefab == null) Debug.LogError("ERROR: Couldn't find a fitting prefab for the calling type " + type.ToString());
-        selGO = Object.Instantiate(prefab, gridTrans);
-
-        selGO.AddComponent<SelLinker>();
-        SelLinker selLink = selGO.GetComponent<SelLinker>();
+        getGO().AddComponent<SelLinker>();
+        SelLinker selLink = getGO().GetComponent<SelLinker>();  // TODO inefficient?
         selLink.link = this;
-        isInstantiated = true;
     }
+
+
+
     // Note: Should PROBABLY be impossible to get gameobject externally
     public virtual void SelHover()
     {
-        isHovered = true;
+        hovered = true;
     }
     public virtual void SelUnHover()
     {
@@ -54,6 +37,9 @@ public class Selectable
     {
         //isSelected = false;
     }
+
+    public bool isSelected() { return selected; }
+    public bool isHovered() { return hovered; }
 
     public bool IsTroop() { return SelGetTroop() != null; }
     public bool IsTile() { return SelGetTile() != null; }

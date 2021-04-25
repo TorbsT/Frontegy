@@ -12,7 +12,7 @@ public class GameMaster : MonoBehaviour
     [SerializeField] public float tileLineHeight = 1f;
     [SerializeField] public float tileCreateAnimationSpeed = 1f;
     [SerializeField] int playerStartingCards = 5;
-    [SerializeField] public List<CardData> cardBlueprints;
+    [SerializeField] public List<Card> cardBlueprints;
     [SerializeField] public Material globalHoverMat;
     [SerializeField] public Material globalSelectMat;
     [SerializeField] public Material breadcrumbMat;
@@ -24,17 +24,18 @@ public class GameMaster : MonoBehaviour
     [SerializeField] public GameObject tileGOPrefab;
     [SerializeField] public GameObject cardGOPrefab;
     [SerializeField] public GameObject lineGOPrefab;
-    [SerializeField] SelectionManager selectionManager;
+    [SerializeField] public SelectionManager selectionManager;
     [SerializeField] UIManager uiManager;
     [SerializeField] CameraScript cameraScript;
     public Grid grid;
     [SerializeField] public float stepTimeLeft;
 
-    public Phase phase;
+    private PhaseManager pm;
     public List<Player> players;
     public List<Conflict> conflicts = new List<Conflict>();
     public List<Merge> merges = new List<Merge>();
     public Player nonePlayer;
+    private Rooster rooster;
 
     GridPivotConfig gridNone;
     GridPivotConfig gridAnchored;
@@ -42,14 +43,41 @@ public class GameMaster : MonoBehaviour
 
     Conflict currentConflict;
 
+    public static Groop getAllGroop() { return GetGM().internalGetAllGroop(); }
+    public static GameObject GetGMGO()
+    {
+        GameObject gmGO = GameObject.FindGameObjectWithTag("GameMaster");
+        if (gmGO == null) Debug.LogError("Couldn't find GMGO");
+        return gmGO;
+    }
+    public static GameMaster GetGM()
+    {
+        GameMaster gm = GetGMGO().GetComponent<GameMaster>();
+        if (gm == null) Debug.LogError("Couldn't find GM");
+        return gm;
+    }
+    public static Tile sfindTile(TileLoc tileLoc) { return GetGM().findTile(tileLoc); }
+    public Tile findTile(TileLoc tileLoc) { return grid.data.getAllTiile().find(tileLoc); }
+    public static CardPhy sgetUnstagedCardPhy() { return sgetRooster().getUnstagedCardPhy(); }
+    public static TilePhy sgetUnstagedTilePhy() { return sgetRooster().getUnstagedTilePhy(); }
+    public static TroopPhy sgetUnstagedTroopPhy() { return sgetRooster().getUnstagedTroopPhy(); }
+    public static PafPhy sgetUnstagedPafPhy() { return sgetRooster().getUnstagedPafPhy(); }
+    public static Rooster sgetRooster() { return GetGM().rooster; }
+    public Rooster getRooster() { return rooster; }
+    public static SelectionManager GetSelectionManager()
+    { return GetGM().selectionManager; }
+    public static CameraScript getCameraScript()
+    { return GetGM().cameraScript; }
+
+    private Groop internalGetAllGroop() { return grid.data.getGroop(); }
+    private AllCaard internalGetAllCaard() { return grid.data.getAllCaard(); }
+    private AllTiile internalGetAllTiile() { return grid.data.getAllTiile(); }
     void Start()
     {
         Restart();
     }
     void Update()
     {
-        GridShit();
-
         //CheckIfPhaseShouldBeSkipped();
 
         CountDown();
@@ -57,158 +85,13 @@ public class GameMaster : MonoBehaviour
         ExecuteManualUpdates();
         
         HandlePlayerInput();
-
     }
     void CountDown()
     {
-        if (IsThisPhase(StaticPhaseType.weiterWeiter))
-        {
-            stepTimeLeft -= Time.deltaTime;
-            if (stepTimeLeft <= 0f)
-            {
-                HandleEncounters();
-                if (conflicts.Count > 0 || merges.Count > 0)
-                {   // Make a conflict when:
-                    // Let x and y be troops from different teams.
-                    // x.to = y.from & x.from = y.to
-                    // x.to = y.to
-                    // ...but what about troops moving multiple tiles at once? Make them move multiple in one step, or make them skip?
 
-                    foreach (Merge merge in merges)
-                    {
-                        
-                    }
-                    foreach (Conflict conflict in conflicts)
-                    {
-                        conflict.AutoResolve();
-                    }
-                }
-                else
-                {
-                    stepTimeLeft = stepDuration;
-                    phase.step++;
-                    if (phase.step > phase.steps)
-                    {
-                        NextPhase();
-                    }
-                }
-            }
-        }
     }
-    public int GetStep() { return phase.step; }
     public float GetStepTimeScalar()  // [0, 1]
     { return 1 - Mathf.Clamp01(stepTimeLeft / stepDuration); }
-    void HandleEncounters()
-    {
-        conflicts = new List<Conflict>();
-        merges = new List<Merge>();
-        AddEncountersToList();
-        Debug.Log("Finished! With " + conflicts.Count + " conflicts and " + merges.Count + " merges");
-    }
-    void AddEncountersToList()
-    {
-        foreach (Troop a in grid.data.GetTroops())
-        {
-            foreach (Troop b in grid.data.GetTroops())
-            {
-                if (a == b) continue;
-
-                bool team = false;
-                bool passing = false;
-                bool gathering = false;
-                if (a.stats.playerId == b.stats.playerId)
-                {
-                    team = true;
-                }
-                if (a.To() == b.From() && a.From() == b.To())
-                {
-                    passing = true;  // pass implies the troops pass on a border
-                }
-                else if (a.To() == b.To())
-                {
-                    gathering = true;  // gather implies the troops gather in the middle of a tile
-                }
-
-                bool isMerge = false;
-                bool isConflict = false;
-                if (team && gathering) isMerge = true;
-                else if (!team) isConflict = true;
-                else continue;
-
-                bool isDuplicate = false;
-                if (isConflict)
-                {
-                    foreach (Conflict conflict in conflicts)  // keep far down, increases time complexity
-                    {
-                        if ((a == conflict.a || a == conflict.b) && (b == conflict.a || b == conflict.b))
-                        {
-                            // already handled
-                            isDuplicate = true;
-                            break;
-                        }
-
-                    }
-                    if (isDuplicate) continue;
-                    conflicts.Add(new Conflict(a, b));
-                }
-                else if (isMerge)
-                {
-                    Debug.Log("is Merge");
-                    foreach (Merge merge in merges)
-                    {
-                        if ((a == merge.a || a == merge.b) && (b == merge.a || b == merge.b))
-                        {
-                            // already handled
-                            isDuplicate = true;
-                            break;
-                        }
-                    }
-                    if (isDuplicate) continue;
-                    Merge newMerge = new Merge(a, b);
-                    merges.Add(newMerge);
-                    conflicts = new List<Conflict>();
-                    newMerge.DoMerge();
-                    AddEncountersToList();  // I think this has like n^3 time complexity
-                    return;
-                }
-            }
-        }
-        /*
-        handleEncounters():
-            for every a in troops:
-                for every b in troops:
-                    if a.player == b.player:
-                        team = true
-                    if a.to == b.from and a.from == b.to:
-                        passing = true  // meet implies the troops meet on a border
-                    else if a.to == b.to:
-                        gathering = true  // gather implies the troops gather in the middle of a tile
-
-                    if team and gathering: merge = true
-                    else if not team and gathering: conflict = true
-                    else if not team and gathering: conflict = true
-
-                    if conflict:
-                        for every conflict in conflicts:  // keep far down, increases time complexity
-                            if (a == conflict.a or a == conflict.b) and (b == conflict.a or b == conflict.b):
-                                // already handled
-                                continue to next b
-                        createconflict(a, b)
-                    else if merge:
-                        for every merge in merges:
-                            if (a == merge.a or a == merge.b) and (b == merge.a or b == merge.b):
-                                // already handled
-                                continue to next b
-                        createmerge(a, b)
-                        handleEncounters()
-                        return
-        */
-    }
-    void GridShit()
-    {
-        VerifyTileShapes();
-        SetGridAnchor();
-    }
     /*
     void CheckIfPhaseShouldBeSkipped()
     {
@@ -219,88 +102,50 @@ public class GameMaster : MonoBehaviour
         }
     }
     */
-    void AttemptSkip()
+    public bool isThisPhase(PhaseType t)
     {
-        if (true) NextPhase();//(phase.type.skippable) NextPhase();
+        return pm.isThisPhase(t);
     }
-    void NextPhase()
+    public Player getCurrentPlayer()
     {
-        selectionManager.ResetSelections();
-        
-        if (IsThisPhase(StaticPhaseType.weiterWeiter)) NextRound();
-        else if (IsLastPlayer()) WeiterWeiter();
-        else NextStrategicPhase();
-        Debug.Log("Round " + phase.round + ": " + phase.type.name + " " + GetPhasePlayer().name);
-
-
+        int id = getCurrentPlayerId();
+        Player p = getPlayerById(id);
+        return p;
     }
-    void NextStrategicPhase()
-    {
-        phase.type = StaticPhaseType.strategic;
-        phase.playerId++;
-        if (phase.playerId >= players.Count) phase.playerId = 0;
-    }
-    void WeiterWeiter()
-    {
-        phase.type = StaticPhaseType.weiterWeiter;
-        phase.playerId = -1;
-        stepTimeLeft = stepDuration;
-        phase.steps = GetMaxSteps();
-        //Debug.Log("Round " + phase.round + ": " + phase.type.name + " " + GetPhasePlayer().name);
-    }
-    void NextRound()
-    {
-        phase.round++;
-        phase.step = 0;
-        TileTracker.UpdateGridValues();
-        Debug.Log("next round!");
-        grid.UpdateTroopTiles();
-        NextStrategicPhase();
-    }
-    int GetMaxSteps()
-    {
-        int steps = 0;
-        foreach (Troop troop in grid.data.GetTroops())
-        {
-            if (troop.line != null)
-            {
-                steps = Mathf.Max(steps, troop.GetStepCount());  // line.line position count is usually twice as big...
-            }
-        }
-        return steps;
-    }
-    public Player GetPhasePlayer() {return GetPlayer(phase.playerId);}
-    public Player GetPlayer(int id)
+    public Player getPlayerById(int id)
     {
         if (id == -1) return nonePlayer;
-        else if (id < 0 || id >= players.Count)
-        {
-            Debug.LogError("ERROR: Tried to access invalid playerId "+id+", count is "+players.Count);
-            return null;
+
+        foreach (Player p in players)
+        {  // Find matching id
+            if (p.hasId(id)) return p;
         }
-        return players[id];
+
+        Debug.LogError("Should probably not happen, couldn't find player by id");
+        return nonePlayer;
     }
-    bool IsLastPlayer() { return (phase.playerId >= players.Count-1); }
-    public bool IsThisPhase(PhaseType spt) { return (phase.type.name == spt.name); }
+    public bool currentPlayerIdIs(int id) { return getCurrentPlayerId() == id; }
+    public int getCurrentPlayerId() { if (pm == null) return -1; return pm.getPlayerId(); }
+    public int getPlayersCount()
+    {
+        if (players == null) return 0;
+        return players.Count;
+    }
     void HandlePlayerInput()
     {
         if (Input.GetKeyDown("r")) Restart();
-        else if (Input.GetKeyDown("space")) AttemptSkip();
+        else if (Input.GetKeyDown("space")) pm.attemptSkip();
     }
     void ExecuteManualUpdates()  // Replacement for mono update
     {
-        foreach (Tile tile in grid.data.tiles)
-        {
-            tile.ManualUpdate();
-        }
-        foreach (Troop troop in grid.data.GetTroops())
-        {
-            troop.ManualUpdate();
-        }
+        updatePhase();
         selectionManager.ManualUpdate();
-        cameraScript.ManualUpdate();
         uiManager.ManualUpdate();
-
+    }
+    void updatePhase()
+    {
+        if (pm == null) return;
+        pm.update();
     }
     void Restart()
     {
@@ -312,10 +157,7 @@ public class GameMaster : MonoBehaviour
 
         grid.ResetGrid();
 
-        phase = new Phase();
-        phase.playerId = 0;
-        phase.type = StaticPhaseType.strategic;
-        phase.round = 0;
+        pm = new PhaseManager();
 
         gridNone = new GridPivotConfig(0f, 0f);
         gridAnchored = new GridPivotConfig(0f, 0.5f);
@@ -323,6 +165,7 @@ public class GameMaster : MonoBehaviour
 
         grid.previousTileShape = Grid.TileShape.none;
     }
+    /*
     public void StartingCards()
     {
         GiveEqualCards(playerStartingCards);
@@ -341,58 +184,30 @@ public class GameMaster : MonoBehaviour
             GiveCard(player, PickCard());
         }
     }
-    void GiveCard(Player player, Card card)
+    void GiveCard(Player player, CardPhy card)
     {
         card.SetPlayerHolder(player);
         grid.data.cards.Add(card);
     }
-    Card PickCard()
+    CardPhy PickCard()
     {
         int blueprintCount = cardBlueprints.Count;
         int pickedCardIndex = Random.Range(0, blueprintCount);
-        CardData data = cardBlueprints[pickedCardIndex];
-        Card createdCard = grid.InstantiateCard(data);
+        Card data = cardBlueprints[pickedCardIndex];
+        CardPhy createdCard = grid.InstantiateCard(data);
 
         return createdCard;
     }
 
 
 
+    */
 
 
 
 
 
 
-
-
-
-    void VerifyTileShapes()  // Checks if tile shapes was changed, and if so, forces each tile to change
-    {
-        if (grid.tileShape != grid.previousTileShape)
-        {
-            foreach (Tile tile in grid.data.tiles)
-            {
-                tile.VerifyMesh();
-            }
-            grid.previousTileShape = grid.tileShape;
-        }
-    }
-    void SetGridAnchor()  // Offsets/anchors all tiles according to current config
-    {
-        switch (grid.gridConfig)
-        {
-            case (Grid.GridConfigs.none):
-                grid.currentGrid = gridNone;
-                break;
-            case (Grid.GridConfigs.anchored):
-                grid.currentGrid = gridAnchored;
-                break;
-            case (Grid.GridConfigs.centered):
-                grid.currentGrid = gridCentered;
-                break;
-        }
-    }
     /*
     void InstantiateUnits(bool useGeoBlueprints = false)
     {

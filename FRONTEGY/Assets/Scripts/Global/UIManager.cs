@@ -25,9 +25,9 @@ public class UIManager : MonoBehaviour
     }
     void UpdateHeader()
     {
-        Player phasePlayer = gameMaster.GetPhasePlayer();
-        string txt = phasePlayer.name;
-        Color color = phasePlayer.mat.color;
+        Player phasePlayer = gameMaster.getCurrentPlayer();
+        string txt = phasePlayer.getName();
+        Color color = phasePlayer.getMat().color;
 
         header.color = color;
         header.text = txt;
@@ -41,28 +41,23 @@ public class UIManager : MonoBehaviour
     }
     void DisplayPhaseHand()
     {
-        DisplayHandOf(gameMaster.GetPhasePlayer());
+        DisplayHandOf(gameMaster.getCurrentPlayer());
     }
     void DisplayHandOf(Player player)
     {
-        List<Card> cards = GetCardsInHandOf(player);
+        List<CardPhy> cards = getCaardInHandOf(player).getPhys();
         for (int i = 0; i < cards.Count; i++)
         {
-            Card card = cards[i];
+            CardPhy card = cards[i];
             card.Display();
             card.SetGORot(GetHandCardRotById(i));
-            card.SetGOPos(GetHandCardPosById(i));
+            card.setPos3(GetHandCardPos3ById(i));
             card.UpdateGOScale();
         }
     }
-    List<Card> GetCardsInHandOf(Player player)
+    Caard getCaardInHandOf(Player player)
     {  // Searches through every card in grid, returns all that are in the HAND of player.
-        List<Card> cards = new List<Card>();
-        foreach (Card card in gameMaster.grid.data.cards)
-        {
-            if (card.playerHolder == player) cards.Add(card);
-        }
-        return cards;
+        return gameMaster.grid.data.getAllCaard().getCaardInHandOf(player);
     }
     Quaternion GetHandCardRotById(int id)
     {
@@ -70,14 +65,14 @@ public class UIManager : MonoBehaviour
         Quaternion finalRot = baseRot * Quaternion.Euler(-90f, 0f, 0f);
         return finalRot;
     }
-    Vector3 GetHandCardPosById(int id)
+    Pos3 GetHandCardPos3ById(int id)
     {
-        Vector3 basePos = uiTransform.position;
+        Pos3 basePos = new Pos3(uiTransform.position);
         float x = id;
         float y = 0;
         float z = 0;
-        Vector3 addPos = new Vector3(x, y, z);
-        Vector3 finalPos = basePos + addPos;
+        Pos3 addPos = new Pos3(x, y, z);
+        Pos3 finalPos = Pos3.sum(basePos, addPos);
         return finalPos;
     }
 }

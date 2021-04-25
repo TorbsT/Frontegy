@@ -1,0 +1,8 @@
+gamemaster phasemanager
+gamemaster.update: phasemanager.update.
+
+phasemanager: a currentPhase
+phasemanager.update: run currentPhase and get bool output
+
+phase:
+multiple views

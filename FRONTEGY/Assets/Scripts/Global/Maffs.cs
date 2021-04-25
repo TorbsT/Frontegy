@@ -20,9 +20,4 @@ public static class Maffs
         }
         return sum;
     }
-    public static GameObject GetGMGO() { return GameObject.FindGameObjectWithTag("GameMaster"); }
-    public static GameMaster GetGM()
-    { return GetGMGO().GetComponent<GameMaster>();}
-    public static SelectionManager GetSelectionManager()
-    { return GetGMGO().GetComponent<SelectionManager>();}
 }

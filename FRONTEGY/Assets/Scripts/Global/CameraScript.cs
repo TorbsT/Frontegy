@@ -30,7 +30,7 @@ public class CameraScript : MonoBehaviour
         isInitialized = true;
         camera = GetComponent<Camera>();
     }
-    public void ManualUpdate()
+    public void freeView()
     {
         if (!isInitialized) ManualStart();
         if (orthographic)
@@ -64,6 +64,14 @@ public class CameraScript : MonoBehaviour
         }
 
         if (Input.GetKeyDown("o")) orthographic = !orthographic;
+    }
+    public void eagleView()
+    {
+        if (!isInitialized) ManualStart();
+        Vector3 eulerAngles = new Vector3(90f, 0f, 0f);
+        Quaternion rotation = Quaternion.identity*Quaternion.Euler(eulerAngles);
+        transform.rotation = rotation;
+        transform.position = new Vector3(0f, height, 0f);
     }
     float GetFov()
     {

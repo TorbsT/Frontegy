@@ -1,12 +1,25 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 [System.Serializable]
 public class Phase
 {
-    public PhaseType type;
-    public int playerId;
-    public int round;
+    public Phase()
+    {
+        // runs before the construction of any subclass!
+    }
 
-    public int step;
-    public int steps;
+    private PhaseType type;
+
+    public PhaseType getType() { return type; }
+    protected void setType(PhaseType t) { type = t; }
+    public bool bupdate()
+    {
+        // common phase update method goes here
+        return bupdateVirtual();
+    }
+    protected virtual bool bupdateVirtual()
+    {
+        return true;
+    }
 }

@@ -36,9 +36,7 @@ public class Grid
 
     [Header("Grid Debug")]
     public GameMaster gameMaster;
-    public List<Geo> geoBlueprints;
     public Transform gridGO;
-
 
     public List<Reservoir> reservoirs;
     //public List<Tile> tiles;
@@ -51,146 +49,24 @@ public class Grid
 
     public void ResetGrid()
     {
-        gameMaster = Maffs.GetGM();
+        gameMaster = GameMaster.GetGM();
         if (data != null)
         {
             Debug.Log("TODO: Destroy gameObjects");
         }
-        data = new GridData(new List<Tile>(), new List<Troop>(), new List<Card>());
+        AllTiile allTiile = AllTiile.genRectTiile(16, 8);
+        Groop groop = new Groop();
+        AllCaard allCaard = new AllCaard();
+        data = new GridData(allTiile, groop, allCaard);
 
         if (GameObject.Find("Grid") != null)
             Object.Destroy(gridGO.gameObject);
         gridGO = new GameObject("Grid").transform;
 
-        geoBlueprints = GetRandomizedGeos();
-        InstantiateTiles(geoBlueprints);
-        gameMaster.StartingCards();
-    }
-    void InstantiateTiles(List<Geo> blueprints)
-    {
-        if (data.tiles != null)
-            foreach (Tile tile in data.tiles)
-            {
-                Object.Destroy(tile.selGO);
-            }
-        List<Tile> tempTiles = new List<Tile>();
-        foreach (Geo blueprint in blueprints)
-        {
-            tempTiles.Add(InstantiateTile(blueprint));
-        }
-        data.tiles = tempTiles;
-        ResetTileGeos();
-    }
-    public Card InstantiateCard(CardData data)
-    {  // UGLY UGLY UGLY
-        Card createdCard = new Card();
-        createdCard.gameMaster = gameMaster;
-        createdCard.data = data;
-        createdCard.Instantiate();
-        return createdCard;
-    }
-    Tile InstantiateTile(Geo blueprint)
-    {  // UGLY UGLY UGLY
-        Tile createdTile = new Tile();
-        createdTile.initialGeo = blueprint;
-        createdTile.gameMaster = gameMaster;  // TEMPORARY
-        createdTile.Instantiate();
-        return createdTile;
-    }
-    public List<int> GetActiveTiles(bool useGeoBlueprints)
-    {
-        List<int> returnTiles = new List<int>();
-        foreach (Tile tile in data.tiles)
-        {
-            int tileId = tile.initialGeo.id;
-            bool isActive;
-            if (useGeoBlueprints) isActive = tile.initialGeo.isActive;
-            else isActive = tile.geo.isActive;
-            if (isActive) returnTiles.Add(tileId);
-        }
-        return returnTiles;
-    }
-    List<Geo> GetRandomizedGeos()
-    {
-        List<Geo> blueprintGeos = new List<Geo>();
-        int remainingSpaces = TileTracker.GetTileCount();
-        int remainingTiles = Mathf.RoundToInt(tileRatio * TileTracker.GetTileCount());
-
-        int gridXPos = 0;
-        int gridYPos = 0;
-
-        List<int> reservoirSpawnWeights = new List<int>();
-        foreach (Reservoir res in reservoirs)
-        {
-            reservoirSpawnWeights.Add(res.spawnWeight);
-        }
-
-
-        for (int i = 0; i < TileTracker.GetTileCount(); i++)
-        {
-            float prob = ((float)remainingTiles) / ((float)remainingSpaces);
-
-            Geo blueprintGeo = new Geo();
-            float thisRandomValue = Random.value;
-            if (prob >= thisRandomValue)
-            {
-                blueprintGeo.isActive = true;
-                remainingTiles--;
-            }
-            else blueprintGeo.isActive = false;
-
-
-            blueprintGeo.reservoir = DecideReservoir(reservoirSpawnWeights);
-
-            if (0.5f >= Random.value) blueprintGeo.playerId = 0;
-            else blueprintGeo.playerId = 1;
-
-
-            remainingSpaces--;
-            blueprintGeo.height = 1f + gameMaster.heightScalar*Mathf.Round(Random.value * 10f) / 10f;
-            blueprintGeo.id = i;
-            blueprintGeo.gridPos = new Vector2Int(gridXPos, gridYPos);
-            blueprintGeos.Add(blueprintGeo);
-
-            gridXPos++;
-            if (gridXPos >= gridSize[0])
-            {
-                gridXPos = 0;
-                gridYPos++;
-            }
-        }
-        return blueprintGeos;
-    }
-    Reservoir DecideReservoir(List<int> weights, bool debug = false)
-    {
-        int resWeightsSoFar = 0;
-        float randomFloat = Random.value;
-        int reservoirValue = Mathf.FloorToInt(randomFloat * Maffs.GetSumOfWeights(weights));
-        if (debug) Debug.Log(randomFloat + " " + reservoirValue);
-        for (int i = 0; i < weights.Count; i++)
-        {
-            int sW = weights[i] + resWeightsSoFar;
-            if (debug) Debug.Log(sW + " " + weights[i] + " " + resWeightsSoFar);
-            if (sW > reservoirValue)
-            {
-                if (debug) Debug.Log("true");
-                return reservoirs[i];
-            }
-            if (debug) Debug.Log("false");
-            resWeightsSoFar += weights[i];
-        }
-        Debug.LogError("FATAL ERROR ON GETTING RESERVOIR");
-        return reservoirs[0];
-    }
-    public void ResetTileGeos()
-    {
-        foreach (Tile tile in data.tiles)
-        {
-            tile.geo = tile.initialGeo;
-        }
+        //gameMaster.StartingCards();
     }
     public void UpdateTroopTiles()
     {
-        data.UpdateTroopTiles();
+        data.getGroop().resetParentTiles();
     }
 }
