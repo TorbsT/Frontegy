@@ -3,12 +3,19 @@ using UnityEngine;
 
 public class TacticalPhase : Phase
 {
+    View v;
+
     public TacticalPhase()
     {
         // runs after the construction of Phase!
-        views = new List<View>();
-        views.Add(new FreeView());
-        type = StaticPhaseType.strategic;
+        v = new FreeView();
+        setType(PhaseType.tactical);
+    }
 
+    protected override bool bupdateVirtual()
+    {
+        bool done = false;
+
+        return done;
     }
 }

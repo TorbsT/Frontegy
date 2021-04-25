@@ -15,9 +15,11 @@ public class SummonSpell : Spell
 
         newUnit.Instantiate();
         */
-        Troop newTroop = new Troop(new TroopStats(GameMaster.GetGM().getCurrentPlayerId(), new List<Unit>() { new Unit(unitId) }));
-        gameMaster.grid.data.GetTroops().Add(newTroop);
-        newTroop.stats.parentTileId = selHover.SelGetTile().geo.id;
-        newTroop.Instantiate();
+        int playerId = GameMaster.GetGM().getCurrentPlayerId();
+        List<Unit> units = new List<Unit>() { new Unit(unitId) };
+        Troop newTroop = new Troop(true, playerId, units);
+        GameMaster.getAllGroop().add(newTroop);
+        newTroop.parentTile = selHover.SelGetTile();
+        // MAYBUG newTroop.parentTIle.instantiate()
     }
 }

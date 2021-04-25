@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class Merge
 {
-    public Merge(Troop _a, Troop _b)
+    /* TODO yup
+    public Merge(TroopPhy _a, TroopPhy _b)
     {
         a = _a;
         b = _b;
     }
-    public Troop a;
-    public Troop b;
+    public TroopPhy a;
+    public TroopPhy b;
 
     public void DoMerge()
     {
@@ -18,7 +19,8 @@ public class Merge
         {
             a.stats.units.Add(unit);
         }
-        a.gameMaster.grid.data.GetTroops().Remove(b);
+        a.gameMaster.grid.data.GetTroopPhys().Remove(b);
         GameObject.Destroy(b.selGO);
     }
+    */
 }

@@ -1,160 +1,142 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class Troop : Selectable
+[System.Serializable]
+public class Troop : Chy  // "Must" be class since SetStats() should be able to modify these values
 {
-    public Troop(TroopStats _stats)
+    public Troop(bool instantiate, int _playerId, List<Unit> _units)
     {
-        stats = _stats;
+        playerId = _playerId;
+        units = _units;
+        if (instantiate) troopPhy = TroopRoster.sgetUnstagedPhy();
     }
-    [Header("Variables")]
-    [SerializeField] public TroopStats stats;
+    private int id;
+    public int playerId;
+    public float scale = 0.5f;
+    public Tile parentTile;
+    private TroopPhy troopPhy;
+    public List<Unit> units;
+    private Djikstra djikstra;
+    private PafChy pafChy;
 
-    [Header("System/Debug")]
-    public LineDoodooer line;
-    [SerializeField] Renderer rndrr;
-    //[SerializeField] Selectable selectable;
-    private List<Breadcrumb> breadcrumbsInRange;
-    
-    [SerializeField] int defaultLayer = 0;
-    [SerializeField] int ignoreRaycastLayer = 2;
-
-    public override void Instantiate()
+    public Player getPlayer()
     {
-        Instantiate2(this.GetType());
-        rndrr = selGO.GetComponent<Renderer>();
-        rndrr.material = gameMaster.getCurrentPlayer().mat;
+        return Player.getById(playerId);
     }
-    public void ManualUpdate()
+    public int GetWalkRange()
     {
-        if (!isInstantiated) Debug.LogError("ERROR: Troop is not instantiated");
-        SetLayer();
-        selGO.transform.localScale = new Vector3(stats.scale, stats.scale, stats.scale);
-        if (TileTracker.GetTileById(stats.parentTileId) == null) return;
-        SetPosition();
+        return GetMaxRange();
     }
-    public int To()
+    public int GetMaxRange()
     {
-        return 1; // CRITICAL
-        //return TileIdByPathIndex(gameMaster.GetStep()+1);
-    }
-    public int From()
-    {
-        return 1;  // CRITICAL
-        //return TileIdByPathIndex(gameMaster.GetStep());
-    }
-    int TileIdByPathIndex(int index)
-    {  // This id is made out of id
-        // if id is out of range, chooses first or last breadcrumb-tile
-        // if path = null or path empty, chooses parent tile
-        if (stats.NoPaf()) return stats.parentTileId;
-        if (stats.GetPaf().IsOutOfRange(index))
+        int range = 0;
+        foreach (Unit unit in units)
         {
-            index = stats.GetPaf().GetIndexInRange(index);  // If there aren't enough breadcrumbs in this path
+            int myRange = unit.myRole.stats.RANGE;
+            if (myRange > range) range = myRange;
         }
-        return stats.GetPaf().GetTileId(index);
+        return range;
     }
-    void SetPosition()
+    public FromTo getFromTo(int step) { return getPaf().getFromTo(step); }
+    public Paf getPaf() { return getPafChy().getPaf(); }
+    public PafChy getPafChy() { return pafChy; }
+    public bool noPaf() { return !hasPaf(); }
+    public bool hasPaf()
     {
-        if (gameMaster.isThisPhase(StaticPhaseType.strategic) || line == null || line.line.positionCount == 0)
-        {
-            selGO.transform.position = TileTracker.GetTileById(stats.parentTileId).GetSurfacePos();
-        }
-        else if (gameMaster.isThisPhase(StaticPhaseType.weiterWeiter))
-        { /* CRITICAL
-            int nextIndex;
-            int previousIndex;
-            int step = gameMaster.phase.step;
-            int stepCount = line.line.positionCount;
-            nextIndex = Mathf.Clamp(step+1, 0, stepCount-1);
-            previousIndex = Mathf.Clamp(step, 0, stepCount - 1);
+        if (getPafChy() == null) return false;
+        if (getPaf() == null) return false;
+        return true;
+    }
+    public int getId() { return id; }
+    public bool isThisTroop(Troop compareAgainst)
+    {
+        if (compareAgainst == null) return false;  // not possible to compare to nulls... i think
+        return (this.id == compareAgainst.getId());
+    }
+    public Conflict findConflictByStepAndTroop(int step, Troop b)
+    {  // MAYBUG doesn't take any consequi into account
+        bool meet = meetOnStep(step, b);
+        bool pass = passOnStep(step, b);
 
-            selGO.transform.position = Vector3.Lerp(line.line.GetPosition(previousIndex), line.line.GetPosition(nextIndex), Mathf.Sqrt(gameMaster.GetStepTimeScalar()));
-            */
-        }
-        AdjustYByHeight();
+        if (meet && pass) Debug.LogError("This is a logical error. what the actual fuck?");
+        if (meet) return new TileConflict(step, this, b);
+        if (pass) return new BorderConflict(step, this, b);
+        return null;
     }
-    void AdjustYByHeight()
+    private bool meetOnStep(int step, Troop t)
     {
-        selGO.transform.position += Vector3.up * selGO.transform.localScale[1];
+        FromTo a = getFromTo(step);
+        FromTo b = t.getFromTo(step);
+
+        return a.meets(b);
     }
-    void SetLayer()
+    private bool passOnStep(int step, Troop t)
     {
-        if (gameMaster.isThisPhase(StaticPhaseType.strategic) && gameMaster.currentPlayerIdIs(stats.playerId))
-        {
-            // selectable
-            selGO.gameObject.layer = defaultLayer;
-        }
-        else selGO.gameObject.layer = ignoreRaycastLayer;
+        FromTo a = getFromTo(step);
+        FromTo b = t.getFromTo(step);
+
+        return a.passes(b);
+    }
+    public void weiterUpdate(WeiterView wv)
+    {
+        int step = wv.getStep();
+        Slid slid = wv.getSlid();
+
+        FromTo ft = getFromTo(step);
+    }
+    public Tile getParentTile() { if (parentTile == null) Debug.LogError("Should probably not happen"); return parentTile; }
+    public void planPafTo(Tile t)
+    {
+        if (hasPaf()) getPafChy().unstage();
+        pafChy = djikstra.getPafTo(t);
+        pafChy.stage();
+    }
+    public void select()
+    {
+        getDjikstra().showMarks();
+    }
+    public void unselect()
+    {
+        getDjikstra().hideMarks();
+    }
+    public void resetParentTile()
+    {
+        parentTile = getPaf().lastTile();
+        resetDjikstra();
+    }
+    private void resetDjikstra()
+    {
+        djikstra = null;
+        pafChy = null;
+    }
+    public Djikstra getDjikstra()
+    {  // If no exists, generate. use as often as you like
+        if (djikstra == null) computeDjikstra();
+        if (djikstra == null) Debug.LogError("you messed up you big stupid piece of feces");
+        return djikstra;
+    }
+    public bool tileIsInRange(Tile t)
+    {
+        return getDjikstra().tileIsInRange(t);
     }
 
 
-    public override Troop SelGetTroop() { return this; }
-    public override void SelHover()
-    {
-        if (!isSelected) rndrr.material = gameMaster.globalHoverMat;
-    }
-    public override void SelUnHover()
-    {
-        if (!isSelected) rndrr.material = gameMaster.getCurrentPlayer().mat;
-    }
-    public override void SelSelect()
-    {
-        rndrr.material = gameMaster.globalSelectMat;
-        breadcrumbsInRange = Pathfinding.GetAllTilesInRange(new Breadcrumb(stats.parentTileId, stats.GetWalkRange(), 0));
 
-        DebugUnits();
-        foreach (Breadcrumb breadcrumb in breadcrumbsInRange)
-        {
-            breadcrumb.GetTile().ShowBreadcrumb(breadcrumb);
-        }
-
-        //Conflict conflict = new Conflict(new List<TroopStats> { stats }, false);
-        //conflict.DebugTroops(conflict.GetRankedTroops(new List<TroopStats> { stats }));
-
-    }
-    public override void SelUnSelect()
+    private void computeDjikstra()
     {
-        foreach (Breadcrumb breadcrumb in breadcrumbsInRange)
-        {
-            TileTracker.GetTileById(breadcrumb.GetTileId()).UnShowBreadcrumb();
-        }
-        breadcrumbsInRange = new List<Breadcrumb>();
-        rndrr.material = gameMaster.getCurrentPlayer().mat;
+        djikstra = new Djikstra(this);
     }
-    public Paf SelPlanMovement(int fromTileId, int toTileId)
-    {
-        Paf path = Pathfinding.GetPathFromTo(fromTileId, toTileId);
-        Pathfinding.UntardPath(path);
 
-        if (path == null) return null;
-        stats.SetPaf(path);
-        if (line == null) line = Object.Instantiate(gameMaster.lineGOPrefab).GetComponent<LineDoodooer>();
-        line.ownerTroop = this;
-        return path;
-    }
-    public int GetStepCount()
+    protected override Phy getPhy()
     {
-        int steps = 0;
-        steps = line.line.positionCount - 1;
-        return steps;
+        return troopPhy;
     }
-    public void DebugUnits()
-    { 
-        foreach (Unit unit in stats.units)
-        {
-            unit.DebugRole();
-        }
-    }
-    public bool tileIsInRange(int tileId)
+    protected override void connect()
     {
-        if (breadcrumbsInRange == null) return false;
-        foreach (Breadcrumb bc in breadcrumbsInRange)
-        {
-            if (bc.GetTileId() == tileId) return true;
-        }
-        return false;
+        troopPhy = TroopRoster.sgetUnstagedPhy();
     }
-    public List<Breadcrumb> GetBreadcrumbsInRange() { return breadcrumbsInRange; }
-
+    protected override void disconnect()
+    {
+        troopPhy = null;
+    }
 }

@@ -28,15 +28,13 @@ public class PhaseManager
     private void nextPhase()
     {
         //selectionManager.ResetSelections();
-        if (isThisPhase(StaticPhaseType.weiterWeiter)) nextRound();
+        if (isThisPhase(PhaseType.battle)) nextRound();
         else if (isLastPlayer()) weiterWeiter();
         else nextTacticalPhase();
     }
     private void nextRound()
     {
         round++;
-        currentPhase.step = 0;
-        TileTracker.UpdateGridValues();
         gm.grid.UpdateTroopTiles();
         playerId = -1;
         nextTacticalPhase();
@@ -135,5 +133,5 @@ void NextRound()
 
     public int getPlayerId() { return playerId; }
     public int getRound() { return round; }
-    public bool isThisPhase(PhaseType spt) { return (currentPhase.type.name == spt.name); }
+    public bool isThisPhase(PhaseType p) { return currentPhase.getType() == p; }
 }
