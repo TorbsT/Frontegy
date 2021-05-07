@@ -98,6 +98,7 @@
     <Compile Include="Assets\Scripts\Grid\Rooster.cs" />
     <Compile Include="Assets\Scripts\Cards\CardPhy.cs" />
     <Compile Include="Assets\Scripts\Grid\TileTracker.cs" />
+    <Compile Include="Assets\Scripts\Troops\RoleStats.cs" />
     <Compile Include="Assets\Scripts\BattlePhase\Consequi.cs" />
     <Compile Include="Assets\Scripts\Troops\StaticRoles.cs" />
     <Compile Include="Assets\Scripts\Global\Pos3.cs" />
@@ -116,7 +117,6 @@
     <Compile Include="Assets\Scripts\BattlePhase\View.cs" />
     <Compile Include="Assets\Scripts\Global\SelectionManager.cs" />
     <Compile Include="Assets\Scripts\Grid\Reservoir.cs" />
-    <Compile Include="Assets\Scripts\Troops\UnitStats.cs" />
     <Compile Include="Assets\Scripts\BattlePhase\TacticalPhase.cs" />
     <Compile Include="Assets\Scripts\Grid\CardRoster.cs" />
     <Compile Include="Assets\Scripts\Troops\Unit.cs" />
@@ -137,6 +137,10 @@
     <Compile Include="Assets\Scripts\Grid\TileLooc.cs" />
     <Compile Include="Assets\Scripts\Troops\TroopPhy.cs" />
     <Compile Include="Assets\Scripts\Grid\AllCaard.cs" />
+    <Compile Include="Assets\Scripts\Rds.cs" />
+    <Compile Include="Assets\Scripts\Rd.cs" />
+    <Compile Include="Assets\Scripts\Weight.cs" />
+    <Compile Include="Assets\Scripts\Weights.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\Concept\weiter.txt" />

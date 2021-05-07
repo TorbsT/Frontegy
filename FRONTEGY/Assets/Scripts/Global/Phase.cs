@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [System.Serializable]
-public class Phase
+public abstract class Phase
 {
     public Phase()
     {
@@ -16,10 +16,7 @@ public class Phase
     public bool bupdate()
     {
         // common phase update method goes here
-        return bupdateVirtual();
+        return bupdateAbs();
     }
-    protected virtual bool bupdateVirtual()
-    {
-        return true;
-    }
+    protected abstract bool bupdateAbs();
 }

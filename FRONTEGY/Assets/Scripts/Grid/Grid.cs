@@ -37,6 +37,10 @@ public class Grid
     [Header("Grid Debug")]
     public GameMaster gameMaster;
     public Transform gridGO;
+    private AllTiile allTiile;
+    private AllCaard allCaard;
+    private Groop allGroop;
+    private Rds rds;
 
     public List<Reservoir> reservoirs;
     //public List<Tile> tiles;
@@ -49,15 +53,24 @@ public class Grid
 
     public void ResetGrid()
     {
+        rds = new Rds(0);
+        int rows = 16;
+        int cols = 8;
+        int tileCount = rows * cols;
+
         gameMaster = GameMaster.GetGM();
         if (data != null)
         {
             Debug.Log("TODO: Destroy gameObjects");
         }
-        AllTiile allTiile = AllTiile.genRectTiile(16, 8);
-        Groop groop = new Groop();
-        AllCaard allCaard = new AllCaard();
-        data = new GridData(allTiile, groop, allCaard);
+        
+        allTiile = AllTiile.genRectTiile(rows, cols, rds.getTiile());
+        allTiile.updateVisuals();
+        allGroop = new Groop();
+
+        allCaard = new AllCaard();  // temp
+        //allCaard = AllCaard.genStartCaard(8);
+       
 
         if (GameObject.Find("Grid") != null)
             Object.Destroy(gridGO.gameObject);
@@ -67,6 +80,23 @@ public class Grid
     }
     public void UpdateTroopTiles()
     {
-        data.getGroop().resetParentTiles();
+        getAllGroop().resetParentTiles();
+    }
+
+
+    public Groop getAllGroop()
+    {
+        if (allGroop == null) Debug.LogError("IllegalStateException: bad construction of grid");
+        return allGroop;
+    }
+    public AllCaard getAllCaard()
+    {
+        if (allCaard == null) Debug.LogError("IllegalStateException: bad construction of grid");
+        return allCaard;
+    }
+    public AllTiile getAllTiile()
+    {
+        if (allTiile == null) Debug.LogError("IllegalStateException: bad construction of grid");
+        return allTiile;
     }
 }

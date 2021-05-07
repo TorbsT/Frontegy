@@ -2,7 +2,7 @@
 
 [System.Serializable]
 public class GridData
-{
+{/*
     private AllTiile allTiile;
     private Groop groop;
     private AllCaard allCaard;
@@ -14,7 +14,7 @@ public class GridData
         this.allCaard = allCaard;
     }
 
-    /*
+    
     public void UpdateTroopTiles()
     {  // changes troop tiles to their path's last breadcrumb's tile
         // MAYBE SCRAP THIS METHOD NO?
@@ -24,7 +24,7 @@ public class GridData
             troop.stats.UpdateParentTile();
         }
     }
-    */
+    
     public AllTiile getAllTiile() { return allTiile; }
     public AllCaard getAllCaard() { return allCaard; }
     public Groop getGroop() { return groop; }
@@ -38,5 +38,5 @@ public class GridData
         if (getGroop() == null) return 0;
         return getGroop().getCount();
     }
-
+    */
 }

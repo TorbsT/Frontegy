@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public struct Pos3
 {
-    private Pos2 pos2;
-    private float y;
+    [SerializeField] private Pos2 pos2;
+    [SerializeField] private float y;
 
     public Pos3(Pos2 pos2)
     {

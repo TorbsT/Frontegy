@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+
 public class TilePhy : Selectable
 {
     enum SideMode
@@ -27,11 +28,11 @@ public class TilePhy : Selectable
     Mesh hexagonPrismMesh;
     Renderer sideRenderer;
     Renderer topRenderer;
-    private Tile tile;
+    [SerializeReference] private Tile tile;
 
     public TilePhy(Roster roster) : base(roster)
     {
-        getGO().transform.localScale = new Vector3(1f, 0f, 1f);
+        //getGO().transform.localScale = new Vector3(1f, 0f, 1f);
         sideRenderer = getGO().GetComponent<Renderer>();
         topRenderer = getGO().transform.GetChild(0).GetComponentInChildren<Renderer>();  // TODO uh oh
         planeTransform = getGO().transform.GetChild(0);  // UH FUCKING OH
@@ -40,16 +41,13 @@ public class TilePhy : Selectable
         if (swapRenderers) SwapRenderers();
     }
 
-    public void ManualUpdate()
+    public void updateVisual()
     {
-        if (!hasGO()) Debug.LogError("ERROR: Tile is not instantiated");
-
         bool show = getTile().isActive();
         topRenderer.enabled = show;
         sideRenderer.enabled = show;
         tileCollider.enabled = show;
-        getGO().transform.localScale = Vector3.Lerp(getGO().transform.localScale, GetTileScale(), getGM().tileCreateAnimationSpeed*Time.deltaTime*60f);
-        updatePos();
+        ResetAllMaterials();
     }
     public Pos2 getSurfacePos()
     {  // Returns the position if this tile's surface
@@ -73,12 +71,20 @@ public class TilePhy : Selectable
     }
     void ResetTopMaterial()
     {
-        SetMaterial(topRenderer, getTile().reservoir.material);
-        SetColor(topRenderer, getGM().getCurrentPlayer().getMat().color);
+        /*
+        Color color = getGM().getCurrentPlayer().getMat().color;
+        Debug.Log(color);
+        SetMaterial(topRenderer, getTile().getReservoir().material);
+        SetColor(topRenderer, color);
+        */
+        SetMaterial(topRenderer, getTile().getPlayer().getMat());
     }
     void ResetSideMaterial()
     {
-        SetMaterial(sideRenderer, getTile().reservoir.material);
+        /*
+        SetMaterial(sideRenderer, getTile().getReservoir().material);
+        */
+        SetMaterial(topRenderer, getTile().getPlayer().getMat());
     }
     void SetMaterial(Renderer r, Material mat)
     {
@@ -141,7 +147,7 @@ public class TilePhy : Selectable
     {
         Vector3 scale = Vector3.one;
         scale.x = getGM().grid.tileSize;
-        scale.y = getTile().height;
+        scale.y = 1f;
         scale.z = getGM().grid.tileSize;
         return scale;
     }
@@ -168,12 +174,11 @@ public class TilePhy : Selectable
         */
     }
 
-    private Tile getTile() { if (tile == null) Debug.LogError("TilePhy has no Tile"); return tile; }
+    private Tile getTile() { return tile; }
 
     protected override void setChy(Chy chy)
     {
         tile = (Tile)chy;
-        ResetAllMaterials();
     }
 
     protected override Chy getChy()

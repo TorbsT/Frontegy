@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public abstract class Chy  // Connector-Phy
 {  // The stuff Phys are connected to. Can be Troop, Tile, etc
     public void stage()

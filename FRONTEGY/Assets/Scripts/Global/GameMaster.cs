@@ -41,8 +41,6 @@ public class GameMaster : MonoBehaviour
     GridPivotConfig gridAnchored;
     GridPivotConfig gridCentered;
 
-    Conflict currentConflict;
-
     public static Groop getAllGroop() { return GetGM().internalGetAllGroop(); }
     public static GameObject GetGMGO()
     {
@@ -57,7 +55,7 @@ public class GameMaster : MonoBehaviour
         return gm;
     }
     public static Tile sfindTile(TileLoc tileLoc) { return GetGM().findTile(tileLoc); }
-    public Tile findTile(TileLoc tileLoc) { return grid.data.getAllTiile().find(tileLoc); }
+    public Tile findTile(TileLoc tileLoc) { return grid.getAllTiile().find(tileLoc); }
     public static CardPhy sgetUnstagedCardPhy() { return sgetRooster().getUnstagedCardPhy(); }
     public static TilePhy sgetUnstagedTilePhy() { return sgetRooster().getUnstagedTilePhy(); }
     public static TroopPhy sgetUnstagedTroopPhy() { return sgetRooster().getUnstagedTroopPhy(); }
@@ -69,9 +67,9 @@ public class GameMaster : MonoBehaviour
     public static CameraScript getCameraScript()
     { return GetGM().cameraScript; }
 
-    private Groop internalGetAllGroop() { return grid.data.getGroop(); }
-    private AllCaard internalGetAllCaard() { return grid.data.getAllCaard(); }
-    private AllTiile internalGetAllTiile() { return grid.data.getAllTiile(); }
+    private Groop internalGetAllGroop() { return grid.getAllGroop(); }
+    private AllCaard internalGetAllCaard() { return grid.getAllCaard(); }
+    private AllTiile internalGetAllTiile() { return grid.getAllTiile(); }
     void Start()
     {
         rooster = new Rooster(20, 10, 200);
@@ -122,7 +120,7 @@ public class GameMaster : MonoBehaviour
             if (p.hasId(id)) return p;
         }
 
-        Debug.LogError("Should probably not happen, couldn't find player by id");
+        Debug.LogError("Should probably not happen, couldn't find player by id "+ id);
         return nonePlayer;
     }
     public bool currentPlayerIdIs(int id) { return getCurrentPlayerId() == id; }

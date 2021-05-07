@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TileLoc : Loc
 {
-    private Vector2Int lw;
+    [SerializeField] private Vector2Int lw;
 
     // constructors
     public TileLoc(Vector2Int lw) { this.lw = lw; }
@@ -17,7 +17,7 @@ public class TileLoc : Loc
         if (comparable == null) return false;
         return getLW() == comparable.getLW();
     }
-    public override Pos2 getPos()
+    public override Pos2 toPos()
     {  // TODO URGENT
         Vector2 v = new Vector2(getL(), getW());
         v *= 1f;

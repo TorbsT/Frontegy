@@ -21,11 +21,11 @@ public class BorderLoc : Loc
         if (comparable == null) return false;
         return sameBorderLoc(comparable);
     }
-    public override Pos2 getPos()
+    public override Pos2 toPos()
     {
         // could convert to FloatLoc first, but that would instantiate a new object every frame. bad
-        Pos2 pa = a.getPos();
-        Pos2 pb = b.getPos();
+        Pos2 pa = a.toPos();
+        Pos2 pb = b.toPos();
 
         return Pos2.halfPoint(pa, pb);
     }

@@ -57,7 +57,7 @@ public class UIManager : MonoBehaviour
     }
     Caard getCaardInHandOf(Player player)
     {  // Searches through every card in grid, returns all that are in the HAND of player.
-        return gameMaster.grid.data.getAllCaard().getCaardInHandOf(player);
+        return gameMaster.grid.getAllCaard().getCaardInHandOf(player);
     }
     Quaternion GetHandCardRotById(int id)
     {

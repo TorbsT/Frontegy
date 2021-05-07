@@ -17,7 +17,7 @@ public class BattlePhase : Phase
         setType(PhaseType.battle);
     }
 
-    protected override bool bupdateVirtual()
+    protected override bool bupdateAbs()
     {
         bool done = false;
 

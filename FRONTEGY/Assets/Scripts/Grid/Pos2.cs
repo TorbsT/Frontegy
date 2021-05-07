@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 
+[System.Serializable]
 public struct Pos2
 {  // having this as struct allows rapid instantiating without performance issues, apparently
-    private static Vector2 unstagedV3 = new Vector2(0f, -10f);
+    private static Vector2 unstagedV2 = new Vector2(0f, -10f);
     private bool staged;
-    private Vector2 v2;
+    [SerializeField] private Vector2 v2;
 
     public Pos2(Vector2 v2)
     {
@@ -24,7 +25,7 @@ public struct Pos2
     public float getX() { return v2.x; }
     public float getZ() { return v2.y; }
     private void stage() { staged = true; }
-    public void unstage() { staged = false; v2 = unstagedV3; }
+    public void unstage() { staged = false; v2 = unstagedV2; }
     public bool isStaged() { return staged; }
     public static Pos2 halfPoint(Pos2 from, Pos2 to)
     {
