@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public abstract class Phy
 {
-    private Pos3 pos;
+    [SerializeField] private Pos3 pos;  // ONLY USE FOR INSPECTING, NOT FOR CODE
     private GameObject go;
     private Roster roster;  // parent
 
@@ -16,10 +17,6 @@ public abstract class Phy
         instantiateGO();
     }
 
-    public void updatePos()
-    {
-        getGO().transform.position = getPos().getV3();
-    }
 
     protected void instantiateGO()
     {
@@ -37,6 +34,7 @@ public abstract class Phy
     public void stage(Chy chy)
     {
         if (chy == null) Debug.LogError("Program would work, but calling this is unecessary and probably shouldn't happen");
+        bool same = chy.Equals(getChy());  // debug
         if (isStaged()) Debug.LogError("Phy already staged");
         setChy(chy);
     }
@@ -46,8 +44,9 @@ public abstract class Phy
         setChy(null);
     }
     public bool isStaged() { return getChy() != null; }
-    public void setPos3(Pos3 pos) { this.pos = pos; }
-    public void setPos2(Pos2 pos) { this.pos = new Pos3(pos); }
+    public void setPos3(Pos3 pos) { this.pos = pos; showPos();  }
+    public void setPos2(Pos2 pos) { this.pos = new Pos3(pos); showPos(); }
+    private void showPos() { getGO().transform.position = getPos().getV3(); }
     public Pos3 getPos() { return pos; }
 
     protected abstract void setChy(Chy chy);  // must cast

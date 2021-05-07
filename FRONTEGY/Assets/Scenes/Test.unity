@@ -640,7 +640,6 @@ MonoBehaviour:
     tileSize: 1
     startingTroops: 0
     gameMaster: {fileID: 0}
-    geoBlueprints: []
     gridGO: {fileID: 0}
     reservoirs:
     - name: None
@@ -655,20 +654,16 @@ MonoBehaviour:
     - name: Hay
       material: {fileID: 2100000, guid: aaf881955afcd0b4aa6fcdf2195ef879, type: 2}
       spawnWeight: 8
-    data:
-      cards: []
   stepTimeLeft: 0
-  phase:
-    playerId: 0
-    round: 0
-    step: 0
-    steps: 0
   players:
-  - name: Red
+  - id: 0
+    name: Red
     mat: {fileID: 2100000, guid: 5c41654410656924c9eec4c1b75f642a, type: 2}
-  - name: Blue
+  - id: 1
+    name: Blue
     mat: {fileID: 2100000, guid: 5982d0e2dc3341d46b0e7792055645a7, type: 2}
   nonePlayer:
+    id: 0
     name: None
     mat: {fileID: 2100000, guid: 336b8f39c584ea54f904181e587f0399, type: 2}
 --- !u!4 &1029950687

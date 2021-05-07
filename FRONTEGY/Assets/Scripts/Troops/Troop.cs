@@ -4,38 +4,37 @@ using UnityEngine;
 [System.Serializable]
 public class Troop : Chy  // "Must" be class since SetStats() should be able to modify these values
 {
-    public Troop(bool instantiate, int _playerId, List<Unit> _units)
+    public Troop(bool instantiate, Player player, Unit unit)
     {
-        playerId = _playerId;
-        units = _units;
+        this.player = player;
+        this.unit = unit;
         if (instantiate) troopPhy = TroopRoster.sgetUnstagedPhy();
     }
     private int id;
-    public int playerId;
+    public Player player;
     public float scale = 0.5f;
-    public Tile parentTile;
+    [SerializeReference] private Tile parentTile;
     private TroopPhy troopPhy;
-    public List<Unit> units;
+    private Unit unit;
     private Djikstra djikstra;
     private PafChy pafChy;
 
     public Player getPlayer()
     {
-        return Player.getById(playerId);
+        return getUnit().getPlayer();
     }
-    public int GetWalkRange()
+    public int GetRange()
     {
-        return GetMaxRange();
+        return getUnit().getRange();
     }
-    public int GetMaxRange()
+    public Unit getUnit()
     {
-        int range = 0;
-        foreach (Unit unit in units)
-        {
-            int myRange = unit.myRole.stats.RANGE;
-            if (myRange > range) range = myRange;
-        }
-        return range;
+        return unit;
+    }
+    public void placeDownOn(Tile t)
+    {
+        if (parentTile != null) Debug.LogError("Already placed down");
+        parentTile = t;
     }
     public FromTo getFromTo(int step) { return getPaf().getFromTo(step); }
     public Paf getPaf() { return getPafChy().getPaf(); }

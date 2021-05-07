@@ -11,7 +11,7 @@ public class Djikstra
     public Djikstra(Troop t)
     {
         startTile = t.getParentTile();
-        startRange = t.GetWalkRange();
+        startRange = t.GetRange();
     }
     public Djikstra(Tile startTile, int startRange)
     {

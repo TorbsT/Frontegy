@@ -62,7 +62,7 @@ public class TroopPhy : Selectable
         Pos2 toP = toT.getPos();
         Pos2 lerped = Pos2.lerp(fromP, toP, slid);
         setPos2(lerped);
-        updatePos();
+        //updateVisual();
     }
     void AdjustYByHeight()
     {
@@ -82,8 +82,6 @@ public class TroopPhy : Selectable
     public override void SelSelect()
     {
         rndrr.material = getGM().globalSelectMat;
-
-        DebugUnits();
         getTroop().select();  // renders tiles green
 
         //Conflict conflict = new Conflict(new List<TroopStats> { stats }, false);
@@ -94,13 +92,6 @@ public class TroopPhy : Selectable
     {
         getTroop().unselect();
         rndrr.material = getGM().getCurrentPlayer().getMat();
-    }
-    public void DebugUnits()
-    { 
-        foreach (Unit unit in troop.units)
-        {
-            unit.DebugRole();
-        }
     }
     public Troop getTroop() { return troop; }
 

@@ -39,7 +39,7 @@ public class Roster
         Debug.LogWarning("Not enough Phys in "+GetType()+"!");
         return null;
     }
-    private bool isUnstaged(int index) { return getPhy(index) != null; }
+    private bool isUnstaged(int index) { return !getPhy(index).isStaged(); }
     private Phy getPhy(int index) { if (outOfBounds(index)) Debug.LogError("Tried getting Phy out of bounds, shoulneverhappen"); return getPhys()[index]; }
     private bool outOfBounds(int index) { return index < 0 || index >= getPhyCount(); }
     public GameMaster getGM() { return getRooster().getGM(); }

@@ -2,32 +2,40 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class Tile : Chy
 {
 
     private TilePhy tilePhy;
     private GameMaster gm;
-    private TileLoc loc;
-    private bool active;
-    public float height;
-    public Reservoir reservoir;
-    public int playerId;
+    [SerializeReference] private TileLoc loc;
+    [SerializeField] private bool active;
+    private Reservoir reservoir;
+    [SerializeReference] private Player player;
 
     public Tile(bool instantiate, TileLoc loc)
     {
         this.loc = loc;
         gm = GameMaster.GetGM();
-        if (instantiate) tilePhy = TileRoster.sgetUnstagedPhy();
+        if (instantiate)
+        {
+            stage();
+            activate();
+        }
     }
 
-
+    public void updateVisual()
+    {
+        getTilePhy().setPos2(getPos());
+        getTilePhy().updateVisual();
+    }
     public Pos2 getPos()
     {
-        float x = getLoc().getL();
-        float z = getLoc().getW();
-        return new Pos2(x, z);
+        return loc.toPos();
     }
+    public Reservoir getReservoir() { return reservoir; }
     public bool isActive() { return active; }
+    private void activate() { active = true; }
     public TileLoc getLoc() { return loc; }
     public bool sameTile(Tile t) { return getLoc().sameLoc(t.getLoc()); }
     private GameMaster getGM() { if (gm == null) Debug.LogError("Should never happen"); return gm; }
@@ -40,7 +48,14 @@ public class Tile : Chy
     public void showMark(Breadcrumb bc) { getTilePhy().showMark(bc); }  // OH NO
     public void hideMark() { getTilePhy().hideMark(); }
 
-
+    public void setPlayer(Player player)
+    {
+        this.player = player;
+    }
+    public Player getPlayer()
+    {
+        return player;
+    }
     private TilePhy getTilePhy()
     {
         if (tilePhy == null) tilePhy = (TilePhy)getPhy();  // OH LORD THIS IS BAD TODO

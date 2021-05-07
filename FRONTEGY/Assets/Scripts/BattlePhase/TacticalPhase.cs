@@ -12,7 +12,7 @@ public class TacticalPhase : Phase
         setType(PhaseType.tactical);
     }
 
-    protected override bool bupdateVirtual()
+    protected override bool bupdateAbs()
     {
         bool done = false;
 
