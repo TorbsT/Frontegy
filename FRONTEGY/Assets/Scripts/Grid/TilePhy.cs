@@ -84,7 +84,7 @@ public class TilePhy : Selectable
         /*
         SetMaterial(sideRenderer, getTile().getReservoir().material);
         */
-        SetMaterial(topRenderer, getTile().getPlayer().getMat());
+        SetMaterial(sideRenderer, getTile().getPlayer().getMat());
     }
     void SetMaterial(Renderer r, Material mat)
     {
@@ -181,7 +181,7 @@ public class TilePhy : Selectable
         tile = (Tile)chy;
     }
 
-    protected override Chy getChy()
+    public override Chy getChy()
     {
         return getTile();
     }

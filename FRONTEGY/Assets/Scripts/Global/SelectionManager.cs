@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class SelectionManager : MonoBehaviour
@@ -92,6 +93,15 @@ public class SelectionManager : MonoBehaviour
 
         previousHoveredObj = hoveredObj;
     }
+
+    public Tile getHoveredTile()
+    {
+        Selectable selHovered = GetSelectable(hoveredObj);
+        if (selHovered == null) Debug.LogError("IllegalStateException");
+        if (!selHovered.IsTile()) Debug.LogError("IllegalStateException");
+        return selHovered.SelGetTile();
+    }
+
     void SelectMechanic()
     {
         selectedObj = hoveredObj;

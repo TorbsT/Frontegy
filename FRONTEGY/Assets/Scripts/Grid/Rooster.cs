@@ -18,9 +18,21 @@ public class Rooster
         troopRoster = new TroopRoster(this, troopPhyCount);
         pafRoster = new PafRoster(this, troopPhyCount);
     }
+    public void unstageAll()
+    {
+        cardRoster.unstageAll();
+        tileRoster.unstageAll();
+        troopRoster.unstageAll();
+        pafRoster.unstageAll();
+    }
     public GameMaster getGM() { if (gm == null) Debug.LogError("Should never happen"); return gm; }
     public CardPhy getUnstagedCardPhy() { return (CardPhy)cardRoster.getUnstagedPhy(); }
-    public TilePhy getUnstagedTilePhy() { return (TilePhy)tileRoster.getUnstagedPhy(); }
+    public TilePhy getUnstagedTilePhy()
+    {
+        Phy p = tileRoster.getUnstagedPhy();
+        TilePhy tp = (TilePhy)p;
+        return tp;
+    }
     public TroopPhy getUnstagedTroopPhy() { return (TroopPhy)troopRoster.getUnstagedPhy(); }
     public PafPhy getUnstagedPafPhy() { return (PafPhy)pafRoster.getUnstagedPhy(); }
 }

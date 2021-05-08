@@ -58,7 +58,9 @@
     <Compile Include="Assets\Scripts\Global\CameraScript.cs" />
     <Compile Include="Assets\Scripts\Troops\Paf.cs" />
     <Compile Include="Assets\Scripts\BattlePhase\BorderConflict.cs" />
+    <Compile Include="Assets\Scripts\Rd.cs" />
     <Compile Include="Assets\Scripts\Cards\Spell.cs" />
+    <Compile Include="Assets\Scripts\Weight.cs" />
     <Compile Include="Assets\Scripts\Troops\Phy.cs" />
     <Compile Include="Assets\Scripts\Global\Phase.cs" />
     <Compile Include="Assets\Scripts\BattlePhase\WeiterView.cs" />
@@ -114,12 +116,14 @@
     <Compile Include="Assets\Scripts\BattlePhase\Results.cs" />
     <Compile Include="Assets\ZZZManure\TutorialInfo\Scripts\Readme.cs" />
     <Compile Include="Assets\Scripts\BattlePhase\Chy.cs" />
+    <Compile Include="Assets\Scripts\Weights.cs" />
     <Compile Include="Assets\Scripts\BattlePhase\View.cs" />
     <Compile Include="Assets\Scripts\Global\SelectionManager.cs" />
     <Compile Include="Assets\Scripts\Grid\Reservoir.cs" />
     <Compile Include="Assets\Scripts\BattlePhase\TacticalPhase.cs" />
     <Compile Include="Assets\Scripts\Grid\CardRoster.cs" />
     <Compile Include="Assets\Scripts\Troops\Unit.cs" />
+    <Compile Include="Assets\Scripts\Rds.cs" />
     <Compile Include="Assets\Scripts\Troops\PafChy.cs" />
     <Compile Include="Assets\Scripts\BattlePhase\BattlePhase.cs" />
     <Compile Include="Assets\Prefabs\Cards\Summon\SummonSpell.cs" />
@@ -137,10 +141,7 @@
     <Compile Include="Assets\Scripts\Grid\TileLooc.cs" />
     <Compile Include="Assets\Scripts\Troops\TroopPhy.cs" />
     <Compile Include="Assets\Scripts\Grid\AllCaard.cs" />
-    <Compile Include="Assets\Scripts\Rds.cs" />
-    <Compile Include="Assets\Scripts\Rd.cs" />
-    <Compile Include="Assets\Scripts\Weight.cs" />
-    <Compile Include="Assets\Scripts\Weights.cs" />
+    <Compile Include="Assets\Scripts\Playyer.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\Concept\weiter.txt" />

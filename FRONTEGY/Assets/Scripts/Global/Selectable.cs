@@ -9,10 +9,6 @@ public abstract class Selectable : Phy
 
     public Selectable(Roster roster) : base(roster)
     {
-        Transform gridTrans = getGM().grid.gridGO;
-
-        //selGO = Object.Instantiate(prefab, gridTrans);  \\ MAYBUG
-
         getGO().AddComponent<SelLinker>();
         SelLinker selLink = getGO().GetComponent<SelLinker>();  // TODO inefficient?
         selLink.link = this;

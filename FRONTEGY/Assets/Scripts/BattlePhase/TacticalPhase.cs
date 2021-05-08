@@ -5,17 +5,19 @@ public class TacticalPhase : Phase
 {
     View v;
 
-    public TacticalPhase()
+    public TacticalPhase(PhaseManager pm) : base(pm)
     {
         // runs after the construction of Phase!
-        v = new FreeView();
+        v = new FreeView(this);
         setType(PhaseType.tactical);
     }
 
-    protected override bool bupdateAbs()
+
+
+    protected override bool bupdateAbstra()
     {
         bool done = false;
-
+        v.bupdate();
         return done;
     }
 }

@@ -4,8 +4,12 @@ using UnityEngine;
 [System.Serializable]
 public abstract class Phase
 {
-    public Phase()
+    private PhaseManager pm;
+
+    public Phase(PhaseManager pm)
     {
+        if (pm == null) Debug.LogError("IllegalArgumentException");
+        this.pm = pm;
         // runs before the construction of any subclass!
     }
 
@@ -16,7 +20,9 @@ public abstract class Phase
     public bool bupdate()
     {
         // common phase update method goes here
-        return bupdateAbs();
+        return bupdateAbstra();
     }
-    protected abstract bool bupdateAbs();
+    protected abstract bool bupdateAbstra();
+    public Grid getGrid() { return getPhaseManager().getGrid(); }
+    public PhaseManager getPhaseManager() { if (pm == null) Debug.LogError("IllegalStateException"); return pm; }
 }

@@ -1,21 +1,29 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PhaseManager
 {
-    private GameMaster gm;
+    private Grid grid;
     public Phase currentPhase;
-    private int playerId;
+    private Player player;
     private int round;
 
-    public PhaseManager()
+    public PhaseManager(Grid grid)
     {
-        gm = GameMaster.GetGM();
-        currentPhase = new TacticalPhase();
-        playerId = 0;
+        if (grid == null) Debug.LogError("IllegalArgumentException");
+        this.grid = grid;
+        currentPhase = new TacticalPhase(this);
+        player = getFirstPlayer();
         round = 0;
     }
+
+    private Player getFirstPlayer()
+    {
+        return grid.getFirstPlayer();
+    }
+
     public void update()
     {
         bool phaseIsDone = currentPhase.bupdate();
@@ -35,23 +43,23 @@ public class PhaseManager
     private void nextRound()
     {
         round++;
-        gm.grid.UpdateTroopTiles();
-        playerId = -1;
+        grid.UpdateTroopTiles();
+        player = null;
         nextTacticalPhase();
     }
     private void nextTacticalPhase()
     {
-        currentPhase = new TacticalPhase();
-        playerId++;
+        currentPhase = new TacticalPhase(this);
+        player = grid.playerAfter(player);
     }
     private void weiterWeiter()
     {
-        currentPhase = new BattlePhase();
-        playerId = -1;  // strictly necessary. UI things try to get playerId all the time
+        currentPhase = new BattlePhase(this);
+        player = grid.getNonePlayer();  // strictly necessary. UI things try to get playerId all the time
     }
     private bool isLastPlayer()
     {
-        return (playerId == gm.getPlayersCount()-1);
+        return grid.isLastPlayer(player);
     }
     /*
 
@@ -130,8 +138,8 @@ void NextRound()
         }
     }
     */
-
-    public int getPlayerId() { return playerId; }
+    public Grid getGrid() { if (grid == null) Debug.LogError("IllegalStateException"); return grid; }
+    public Player getPlayer() { return player; }
     public int getRound() { return round; }
     public bool isThisPhase(PhaseType p) { return currentPhase.getType() == p; }
 }

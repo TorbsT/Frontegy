@@ -10,6 +10,4 @@ public class TileRoster : Roster
     {
         return new TilePhy(this);
     }
-
-    public static TilePhy sgetUnstagedPhy() { return GameMaster.sgetUnstagedTilePhy(); }
 }

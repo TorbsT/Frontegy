@@ -110,7 +110,7 @@ public class CardPhy : Selectable
         cardChy = (HandCard)chy;
     }
 
-    protected override Chy getChy()
+    public override Chy getChy()
     {
         return cardChy;
     }

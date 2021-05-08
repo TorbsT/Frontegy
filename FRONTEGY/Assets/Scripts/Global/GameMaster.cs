@@ -5,11 +5,16 @@ using UnityEngine;
 public class GameMaster : MonoBehaviour
 {
     [Header("Variables")]
+    [SerializeField] Vector2Int gridSize;
     [SerializeField] private bool randomSeed;
     [SerializeField] private int seed;
     [SerializeField] private float stepDuration = 1f;
     [SerializeField] public float heightScalar = 1f;
     [SerializeField] public float tileLineHeight = 1f;
+
+    [SerializeField] private int nonePlayerTileWeight = 1;
+    [SerializeField] private int player0TileWeight = 1;
+    [SerializeField] private int player1TileWeight = 1;
     [SerializeField] public float tileCreateAnimationSpeed = 1f;
     [SerializeField] int playerStartingCards = 5;
     [SerializeField] public List<Card> cardBlueprints;
@@ -27,21 +32,25 @@ public class GameMaster : MonoBehaviour
     [SerializeField] public SelectionManager selectionManager;
     [SerializeField] UIManager uiManager;
     [SerializeField] CameraScript cameraScript;
-    public Grid grid;
+    [System.NonSerialized] public Grid grid;
     [SerializeField] public float stepTimeLeft;
 
-    private PhaseManager pm;
-    public List<Player> players;
     public List<Conflict> conflicts = new List<Conflict>();
     public List<Merge> merges = new List<Merge>();
-    public Player nonePlayer;
+    [SerializeField] private Playyer playyer;
     private Rooster rooster;
 
     GridPivotConfig gridNone;
     GridPivotConfig gridAnchored;
     GridPivotConfig gridCentered;
 
+    public Playyer getPlayyer() { if (playyer == null) Debug.LogError("IllegalStateException"); return playyer; }
+
+
     public static Groop getAllGroop() { return GetGM().internalGetAllGroop(); }
+
+
+
     public static GameObject GetGMGO()
     {
         GameObject gmGO = GameObject.FindGameObjectWithTag("GameMaster");
@@ -62,6 +71,13 @@ public class GameMaster : MonoBehaviour
     public static PafPhy sgetUnstagedPafPhy() { return sgetRooster().getUnstagedPafPhy(); }
     public static Rooster sgetRooster() { return GetGM().getRooster(); }
     public Rooster getRooster() { if (rooster == null) Debug.LogError("Rooster should never be null"); return rooster; }
+
+    public SelectionManager getSelectionManager()
+    {
+        if (selectionManager == null) Debug.LogError("IllegalStateException");
+        return selectionManager;
+    }
+
     public static SelectionManager GetSelectionManager()
     { return GetGM().selectionManager; }
     public static CameraScript getCameraScript()
@@ -101,62 +117,35 @@ public class GameMaster : MonoBehaviour
         }
     }
     */
-    public bool isThisPhase(PhaseType t)
-    {
-        return pm.isThisPhase(t);
-    }
     public Player getCurrentPlayer()
     {
-        int id = getCurrentPlayerId();
-        Player p = getPlayerById(id);
-        return p;
-    }
-    public Player getPlayerById(int id)
-    {
-        if (id == -1) return nonePlayer;
-
-        foreach (Player p in players)
-        {  // Find matching id
-            if (p.hasId(id)) return p;
-        }
-
-        Debug.LogError("Should probably not happen, couldn't find player by id "+ id);
-        return nonePlayer;
-    }
-    public bool currentPlayerIdIs(int id) { return getCurrentPlayerId() == id; }
-    public int getCurrentPlayerId() { if (pm == null) return -1; return pm.getPlayerId(); }
-    public int getPlayersCount()
-    {
-        if (players == null) return 0;
-        return players.Count;
+        return grid.getCurrentPlayer();
     }
     void HandlePlayerInput()
     {
         if (Input.GetKeyDown("r")) Restart();
-        else if (Input.GetKeyDown("space")) pm.attemptSkip();
+        else if (Input.GetKeyDown("space")) grid.getPhaseManager().attemptSkip();
     }
     void ExecuteManualUpdates()  // Replacement for mono update
     {
-        updatePhase();
+        grid.update();
         selectionManager.ManualUpdate();
-        uiManager.ManualUpdate();
-    }
-    void updatePhase()
-    {
-        if (pm == null) return;
-        pm.update();
     }
     void Restart()
     {
+        // destroys previous grid
+        if (grid != null)
+        {
+            getRooster().unstageAll();
+        }
+
+        // starts new grid
+        Debug.Log("restarted");
         if (randomSeed)
         {
-            seed = Random.Range(0, 99999);
+            seed = Random.Range(0, 9999999);
         }
-        Random.InitState(seed);
-
-        grid.ResetGrid();
-
-        pm = new PhaseManager();
+        grid = new Grid(this, seed, gridSize, nonePlayerTileWeight, player0TileWeight, player1TileWeight);
 
         gridNone = new GridPivotConfig(0f, 0f);
         gridAnchored = new GridPivotConfig(0f, 0.5f);

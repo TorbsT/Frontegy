@@ -2,7 +2,8 @@
 
 public class ViewBattles : View
 {
-    public override bool bupdateVirtual()
+    public ViewBattles(Phase phase) : base(phase) { }
+    protected override bool bupdateVirtual()
     {
         cs.eagleView();
         return (life > 10000);
