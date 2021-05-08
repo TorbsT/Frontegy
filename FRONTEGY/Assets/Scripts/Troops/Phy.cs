@@ -5,6 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public abstract class Phy
 {
+    private static Pos3 unstagedPos = new Pos3(0f, -10f, 0f);
     [SerializeField] private Pos3 pos;  // ONLY USE FOR INSPECTING, NOT FOR CODE
     private GameObject go;
     private Roster roster;  // parent
@@ -15,6 +16,7 @@ public abstract class Phy
         pos = new Pos3();
         go = null;  // only temporary, subclasses should instantiate
         instantiateGO();
+        unstage();
     }
 
 
@@ -40,8 +42,11 @@ public abstract class Phy
     }
     public void unstage()
     {
-        if (!isStaged()) Debug.LogError("Phy wasn't staged in the first place");
+        // if (!isStaged()) Debug.LogError("Phy wasn't staged in the first place");
+        // default behaviour, thus removed
+
         setChy(null);
+        setPos3(unstagedPos);
     }
     public bool isStaged() { return getChy() != null; }
     public void setPos3(Pos3 pos) { this.pos = pos; showPos();  }
@@ -50,6 +55,6 @@ public abstract class Phy
     public Pos3 getPos() { return pos; }
 
     protected abstract void setChy(Chy chy);  // must cast
-    protected abstract Chy getChy();
+    public abstract Chy getChy();
     protected abstract GameObject getPrefab();
 }

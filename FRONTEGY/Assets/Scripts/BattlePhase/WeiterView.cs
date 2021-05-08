@@ -7,7 +7,7 @@ public class WeiterView : View
     private int step;
     private BattlePhase bp;
     private Coonflict coonflict;
-    public WeiterView(int step, BattlePhase bp)
+    public WeiterView(int step, BattlePhase bp) : base(bp)
     {
         this.step = step;
         this.bp = bp;
@@ -15,10 +15,10 @@ public class WeiterView : View
         coonflict = bp.getStepCoonflict(step);
         // Should find some fancy way to auto-determine the pafs every troop will have in the end, also their fate? huummmmmmm
     }
-    public override bool bupdateVirtual()
+    protected override bool bupdateVirtual()
     {
         addTime(0.01f);
-        groop.weiterUpdate(this);
+        getAllGroop().weiterUpdate(this);
         return isDone();
     }
     private bool isDone() { return getSlid().isDone(); }

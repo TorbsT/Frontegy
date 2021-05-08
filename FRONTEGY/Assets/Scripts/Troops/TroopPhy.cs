@@ -6,7 +6,7 @@ public class TroopPhy : Selectable
     public TroopPhy(Roster roster) : base(roster)
     {
         rndrr = getGO().GetComponent<Renderer>();
-        rndrr.material = getGM().getCurrentPlayer().getMat();
+        //rndrr.material = getGM().getCurrentPlayer().getMat();
     }
 
     [Header("Variables")]
@@ -100,7 +100,7 @@ public class TroopPhy : Selectable
         troop = (Troop)chy;
     }
 
-    protected override Chy getChy()
+    public override Chy getChy()
     {
         return troop;
     }

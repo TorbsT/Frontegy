@@ -13,7 +13,7 @@ public class SpellCollection : ScriptableObject
     {
         foreach (Spell spell in spells)
         {
-            spell.Cast(parent);
+            spell.cast(parent);
         }
     }
 }

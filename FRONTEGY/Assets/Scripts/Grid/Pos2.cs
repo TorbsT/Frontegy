@@ -3,7 +3,6 @@
 [System.Serializable]
 public struct Pos2
 {  // having this as struct allows rapid instantiating without performance issues, apparently
-    private static Vector2 unstagedV2 = new Vector2(0f, -10f);
     private bool staged;
     [SerializeField] private Vector2 v2;
 
@@ -20,13 +19,10 @@ public struct Pos2
 
     public void mod(Vector2 m) { set(v2+m); }
     public void setF(float x, float z) { set(new Vector2(x, z)); }
-    public void set(Vector2 v) { v2 = v; stage(); }
+    public void set(Vector2 v) { v2 = v; }
     public Vector2 getV2() { return v2; }
     public float getX() { return v2.x; }
     public float getZ() { return v2.y; }
-    private void stage() { staged = true; }
-    public void unstage() { staged = false; v2 = unstagedV2; }
-    public bool isStaged() { return staged; }
     public static Pos2 halfPoint(Pos2 from, Pos2 to)
     {
         return Pos2.lerp(from, to, new Slid(0.5f));

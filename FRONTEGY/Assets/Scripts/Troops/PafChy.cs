@@ -8,7 +8,7 @@ public class PafChy : Chy
     
     
     //
-    public PafChy(Paf paf)
+    public PafChy(Grid grid, Paf paf) : base(grid)
     {
         setPaf(paf);
     }

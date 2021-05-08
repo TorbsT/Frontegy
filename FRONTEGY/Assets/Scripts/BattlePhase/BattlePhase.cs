@@ -7,7 +7,7 @@ public class BattlePhase : Phase
     int stepId;
     int stepCount = -1;
 
-    public BattlePhase()
+    public BattlePhase(PhaseManager pm) : base(pm)
     {
         // runs after Phase construction!
         results = new Results();
@@ -17,7 +17,7 @@ public class BattlePhase : Phase
         setType(PhaseType.battle);
     }
 
-    protected override bool bupdateAbs()
+    protected override bool bupdateAbstra()
     {
         bool done = false;
 

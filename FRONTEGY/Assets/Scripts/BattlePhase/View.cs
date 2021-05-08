@@ -1,14 +1,15 @@
 ﻿using UnityEngine;
 
-public class View
+public abstract class View
 {
-    protected Groop groop;
+    private Phase phase;
     protected int life;
     protected CameraScript cs;
-    public View()
+    public View(Phase phase)
     {
+        if (phase == null) Debug.LogError("IllegalArgumentException");
+        this.phase = phase;
         life = 0;
-        groop = GameMaster.getAllGroop();
         cs = GameMaster.getCameraScript();
     }
     public bool bupdate()
@@ -17,8 +18,9 @@ public class View
         life++;
         return finished;
     }
-    public virtual bool bupdateVirtual()
-    {
-        return true;
-    }
+    protected abstract bool bupdateVirtual();
+    protected Groop getAllGroop() { return getGrid().getAllGroop(); }
+    protected Grid getGrid() { return getPhaseManager().getGrid(); }
+    protected PhaseManager getPhaseManager() { return getPhase().getPhaseManager(); }
+    protected Phase getPhase() { if (phase == null) Debug.LogError("IllegalStateException: i feel like this will be relevant when resetting game"); return phase; }
 }

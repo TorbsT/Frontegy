@@ -567,11 +567,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b8fc08354755014c940a85d59b59dbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gridSize: {x: 16, y: 8}
   randomSeed: 1
   seed: 1235
   stepDuration: 1
   heightScalar: 0
   tileLineHeight: 1
+  nonePlayerTileWeight: 0
+  player0TileWeight: 4
+  player1TileWeight: 4
   tileCreateAnimationSpeed: 1
   playerStartingCards: 5
   cardBlueprints:
@@ -631,41 +635,16 @@ MonoBehaviour:
   selectionManager: {fileID: 3870067544836170832}
   uiManager: {fileID: 320468735}
   cameraScript: {fileID: 1362506143}
-  grid:
-    tileShape: 2
-    gridConfig: 2
-    gridSize: {x: 7, y: 12}
-    tileRatio: 1
-    tileGap: 0
-    tileSize: 1
-    startingTroops: 0
-    gameMaster: {fileID: 0}
-    gridGO: {fileID: 0}
-    reservoirs:
-    - name: None
-      material: {fileID: 2100000, guid: 40efd55466b0c3b4aa7f62d5aec67c0a, type: 2}
-      spawnWeight: 0
-    - name: Rock
-      material: {fileID: 2100000, guid: 066d42cb4991e8943907ccd5af87f496, type: 2}
-      spawnWeight: 4
-    - name: Wood
-      material: {fileID: 2100000, guid: 2b73128622c2ca244afedac596986a40, type: 2}
-      spawnWeight: 8
-    - name: Hay
-      material: {fileID: 2100000, guid: aaf881955afcd0b4aa6fcdf2195ef879, type: 2}
-      spawnWeight: 8
   stepTimeLeft: 0
-  players:
-  - id: 0
-    name: Red
-    mat: {fileID: 2100000, guid: 5c41654410656924c9eec4c1b75f642a, type: 2}
-  - id: 1
-    name: Blue
-    mat: {fileID: 2100000, guid: 5982d0e2dc3341d46b0e7792055645a7, type: 2}
-  nonePlayer:
-    id: 0
-    name: None
-    mat: {fileID: 2100000, guid: 336b8f39c584ea54f904181e587f0399, type: 2}
+  playyer:
+    nonePlayer:
+      name: Neutral
+      mat: {fileID: 2100000, guid: 336b8f39c584ea54f904181e587f0399, type: 2}
+    players:
+    - name: RED
+      mat: {fileID: 2100000, guid: 5c41654410656924c9eec4c1b75f642a, type: 2}
+    - name: BLUE
+      mat: {fileID: 2100000, guid: 5982d0e2dc3341d46b0e7792055645a7, type: 2}
 --- !u!4 &1029950687
 Transform:
   m_ObjectHideFlags: 0

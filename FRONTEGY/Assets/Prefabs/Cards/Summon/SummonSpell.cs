@@ -8,19 +8,12 @@ public class SummonSpell : Spell
 {
     //[SerializeField] int unitId;  // Unit to spawn
     private Role role;  // unit spawned uses this role
-    public override void Cast(Card parent)
+    protected override void use()
     {
-        base.Cast(parent);
-        /*
-        Unit newUnit = new Unit(new UnitStats());
-
-        newUnit.Instantiate();
-        */
-        Player castingPlayer = GameMaster.GetGM().getCurrentPlayer();
         Unit unit = new Unit(role);
-        Troop newTroop = new Troop(true, castingPlayer, unit);
+        Troop newTroop = new Troop(getGrid(), true, getPlayer(), unit);
         GameMaster.getAllGroop().add(newTroop);
-        newTroop.placeDownOn(selHover.SelGetTile());
+        newTroop.placeDownOn(getHoveredTile());
         // MAYBUG newTroop.parentTIle.instantiate()
     }
 }

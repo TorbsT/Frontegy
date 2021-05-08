@@ -13,11 +13,21 @@ public class Card : Chy  // changed to class since i didn't know why it should b
 
 
     private CardPhy phy;
-    private Player holder;
+    private Player player;
 
-    public void setHolder(Player player)
+    public Card(Grid grid) : base(grid)
     {
-        holder = player;
+
+    }
+    public void setPlayer(Player player)
+    {
+        if (player == null) Debug.LogError("IllegalArgumentException");
+        this.player = player;
+    }
+    public Player getPlayer()
+    {
+        if (player == null) Debug.LogError("IllegalStateException");
+        return player;
     }
 
     public void Activate(string triggerTag)  // ownerId difficult when casting from tactical?
@@ -30,7 +40,7 @@ public class Card : Chy  // changed to class since i didn't know why it should b
             }
         }
     }
-    public Player getHolder() { if (holder == null) Debug.LogError("Should probably not happen"); return holder; }  // may be null 
+    public Player getHolder() { if (player == null) Debug.LogError("Should probably not happen"); return player; }  // may be null 
     public CardPhy getCardPhy()
     {
         return phy;

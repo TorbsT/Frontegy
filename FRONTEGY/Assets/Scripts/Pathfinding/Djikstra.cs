@@ -4,14 +4,17 @@ using UnityEngine;
 
 public class Djikstra
 {
+    private Grid grid;
     private Breadcruumb marked;
     private Tile startTile;
     private int startRange;
     
     public Djikstra(Troop t)
     {
+        if (t == null) Debug.LogError("IllegalArgumentException");
         startTile = t.getParentTile();
         startRange = t.GetRange();
+        grid = t.getGrid();
     }
     public Djikstra(Tile startTile, int startRange)
     {
@@ -33,7 +36,7 @@ public class Djikstra
         }
 
         paf.reverse();  // The way this is implemented, the paf starts off in wrong order
-        PafChy pafChy = new PafChy(paf);
+        PafChy pafChy = new PafChy(getGrid(), paf);
         return pafChy;
     }
     public bool tileIsInRange(Tile t)
@@ -93,5 +96,10 @@ public class Djikstra
     private bool tryMark(Breadcrumb newBreadcrumb)  // returns FALSE if a better breadcrumb existed.
     {
         return marked.tryAdd(newBreadcrumb);
+    }
+    private Grid getGrid()
+    {
+        if (grid == null) Debug.LogError("IllegalStateException");
+        return grid;
     }
 }

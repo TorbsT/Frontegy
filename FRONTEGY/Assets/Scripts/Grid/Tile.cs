@@ -13,7 +13,7 @@ public class Tile : Chy
     private Reservoir reservoir;
     [SerializeReference] private Player player;
 
-    public Tile(bool instantiate, TileLoc loc)
+    public Tile(Grid grid, bool instantiate, TileLoc loc) : base(grid)
     {
         this.loc = loc;
         gm = GameMaster.GetGM();
@@ -69,7 +69,8 @@ public class Tile : Chy
 
     protected override void connect()
     {
-        tilePhy = TileRoster.sgetUnstagedPhy();
+        tilePhy = getGrid().getUnstagedTilePhy();
+        if (tilePhy == null) Debug.LogError("IllegalStateException: Tile.connect() failed to set a tilePhy");
     }
 
     protected override void disconnect()

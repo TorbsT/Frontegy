@@ -70,7 +70,7 @@ public class PafPhy : Phy
     }
 
 
-    protected override Chy getChy()
+    public override Chy getChy()
     {
         return pafChy;
     }

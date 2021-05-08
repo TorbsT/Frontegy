@@ -4,7 +4,7 @@ using UnityEngine;
 [System.Serializable]
 public class Troop : Chy  // "Must" be class since SetStats() should be able to modify these values
 {
-    public Troop(bool instantiate, Player player, Unit unit)
+    public Troop(Grid grid, bool instantiate, Player player, Unit unit) : base(grid)
     {
         this.player = player;
         this.unit = unit;

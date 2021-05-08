@@ -18,6 +18,7 @@ public class Weights
         if (totalCount <= 0) Debug.LogError("IllegalArgumentException");
         if (inputWeights == null) Debug.LogError("IllegalArgumentException");
         if (rd == null) Debug.LogError("IllegalArgumentException");
+
         weightCount = inputWeights.Count;
         ids = new int[weightCount];
         weights = new int[weightCount];
@@ -25,18 +26,23 @@ public class Weights
         goalCounts = new int[weightCount];
         this.totalCount = totalCount;
 
+        
+
         // sets ids and weights
         for (int i = 0; i < weightCount; i++)
         {
             ids[i] = inputWeights[i][0];
             weights[i] = inputWeights[i][1];
         }
+        if (getSum() == 0) Debug.LogError("IllegalArgumentException: Please provide atleast one weight other than 0");
 
         // sets goalCounts
         int totalCountLeft = totalCount;
         int totalWeightLeft = getSum();
         for (int i = 0; i < weightCount; i++)
         {
+            if (totalWeightLeft < 0) Debug.LogError("how");
+            if (totalWeightLeft == 0) break;
             int thisWeight = weights[i];
             int countToRemove = thisWeight * totalCountLeft / totalWeightLeft;
 
