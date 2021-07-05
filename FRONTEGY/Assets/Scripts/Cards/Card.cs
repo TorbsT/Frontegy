@@ -1,63 +1,75 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
+//using TMPro; please dont use here
 
 [System.Serializable]
-public class Card : Chy  // changed to class since i didn't know why it should be struct
+public class Card : SelChy  // changed to class since i didn't know why it should be struct
 {  // TODO Currently only supports handCard, not upgrades
+    [SerializeReference] private SummonBP blueprint;
 
-    public string title;
-    public string desc;
-    public string type;
-    public List<SpellCollection> spellCollections;
-
-
-
-    private CardPhy phy;
-    private Player player;
-
-    public Card(Grid grid) : base(grid)
+    public Card(Grid grid, SummonBP blueprint, Player owner) : base(grid)
     {
-
-    }
-    public void setPlayer(Player player)
-    {
-        if (player == null) Debug.LogError("IllegalArgumentException");
-        this.player = player;
-    }
-    public Player getPlayer()
-    {
-        if (player == null) Debug.LogError("IllegalStateException");
-        return player;
+        if (blueprint == null) Debug.LogError("IllegalArgumentException");
+        this.blueprint = blueprint;
+        if (owner == null) Debug.LogError("IllegalArgumentException");
+        this.owner = owner;
+        stage();
+        initMats();
     }
 
-    public void Activate(string triggerTag)  // ownerId difficult when casting from tactical?
+    public void display(UIPlace place)
     {
-        foreach (SpellCollection spellCollection in spellCollections)
-        {
-            if (triggerTag == spellCollection.triggerTag)
-            {
-                spellCollection.CastSpells(this);
-            }
-        }
+        //getCardPhy().displayFGs(); MAYBUG
+        uize();
     }
-    public Player getHolder() { if (player == null) Debug.LogError("Should probably not happen"); return player; }  // may be null 
+
+    public void castOn(Tile tile, CastType type)  // ownerId difficult when casting from tactical?
+    {
+        getBlueprint().cast(this, tile, type);
+    }
+
+    public SummonBP getBlueprint() { if (blueprint == null) Debug.LogError("IllegalStateException"); return blueprint; }
+    public bool canCastOn(Tile tile)
+    {
+        return tile.owner == owner;
+    }
     public CardPhy getCardPhy()
     {
-        return phy;
+        return CardPool.Instance.getHost(this);
+    }
+    public Role getRole()
+    {
+        return blueprint.getRole();
     }
 
+    private MatPlace getRoleMatPlace()
+    {
+        MatPlace place = getRole().getFrontFGPlace();
+        return place;
+    }
+
+    public override void initMats()
+    {
+        setMat(getRoleMatPlace(), RendPlace.frontFG);
+        setMat(MatPlace.backFG, RendPlace.backFG);
+        setMat(MatPlace.initialSel, RendPlace.selectable);
+        setCol(getPlayerMatPlace(), RendPlace.FG);
+    }
+    protected override MatPlace getInitialSelMat()
+    {
+        return MatPlace.initialSel;
+    }
     protected override Phy getPhy()
     {
         return getCardPhy();
     }
-
-    protected override void connect()
+    public override void stage()
     {
-        phy = CardRoster.sgetUnstagedPhy();
+        CardPool.Instance.stage(this);
     }
-
-    protected override void disconnect()
+    public override void unstage()
     {
-        phy = null;
+        CardPool.Instance.unstage(this);
     }
 }

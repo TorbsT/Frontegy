@@ -8,7 +8,7 @@ public class PafPhy : Phy
     private PafChy pafChy;
     [SerializeField] private LineRenderer line;
 
-    public PafPhy(Roster roster) : base(roster) { }
+    public PafPhy() { }
 
     public void tacticalUpdate()
     {
@@ -69,19 +69,8 @@ public class PafPhy : Phy
         */
     }
 
+    public PafChy getPafChy() { return PafPool.Instance.getClient(this); }
+    protected override Chy getChy() { return getPafChy(); }
+    public override void unstage() { PafPool.Instance.unstage(this); }
 
-    public override Chy getChy()
-    {
-        return pafChy;
-    }
-
-    protected override void setChy(Chy chy)
-    {
-        pafChy = (PafChy)chy;  // god this is dirty
-    }
-
-    protected override GameObject getPrefab()
-    {
-        return getGM().lineGOPrefab;
-    }
 }

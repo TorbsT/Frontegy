@@ -6,8 +6,16 @@ using UnityEngine;
 [System.Serializable]
 public class Playyer
 {
-    [SerializeField] private Player nonePlayer;
+    public static Playyer Instance;
+
+    [SerializeField] private NonePlayer nonePlayer;
     [SerializeField] private List<Player> players;
+
+    public void init()
+    {
+        Instance = this;
+        nonePlayer.init();
+    }
 
     public Player getPlayerByIndex(int index)
     {
@@ -17,6 +25,7 @@ public class Playyer
 
     public Player playerAfter(Player player)
     {
+        if (player == null) Debug.LogError("IllegalArgumentException");
         if (isLastPlayer(player)) Debug.LogError("IllegalArgumentException: This is the last player, no players are after.");
 
         for (int i = 0; i < getPlayerCount(); i++)

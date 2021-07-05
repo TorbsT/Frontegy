@@ -16,13 +16,16 @@ public class Results
 
     private Coonflict allCoonflict;
     private Consequi consequi;
+    private Round round;
     private int maxSteps;
-    public Results()  // correct input?
+    public Results(Round round)  // correct input?
     {
+        if (round == null) Debug.LogError("IllegalArgumentException");
+        this.round = round;
         allCoonflict = new Coonflict();
         consequi = new Consequi();
 
-        Groop allGroop = GameMaster.getAllGroop();
+        Groop allGroop = round.getGrid().getAllGroop();
         /*
         List<Paf> veryTempPafs = new List<Paf>();
         foreach (Troop troop in allTroops)
@@ -35,7 +38,7 @@ public class Results
 
         // check for colliding pafs.
         // do this by going step for step and look for collisions
-        maxSteps = allGroop.getMaxSteps();  // YES
+        maxSteps = round.getRoundPlan().getMaxSteps();  // YES
         for (int step = 0; step < maxSteps; step++)
         {
             // Every step, this checks for coonflict that appears during that step.
@@ -90,6 +93,8 @@ public class Results
     }
 
     // delegation
+    public Tile lastTileInPaf(Troop troop) { return getRound().lastTileInPaf(troop); }
+    public Round getRound() { if (round == null) Debug.LogError("IllegalStateException"); return round; }
     public int getMaxSteps() { return maxSteps; }
     public Coonflict getStepCoonflict(int step) { return getAllCoonflict().getStepCoonflict(step); }  // TODO getters
     public Coonflict getAllCoonflict() { return allCoonflict; }

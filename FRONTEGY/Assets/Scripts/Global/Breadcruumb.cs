@@ -40,7 +40,7 @@ public class Breadcruumb
             Breadcrumb oldBreadcrumb = GetBreadcrumb(i);
             if (newBreadcrumb.sameTileAs(oldBreadcrumb))
             {
-                if (newBreadcrumb.betterThan(oldBreadcrumb))
+                if (newBreadcrumb > oldBreadcrumb)
                 {
                     removeAt(i);
                     break;  // improves performance
@@ -73,7 +73,7 @@ public class Breadcruumb
         Breadcrumb best = Breadcrumb.makeInvalid();
         foreach (Breadcrumb b in getBreadcrumbs())
         {
-            int score = b.GetStepsRemaining();
+            int score = b.stepsRemaining;
             if (score > bestScore)
             {
                 bestScore = score;

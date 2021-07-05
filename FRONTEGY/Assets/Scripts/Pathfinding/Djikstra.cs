@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class Djikstra
 {
     private Grid grid;
-    private Breadcruumb marked;
-    private Tile startTile;
-    private int startRange;
+    [SerializeReference] private Breadcruumb marked;
+    [SerializeReference] private Tile startTile;
+    [SerializeField] private int startRange;
     
     public Djikstra(Troop t)
     {
@@ -49,12 +50,14 @@ public class Djikstra
         if (marked == null) Debug.LogError("Djikstra.compute() didn't do anything...? Should never happen");
         return marked;
     }
-    public void showMarks() { getMarked().showMarks(); }
+    public void showMarks() { Debug.Log("penuadsas"); getMarked().showMarks(); }
     public void hideMarks() { getMarked().hideMarks(); }
 
 
     private void compute()
     {  // gets called once trying to get info!
+        Debug.Log("penuadsas");
+        if (startTile == null) Debug.LogError("IllegalStateException");
         marked = new Breadcruumb();
         Breadcrumb startBC = Breadcrumb.makeStarter(startTile, startRange);
         marked.tryAdd(startBC);
@@ -74,12 +77,11 @@ public class Djikstra
                 // these neigs are validated.
 
                 // stepsremaining and step for this breadcrumb, not its neigs
-                int stepsRemaining = breadcrumb.GetStepsRemaining();
-                int step = breadcrumb.getStep();
+                int stepsRemaining = breadcrumb.stepsRemaining;
 
                 foreach (Tile neig in neigs.getTiles())
                 {
-                    Breadcrumb neigBc = Breadcrumb.makeNeig(neig, stepsRemaining, step);
+                    Breadcrumb neigBc = Breadcrumb.makeNeig(neig, stepsRemaining);
                     recursiveMarkNeigs(neigBc);
                 }
             }
@@ -89,7 +91,7 @@ public class Djikstra
     private bool IsAvailableForWalking(Breadcrumb breadcrumb)
     {
         // add things like tile.isActive and shit
-        if (breadcrumb.GetStepsRemaining() < 0) return false;
+        if (breadcrumb.stepsRemaining < 0) return false;
         if (breadcrumb.getTile() == null) return false;  // This is checked twice: One here, and one in TryAddBreadcrumb. Without here, shit goes wild?
         return true;
     }

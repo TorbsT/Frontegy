@@ -42,80 +42,126 @@ public class Grid
 
     [Header("Grid Debug")]
     public GameMaster gm;
+    private GridConfig config;
     private AllTiile allTiile;
     private AllCaard allCaard;
     private Groop allGroop;
     private Rds rds;
     private PhaseManager pm;
     private Playyer playyer;
+    private Roole roole;
+    [SerializeReference] private SelMan selectionManager;
     int debug;
     public List<Reservoir> reservoirs;
+
     //public List<Tile> tiles;
     //public List<Troop> troopScripts;
 
 
     [System.NonSerialized] public GridPivotConfig currentGrid;
     [System.NonSerialized] public TileShape previousTileShape;
+    public UIManager UiManager { get { return gm.UiManager; } }
 
-    public Grid(GameMaster gm, int seed, Vector2Int size, int nonePlayerTileWeight, int player0TileWeight, int player1TileWeight)
+
+
+
+    public Grid(GameMaster gm, GridConfig config)
     {
         Debug.Log("grid restarted");
         if (gm == null) Debug.LogError("IllegalArgumentException");
-        if (size.x <= 0 || size.y <= 0) Debug.LogError("IllegalArgumentException");
-        if (nonePlayerTileWeight + player0TileWeight + player1TileWeight == 0) Debug.LogError("IllegalArgumentException: Please provide atleast one weight other than 0");
+        if (config.getSize().x <= 0 || config.getSize().y <= 0) Debug.LogError("IllegalArgumentException");
+        //if (config.getNonePlayerTileWeight() + config.getPlayer0TileWeight() + config.getPlayer1TileWeight() == 0) Debug.LogError("IllegalArgumentException: Please provide atleast one weight other than 0");
         this.gm = gm;
+        this.config = config;
+
+        roole = config.getBPs().makeRooleFromSummonBPs();
+        roole.applyRoles();
 
         playyer = getGM().getPlayyer();
         pm = new PhaseManager(this);
-        rds = new Rds(seed);
-        allTiile = genRectTiile(size, rds.getTiile(), nonePlayerTileWeight, player0TileWeight, player1TileWeight);
+        rds = new Rds(config.getSeed());
+        allTiile = genRectTiile();
         allTiile.updateVisuals();
         allGroop = new Groop();
 
-        allCaard = new AllCaard();  // temp
-                                    //allCaard = AllCaard.genStartCaard(8);
-        
+        //allCaard = new AllCaard();  // temp
+        allCaard = genStartCaard();
+
         //gameMaster.StartingCards();
+        selectionManager = new SelMan(getCam());
     }
 
-    public TilePhy getUnstagedTilePhy()
+    public void planPaf(Troop troop, PafChy pafChy)
     {
-        return getRooster().getUnstagedTilePhy();
-    }
-    public CardPhy getUnstagedCardPhy()
-    {
-        return getRooster().getUnstagedCardPhy();
-    }
-    public PafPhy getUnstagedPafPhy()
-    {
-        return getRooster().getUnstagedPafPhy();
-    }
-    public TroopPhy getUnstagedTroopPhy()
-    {
-        return getRooster().getUnstagedTroopPhy();
-    }
-    public Tile getHoveredTile() { return getSelectionManager().getHoveredTile(); }
-    public SelectionManager getSelectionManager() { return getGM().getSelectionManager(); }
 
-    private AllTiile genRectTiile(Vector2Int size, Rd rd, int nonePlayerTileWeight, int player0TileWeight, int player1TileWeight)
+    }
+    public void removePaf(Troop troop)
+    {
+
+    }
+    public TroopPlan getTroopPlan(Troop troop)
+    {
+        return getPhaseManager().getTroopPlan(troop);
+    }
+    public Transform getPhyContainer()
+    {
+        return getGM().getPhyContainer();
+    }
+    private void setTransformParent(Transform p, Transform t)
+    {
+        t.SetParent(p, true);
+    }
+    private Transform getUIPlace(UIPlace place)
+    {
+        return UiManager.getUIPlace(place);
+    }
+    public SelMan getSelectionManager()
+    {
+        if (selectionManager == null) Debug.LogError("IllegalStateException");
+        return selectionManager;
+    }
+
+    private AllCaard genStartCaard()
+    {
+        AllCaard ac = new AllCaard();
+        int count = config.getStartCardCount();
+        if (count < 0) Debug.LogError("IllegalArgumentException");
+
+        
+        if (config.getGiveSameCards())
+        {
+            List<int> cardMap = new Weights(count, config.getCardWeights(), rds.getCaard0()).getOutput();
+
+            string write = "";
+            foreach (int id in cardMap)
+            {
+                SummonBP sbp = config.getBPs().getSummonBP(id);
+                write += sbp + ", ";
+                Card c0 = new Card(this, sbp, getPlayerByIndex(0));
+                Card c1 = new Card(this, sbp, getPlayerByIndex(1));
+                ac.add(c0);
+                ac.add(c1);
+            }
+            Debug.Log(write);
+        }
+        return ac;
+    }
+    private AllTiile genRectTiile()
     {  // dysfunction hihihihi
-        if (size.x <= 0 || size.y <= 0) Debug.LogError("IllegalArgumentException");
-        if (nonePlayerTileWeight + player0TileWeight + player1TileWeight == 0) Debug.LogError("IllegalArgumentException: Please provide atleast one weight other than 0");
         GameMaster gm = GameMaster.GetGM();
-        int rows = size.x;
-        int cols = size.y;
+        int rows = config.getSize().x;
+        int cols = config.getSize().y;
         int tileCount = rows * cols;
-        List<int> playerMap = new Weights(tileCount, new List<Vector2Int> { new Vector2Int(-1, nonePlayerTileWeight), new Vector2Int(0, player0TileWeight), new Vector2Int(1, player1TileWeight) }, rd).getOutput();
+        List<int> playerMap = new Weights(tileCount, config.getTileWeights(), rds.getTiile()).getOutput();
 
-        AllTiile tiile = new AllTiile(this);
-        string write = "";
+        List<Tile> tiles = new List<Tile>();
         for (int w = 0; w < cols; w++)
         {
             for (int l = 0; l < rows; l++)
             {
                 TileLoc tloc = new TileLoc(l, w);
                 // TODO randomize gen params
-                Tile tile = new Tile(this, true, tloc);
+                
 
                 int tempId = w * rows + l;
                 int p = playerMap[tempId];
@@ -123,22 +169,46 @@ public class Grid
                 Player player;
                 if (p == -1) player = getNonePlayer();
                 else player = getPlayerByIndex(p);
-                tile.setPlayer(player);
 
-                write += p + ", ";
-
-
-
-
-
-                tiile.add(tile);
+                Tile tile = new Tile(this, true, tloc, player);
+                tiles.Add(tile);
             }
         }
-        Debug.Log(write);
+        AllTiile tiile = new AllTiile(this, tiles);
         return tiile;
     }
+    public Pos3 getCenterPos3()
+    {  // May be TileLoc or BorderLoc
+        // Assuming grid represents config
+        Vector2Int size = config.getSize();
+        int rows = size[0] - 1;
+        int cols = size[1] - 1;
+        float centerRowFloat = rows/2f;
+        float centerColFloat = cols/2f;
+        return TileLoc.toPos3(centerRowFloat, 0f, centerColFloat);
+        /*
+        bool centerIsOnBorder = Mathf.Floor(centerRowFloat) != centerRowFloat || Mathf.Floor(centerColFloat) != centerColFloat;
+        if (centerIsOnBorder)
+        {
+            // MiddleLoc is between two or more tiles. Must create a FloatLoc.
+            int centerRowA = Mathf.FloorToInt(centerRowFloat);
+            int centerColA = Mathf.FloorToInt(centerColFloat);
+            int centerRowB = Mathf.CeilToInt(centerRowFloat);
+            int centerColB = Mathf.CeilToInt(centerColFloat);
 
+            TileLoc a = new TileLoc(centerRowA, centerColA);
+            TileLoc b = new TileLoc(centerRowB, centerColB);
 
+            return new BorderLoc(a, b);
+        } else
+        {
+            // MiddleLoc is a TileLoc. Easy job.
+            int centerRow = rows / 2;
+            int centerCol = cols / 2;
+            return new TileLoc(centerRow, centerCol);
+        }
+        */
+    }
 
     public Player getPlayerByIndex(int p)
     {
@@ -166,11 +236,7 @@ public class Grid
         if (pm == null) Debug.LogError("IllegalStateException");
         return pm;
     }
-    public void UpdateTroopTiles()
-    {
-        getAllGroop().resetParentTiles();
-    }
-
+    public Caard getCaardInHandOf(Player player) { return getAllCaard().getCaardOwnedBy(player); }
 
     public Groop getAllGroop()
     {
@@ -188,11 +254,11 @@ public class Grid
         return allTiile;
     }
 
-    public void update()
+    public void update(Control c)
     {
-        getPhaseManager().update();
+        getPhaseManager().update(c);
     }
-    private Rooster getRooster() { return getGM().getRooster(); }
-    private GameMaster getGM() { if (gm == null) Debug.LogError("IllegalStateException"); return gm; }
+    public Cam getCam() { return getGM().getCam(); }
+    public GameMaster getGM() { if (gm == null) Debug.LogError("IllegalStateException"); return gm; }
     private Playyer getPlayyer() { if (playyer == null) Debug.LogError("IllegalStateException"); return playyer; }
 }

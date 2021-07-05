@@ -2,33 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Slid
+public struct Slid
 {
-    private float slid;
+    public float f { get { return _f; } }
+    private float _f;
 
-    public Slid()
-    {
-        set(0f);
-    }
     public Slid(float f)
     {
-        set(f);
+        _f = Mathf.Clamp(f, 0f, 1f);
     }
     
     public bool isDone()
     {
-        return get() == 1f;
+        return _f == 1f;
     }
-    public float get()
-    {
-        return slid;
-    }
-    public void add(float f)
-    {
-        set(slid + f);
-    }
-    public void set(float f)
-    {
-        slid = Mathf.Clamp(f, 0f, 1f);
-    }
+
+    public static Slid operator +(Slid s, float f) => new Slid(s._f + f);
+    public static Slid operator +(Slid a, Slid b) => new Slid(a._f + b._f);
+    public static Slid operator -(Slid s, float f) => new Slid(s._f - f);
+    public static Slid operator -(Slid a, Slid b) => new Slid(a._f - b._f);
 }

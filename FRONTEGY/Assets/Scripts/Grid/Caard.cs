@@ -2,32 +2,61 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class Caard
 {
-    private List<Card> cards;
+    [SerializeReference] private List<Card> cards;
 
     public Caard()
     {
-        this.cards = new List<Card>();
+        makeEmpty();
     }
     public Caard(List<Card> cards)
     {
-        this.cards = cards;
+        setCards(cards);
     }
-
+    public void makeEmpty()
+    {
+        this.cards = new List<Card>();
+    }
     public void add(Card c)
     {
         getCards().Add(c);
     }
-
-    public Caard getCaardInHandOf(Player player)
+    public bool outOfRange(int index)
+    {
+        return index < 0 || index >= getCount();
+    }
+    public Card getCard(int index)
+    {
+        if (outOfRange(index)) Debug.LogError("IllegalArgument");
+        return getCards()[index];
+    }
+    public int getCount()
+    {
+        return getCards().Count;
+    }
+    public void stage()
+    {
+        foreach (Card c in getCards())
+        {
+            if (c.staged) continue;
+            c.stage();
+        }
+    }
+    public Caard getCaardOwnedBy(Player player)
     {
         Caard caard = new Caard();
         foreach (Card c in getCards())
         {
-            if (player.isSamePlayer(c.getHolder())) caard.add(c);
+            if (player.isSamePlayer(c.owner)) caard.add(c);
         }
         return caard;
+    }
+    public void setCards(List<Card> cards)
+    {
+        if (cards == null) Debug.LogError("IllegalArgumentException");
+        this.cards = cards;
     }
     public List<Card> getCards()
     {

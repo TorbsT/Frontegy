@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class HandCard : Card
 {
-    public HandCard(Grid grid) : base(grid) { }
+    public HandCard(Grid grid) : base(grid, null, null) { }
 }

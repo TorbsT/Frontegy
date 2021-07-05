@@ -5,38 +5,25 @@ using UnityEngine;
 public class TileLooc
 {
     private List<TileLoc> locs;
+    private Tiile validTiile;
 
-    public TileLooc()
-    {
-        locs = new List<TileLoc>();
-    }
     public TileLooc(List<TileLoc> locs)
     {
         if (locs == null) Debug.LogError("Should never happen");
         this.locs = locs;
-    }
 
-    public Tiile toValidTiile()
-    {
-        Tiile tiile = new Tiile();
-        foreach (TileLoc loc in getLocs())
+
+        List<Tile> tiles = new List<Tile>();
+        validTiile = new Tiile(tiles);
+        foreach (TileLoc loc in locs)
         {
             Tile t = loc.findTile();
-            if (t != null) tiile.add(t);
+            if (t != null) validTiile.add(t);
         }
-        return tiile;
+        validTiile = new Tiile(tiles);
     }
-    public void add(TileLoc loc)
+    public Tiile getValidTiile()
     {
-        getLocs().Add(loc);
+        return validTiile;
     }
-    public bool contains(TileLoc find)
-    {
-        foreach (TileLoc tl in getLocs())
-        {
-            if (tl.sameLoc(find)) return true;
-        }
-        return false;
-    }
-    public List<TileLoc> getLocs() { return locs; }
 }

@@ -2,22 +2,23 @@
 using UnityEngine;
 
 [System.Serializable]
-public class Troop : Chy  // "Must" be class since SetStats() should be able to modify these values
+public class Troop : SelChy  // "Must" be class since SetStats() should be able to modify these values
 {
-    public Troop(Grid grid, bool instantiate, Player player, Unit unit) : base(grid)
+    public Troop(Grid grid, bool instantiate, Player owner, Unit unit, Tile parentTile) : base(grid)
     {
-        this.player = player;
+        this.parentTile = parentTile;
+        this.owner = owner;
         this.unit = unit;
-        if (instantiate) troopPhy = TroopRoster.sgetUnstagedPhy();
+        stage();
+        initMats();
+        displayOnParent();
     }
     private int id;
-    public Player player;
     public float scale = 0.5f;
+    public int tiss = 123;
     [SerializeReference] private Tile parentTile;
-    private TroopPhy troopPhy;
     private Unit unit;
-    private Djikstra djikstra;
-    private PafChy pafChy;
+    [SerializeReference] private Djikstra djikstra;
 
     public Player getPlayer()
     {
@@ -25,27 +26,28 @@ public class Troop : Chy  // "Must" be class since SetStats() should be able to 
     }
     public int GetRange()
     {
-        return getUnit().getRange();
+        return getUnit().getRANGE();
     }
     public Unit getUnit()
     {
         return unit;
     }
-    public void placeDownOn(Tile t)
+    
+    public void tacticalStart()
     {
-        if (parentTile != null) Debug.LogError("Already placed down");
-        parentTile = t;
+        Debug.Log("penIS");
+        displayOnParent();
+
     }
-    public FromTo getFromTo(int step) { return getPaf().getFromTo(step); }
-    public Paf getPaf() { return getPafChy().getPaf(); }
-    public PafChy getPafChy() { return pafChy; }
-    public bool noPaf() { return !hasPaf(); }
-    public bool hasPaf()
+    private void displayOnParent()
     {
-        if (getPafChy() == null) return false;
-        if (getPaf() == null) return false;
-        return true;
+        Pos3 p3 = parentTile.getPos3();
+        Pos3 add = new Pos3(0f, parentTile.getColliderBounds().extents.y + getColliderBounds().extents.y, 0f);
+        p3 += add;
+        trans.pos3 = p3;
+        showTrans();
     }
+
     public int getId() { return id; }
     public bool isThisTroop(Troop compareAgainst)
     {
@@ -67,14 +69,14 @@ public class Troop : Chy  // "Must" be class since SetStats() should be able to 
         FromTo a = getFromTo(step);
         FromTo b = t.getFromTo(step);
 
-        return a.meets(b);
+        return FromTo.meet(a, b);
     }
     private bool passOnStep(int step, Troop t)
     {
         FromTo a = getFromTo(step);
         FromTo b = t.getFromTo(step);
 
-        return a.passes(b);
+        return FromTo.pass(a, b);
     }
     public void weiterUpdate(WeiterView wv)
     {
@@ -83,30 +85,50 @@ public class Troop : Chy  // "Must" be class since SetStats() should be able to 
 
         FromTo ft = getFromTo(step);
     }
-    public Tile getParentTile() { if (parentTile == null) Debug.LogError("Should probably not happen"); return parentTile; }
-    public void planPafTo(Tile t)
+    private FromTo getFromTo(int step)
     {
-        if (hasPaf()) getPafChy().unstage();
-        pafChy = djikstra.getPafTo(t);
-        pafChy.stage();
+        return getTroopPlan().getFromTo(step);
     }
-    public void select()
+    private TroopPlan getTroopPlan()
     {
+        return getGrid().getTroopPlan(this);
+    }
+    public Tile getParentTile() { if (parentTile == null) Debug.LogError("Should probably not happen"); return parentTile; }
+    public bool planPafTo(Tile t)
+    {
+        if (t.Equals(getParentTile()))
+        {
+            getGrid().removePaf(this);
+            return true;
+        }
+
+        PafChy pafChy = djikstra.getPafTo(t);
+        if (pafChy == null) return false;  // Out of range
+        getGrid().planPaf(this, pafChy);  // should always succeed
+        return true;
+    }
+    public override void primarySelect()
+    {
+        base.primarySelect();
+        Debug.Log("penus");
         getDjikstra().showMarks();
     }
-    public void unselect()
+    public override void unselect()
     {
+        base.unselect();
         getDjikstra().hideMarks();
     }
-    public void resetParentTile()
+    public void newRound(Results results)
     {
-        parentTile = getPaf().lastTile();
+        // get results.consequence, roundplan.paf
+        // if dead: dead = true, unstage, return (not sure what to do with dead troopsyet)
+        if (results == null) Debug.LogError("IllegalArgumentException");
+        parentTile = results.lastTileInPaf(this);
         resetDjikstra();
     }
     private void resetDjikstra()
     {
         djikstra = null;
-        pafChy = null;
     }
     public Djikstra getDjikstra()
     {  // If no exists, generate. use as often as you like
@@ -125,17 +147,25 @@ public class Troop : Chy  // "Must" be class since SetStats() should be able to 
     {
         djikstra = new Djikstra(this);
     }
-
+    public TroopPhy getTroopPhy() { return TroopPool.Instance.getHost(this); }
+    public override void initMats()
+    {
+        setMat(getPlayerMatPlace(), RendPlace.selectable);
+    }
+    protected override MatPlace getInitialSelMat()
+    {
+        return getPlayerMatPlace();
+    }
     protected override Phy getPhy()
     {
-        return troopPhy;
+        return getTroopPhy();
     }
-    protected override void connect()
+    public override void stage()
     {
-        troopPhy = TroopRoster.sgetUnstagedPhy();
+        TroopPool.Instance.stage(this);
     }
-    protected override void disconnect()
+    public override void unstage()
     {
-        troopPhy = null;
+        TroopPool.Instance.unstage(this);
     }
 }

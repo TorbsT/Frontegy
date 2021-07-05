@@ -6,30 +6,14 @@ public class Groop
     // TODO make AllGroop
     private List<Troop> troops;
 
-    public Groop() { }
+    public Groop()
+    {
+        troops = new List<Troop>();
+    }
     public Groop(List<Troop> troops)
     {
+        if (troops == null) Debug.LogError("IllegalArgumentException");
         this.troops = troops;
-    }
-    public int getMaxSteps()
-    {  // This here is some good shit
-        int longest = 0;
-        foreach (PafChy pafChy in getPafs())
-        {
-            int thisLength = pafChy.getPafCount();
-            if (thisLength > longest) longest = thisLength;
-        }
-        return longest;
-    }
-    private List<PafChy> getPafs()
-    {
-        List<PafChy> pafs = new List<PafChy>();
-        foreach (Troop troop in troops)
-        {
-            PafChy paf = troop.getPafChy();
-            pafs.Add(paf);
-        }
-        return pafs;
     }
     private bool troopOutOfBounds(int index) { return index < 0 || index >= getCount(); }
     private bool noTroops() { return getCount() == 0; }
@@ -38,11 +22,12 @@ public class Groop
         if (troops == null) return 0;
         return troops.Count;
     }
-    public void resetParentTiles()
+    public void newRound(Results results)
     {
+        if (results == null) Debug.LogError("IllegalArgumentException");
         foreach (Troop troop in getTroops())
         {
-            troop.resetParentTile();
+            troop.newRound(results);
         }
     }
     private Troop getTroop(int index)
@@ -59,6 +44,13 @@ public class Groop
     {
         if (troops == null) Debug.LogError("Should never happen");
         return troops;
+    }
+    public void tacticalStart()
+    {
+        foreach (Troop t in getTroops())
+        {
+            t.tacticalStart();
+        }
     }
     
     public Coonflict getCoonflict(int step, Consequi consequi)
@@ -94,7 +86,7 @@ public class Groop
     }
     public void weiterUpdate(WeiterView wv)
     {
-        foreach (Troop t in troops)
+        foreach (Troop t in getTroops())
         {
             t.weiterUpdate(wv);
         }

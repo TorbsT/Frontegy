@@ -1,7 +1,8 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 
-public class TilePhy : Selectable
+public class TilePhy : SelPhy
 {
     enum SideMode
     {
@@ -23,52 +24,20 @@ public class TilePhy : Selectable
     TopMode topMode = TopMode.none;
     Collider tileCollider;
     Transform planeTransform;
-    Mesh trianglePrismMesh;
-    Mesh squarePrismMesh;
-    Mesh hexagonPrismMesh;
-    Renderer sideRenderer;
-    Renderer topRenderer;
-    [SerializeReference] private Tile tile;
 
-    public TilePhy(Roster roster) : base(roster)
+    void Awake()
     {
-        //getGO().transform.localScale = new Vector3(1f, 0f, 1f);
-        sideRenderer = getGO().GetComponent<Renderer>();
-        topRenderer = getGO().transform.GetChild(0).GetComponentInChildren<Renderer>();  // TODO uh oh
-        planeTransform = getGO().transform.GetChild(0);  // UH FUCKING OH
-        if (topRenderer == null) Debug.LogError("ERROR: couldn't find topRenderer using child index 0");
-        tileCollider = getGO().GetComponent<Collider>();
-        if (swapRenderers) SwapRenderers();
-    }
-
-    public void updateVisual()
-    {
-        bool show = getTile().isActive();
-        topRenderer.enabled = show;
-        sideRenderer.enabled = show;
-        tileCollider.enabled = show;
-        ResetAllMaterials();
+        tileCollider = GetComponent<Collider>();
     }
     public Pos2 getSurfacePos()
     {  // Returns the position if this tile's surface
         return new Pos2(planeTransform.position);  // TODO this is stupid
-    }
-    void SwapRenderers()
-    {
-        Renderer temp = sideRenderer;
-        sideRenderer = topRenderer;
-        topRenderer = temp;
     }
 
 
     /// <summary>
     /// defaq
     /// </summary>
-    void ResetAllMaterials()
-    {
-        ResetSideMaterial();
-        ResetTopMaterial();
-    }
     void ResetTopMaterial()
     {
         /*
@@ -77,66 +46,7 @@ public class TilePhy : Selectable
         SetMaterial(topRenderer, getTile().getReservoir().material);
         SetColor(topRenderer, color);
         */
-        SetMaterial(topRenderer, getTile().getPlayer().getMat());
-    }
-    void ResetSideMaterial()
-    {
-        /*
-        SetMaterial(sideRenderer, getTile().getReservoir().material);
-        */
-        SetMaterial(sideRenderer, getTile().getPlayer().getMat());
-    }
-    void SetMaterial(Renderer r, Material mat)
-    {
-        r.material = mat;
-    }
-    void SetColor(Renderer renderer, Color color)
-    {
-        renderer.material.color = color;
-    }
-    /// <summary>
-    /// dafaq
-    /// </summary>
-    /// 
-    public override Tile SelGetTile() {return this.getTile();}
-    public override void SelHover()
-    {
-        if (sideMode != SideMode.select)
-        {
-            sideMode = SideMode.hover;
-            sideRenderer.material = getGM().globalHoverMat;
-        }
-    }
-    public override void SelUnHover()
-    {
-        if (sideMode != SideMode.select)
-        {
-            sideMode = SideMode.none;
-            ResetSideMaterial();
-        }
-    }
-    public override void SelSelect()
-    {
-        if (true)
-        {
-            sideMode = SideMode.select;
-            sideRenderer.material = getGM().globalSelectMat;
-        }
-    }
-    public override void SelUnSelect()
-    {
-        if (true)
-        {
-            sideMode = SideMode.none;
-            ResetSideMaterial();
-        }
-    }
-    public void showMark(Breadcrumb breadcrumb)
-    {
-        topRenderer.material = getGM().breadcrumbMat;
-
-        float timeOffset = ((float)breadcrumb.GetStepsRemaining()) * 0.1f;
-        topRenderer.material.SetFloat("TimeOffset", timeOffset);
+        
     }
     public void hideMark()
     {
@@ -146,9 +56,9 @@ public class TilePhy : Selectable
     Vector3 GetTileScale()
     {
         Vector3 scale = Vector3.one;
-        scale.x = getGM().grid.tileSize;
+        scale.x = 1f;
         scale.y = 1f;
-        scale.z = getGM().grid.tileSize;
+        scale.z = 1f;
         return scale;
     }
     private Pos2 getTilePos()
@@ -156,7 +66,7 @@ public class TilePhy : Selectable
         // TODO WHY IS THIS UNUSED
         Vector3 pos = Vector3.zero;
         pos.x = GetDimensionScalar(0);
-        pos.y = getGO().transform.localScale.y/2f;  // TODO
+        pos.y = 1f;  // TODO
         pos.z = GetDimensionScalar(1);
         return new Pos2(pos);
     }
@@ -174,20 +84,18 @@ public class TilePhy : Selectable
         */
     }
 
-    private Tile getTile() { return tile; }
-
-    protected override void setChy(Chy chy)
+    public Tile getTile()
     {
-        tile = (Tile)chy;
+        return TilePool.Instance.getClient(this);
+    }
+    public override void unstage()
+    {
+        TilePool.Instance.unstage(this);
     }
 
-    public override Chy getChy()
+    public override SelChy getSelChy()
     {
         return getTile();
     }
 
-    protected override GameObject getPrefab()
-    {
-        return getGM().tileGOPrefab;
-    }
 }

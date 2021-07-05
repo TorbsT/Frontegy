@@ -6,7 +6,7 @@ public class Unit
 {
     public Unit(Role role)
     {
-        if (role == null) 
+        if (role == null) Debug.Log("No. bad");
         this.role = role;
         dead = false;
     }
@@ -16,11 +16,11 @@ public class Unit
     private bool dead;
     //public List<ActiveCard> activeCards;
     //private Moodifier moodifier  // stores all stat modifiers
-    public int getPow()
+    public int getPOW()
     {
         return getModdedStats().getPOW();
     }
-    public int getRange()
+    public int getRANGE()
     {
         return getModdedStats().getRANGE();  // verygood (unironically) 
     }

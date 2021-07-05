@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BorderLoc : Loc
+public class BorderLoc
 {
     private TileLoc a;  // TODO maybe some fancy shit to make it one variable
     private TileLoc b;
@@ -14,20 +14,13 @@ public class BorderLoc : Loc
         this.b = b;
     }
 
-    // virtuals
-    public override bool sameLoc(Loc loc)
-    {
-        BorderLoc comparable = loc as BorderLoc;
-        if (comparable == null) return false;
-        return sameBorderLoc(comparable);
-    }
-    public override Pos2 toPos()
+    public Pos3 toPos3()
     {
         // could convert to FloatLoc first, but that would instantiate a new object every frame. bad
-        Pos2 pa = a.toPos();
-        Pos2 pb = b.toPos();
+        Pos3 pa = a.toPos3();
+        Pos3 pb = b.toPos3();
 
-        return Pos2.halfPoint(pa, pb);
+        return Pos3.halfPoint(pa, pb);
     }
 
 
@@ -35,14 +28,14 @@ public class BorderLoc : Loc
 
     // normals
     public bool sameBorderLoc(BorderLoc bl)
-    {
+    {  // Ignores direction
         TileLoc c = bl.getA();
         TileLoc d = bl.getB();
 
-        bool ac = a.sameLoc(c);
-        bool ad = a.sameLoc(d);
-        bool bc = b.sameLoc(c);
-        bool bd = b.sameLoc(d);
+        bool ac = a == c;
+        bool ad = a == d;
+        bool bc = b == c;
+        bool bd = b == d;
 
         bool same = (ac && bd) || (ad && bc);
         return same;

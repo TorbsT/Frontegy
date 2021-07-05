@@ -2,63 +2,72 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TileLoc : Loc
+public struct TileLoc
 {
-    [SerializeField] private Vector2Int lw;
+    public int x { get { return _x; } }
+    public int y { get { return _y; } }
+    public int z { get { return _z; } }
+
+    private int _x { get { return _xyz.x; } }
+    private int _y { get { return _xyz.y; } }
+    private int _z { get { return _xyz.z; } }
+    [SerializeField] private Vector3Int _xyz;
 
     // constructors
-    public TileLoc(Vector2Int lw) { this.lw = lw; }
-    public TileLoc(int l, int w) { this.lw = new Vector2Int(l, w); }
+    public TileLoc(Vector2Int xz) { _xyz = new Vector3Int(xz.x, 0, xz.y); }
+    public TileLoc(int x, int z) { _xyz = new Vector3Int(x, 0, z); }
+    public TileLoc(int x, int y, int z) { _xyz = new Vector3Int(x, y, z); }
+    public TileLoc(Vector3Int xyz) { _xyz = xyz; }
 
-    // virtuals
-    public override bool sameLoc(Loc loc)
-    {
-        TileLoc comparable = loc as TileLoc;
-        if (comparable == null) return false;
-        return getLW() == comparable.getLW();
-    }
-    public override Pos2 toPos()
-    {  // TODO URGENT
-        Vector2 v = new Vector2(getL(), getW());
-        v *= 1f;
-        return new Pos2(v);
-    }
-
-    // statics
-
-
-    // normals
-    public int distance(TileLoc loc) { return difference(loc).getLength(); }
-    public int getLength() { return Mathf.Abs(getL()) + Mathf.Abs(getW()); }
-    public TileLoc difference(TileLoc loc) { return new TileLoc(lw - loc.getLW()); }
-    public Tiile getNeigTiile()
+    public Pos3 toPos3() => new Pos3(_xyz)*1f;
+    public static int stepsBetween(TileLoc a, TileLoc b) { return (a-b).getLength(); }
+    public int getLength() { return Mathf.Abs(x) + Mathf.Abs(z); }
+    public Tiile getValidNeigTiile()
     {
         TileLooc looc = getNeigLooc();
-        return looc.toValidTiile();
+        return looc.getValidTiile();
     }
-    public bool isNeigOfTileLoc(TileLoc tl)
+    public static bool areNeigs(TileLoc a, TileLoc b)
     {
-        return distance(tl) == 1;
+        return stepsBetween(a, b) == 1;
         // return getNeigLooc().contains(tl); BAD
     }
     public TileLooc getNeigLooc()
     {
-        TileLooc looc = new TileLooc();
-        looc.add(north());
-        looc.add(east());
-        looc.add(south());
-        looc.add(west());
+        // don't cache this - tiles may be disabled throughout run
+        List<TileLoc> locs = new List<TileLoc>();
+        locs.Add(north());
+        locs.Add(east());
+        locs.Add(south());
+        locs.Add(west());
+        TileLooc looc = new TileLooc(locs);
         return looc;
     }
-    public TileLoc north() { return new TileLoc(getL() + 1, getW()); }
-    public TileLoc east() { return new TileLoc(getL(), getW() + 1); }
-    public TileLoc south() { return new TileLoc(getL() - 1, getW()); }
-    public TileLoc west() { return new TileLoc(getL(), getW() - 1); }
-    public int getL() { return lw.x; }
-    public int getW() { return lw.y; }
-    public Vector2Int getLW() { return lw; }
+    public TileLoc north() { return new TileLoc(x+1, z); }
+    public TileLoc east() { return new TileLoc(x, z+1); }
+    public TileLoc south() { return new TileLoc(x-1, z); }
+    public TileLoc west() { return new TileLoc(x, z-1); }
     public Tile findTile()
     {
         return GameMaster.sfindTile(this);
     }
+
+    public static bool operator ==(TileLoc a, TileLoc b) => a._xyz == b._xyz;
+    public static bool operator !=(TileLoc a, TileLoc b) => a._xyz != b._xyz;
+    public static TileLoc operator +(TileLoc a, TileLoc b) => new TileLoc(a._xyz + b._xyz);
+    public static TileLoc operator -(TileLoc a, TileLoc b) => new TileLoc(a._xyz - b._xyz);
+
+    public override bool Equals(object obj)
+    {
+        if (!(obj is TileLoc)) return false;
+        TileLoc tl = (TileLoc)obj;
+        return _xyz == tl._xyz;
+    }
+    public override int GetHashCode()
+    {
+        return _xyz.GetHashCode();
+    }
+
+    public static Pos3 toPos3(Vector3 v3) { return toPos3(v3.x, v3.y, v3.z); }
+    public static Pos3 toPos3(float x, float y, float z) { return new Pos3(x, y, z); }
 }

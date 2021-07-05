@@ -3,78 +3,92 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class Tile : Chy
+public class Tile : SelChy
 {
-
-    private TilePhy tilePhy;
     private GameMaster gm;
     [SerializeReference] private TileLoc loc;
     [SerializeField] private bool active;
     private Reservoir reservoir;
-    [SerializeReference] private Player player;
 
-    public Tile(Grid grid, bool instantiate, TileLoc loc) : base(grid)
+    public Tile(Grid grid, bool instantiate, TileLoc loc, Player owner) : base(grid)
     {
         this.loc = loc;
+        this.owner = owner;
         gm = GameMaster.GetGM();
         if (instantiate)
         {
             stage();
-            activate();
         }
+        initMats();
     }
 
     public void updateVisual()
     {
-        getTilePhy().setPos2(getPos());
-        getTilePhy().updateVisual();
+        trans.pos3 = getPos3();
+        showTrans();
     }
-    public Pos2 getPos()
+    public Pos3 getPos3()
     {
-        return loc.toPos();
+        return loc.toPos3();
     }
     public Reservoir getReservoir() { return reservoir; }
     public bool isActive() { return active; }
     private void activate() { active = true; }
     public TileLoc getLoc() { return loc; }
-    public bool sameTile(Tile t) { return getLoc().sameLoc(t.getLoc()); }
     private GameMaster getGM() { if (gm == null) Debug.LogError("Should never happen"); return gm; }
     public Tiile getNeigTiile()
     {
-        return getLoc().getNeigTiile();
+        return getLoc().getValidNeigTiile();
     }
     public bool isNeigOfTile(Tile t) { return isNeigOfTileLoc(t.getLoc()); }
-    public bool isNeigOfTileLoc(TileLoc tl) { return getLoc().isNeigOfTileLoc(tl); }
-    public void showMark(Breadcrumb bc) { getTilePhy().showMark(bc); }  // OH NO
-    public void hideMark() { getTilePhy().hideMark(); }
+    public bool isNeigOfTileLoc(TileLoc tl) { return TileLoc.areNeigs(getLoc(), tl); }
+    public void showMark(Breadcrumb bc)
+    {
+        float timeOffset = (float)bc.stepsRemaining * 0.1f;
+        setFloat(RendPlace.top, "TimeOffset", timeOffset);  // REMEMBER TO ALSO CHANGE MAT BEFORE THIS, IF IT DOESN'T WORK
+    }
+    public void hideMark() { setMat(owner.getMatPlace(), RendPlace.top); }//hehehehe
 
-    public void setPlayer(Player player)
+    public TilePhy getHost()
     {
-        this.player = player;
+        return TilePool.Instance.getHost(this);
     }
-    public Player getPlayer()
-    {
-        return player;
-    }
-    private TilePhy getTilePhy()
-    {
-        if (tilePhy == null) tilePhy = (TilePhy)getPhy();  // OH LORD THIS IS BAD TODO
-        return tilePhy;
-    }
+
+
+
+
 
     protected override Phy getPhy()
     {
-        return tilePhy;
+        return getHost();
+    }
+    public override void stage()
+    {
+        TilePool.Instance.stage(this);
+    }
+    public override void unstage()
+    {
+        TilePool.Instance.unstage(this);
+    }
+    protected override MatPlace getInitialSelMat()
+    {
+        return getPlayerMatPlace();
+    }
+    public override void initMats()
+    {
+        setMat(getPlayerMatPlace(), RendPlace.top);
+        setMat(getInitialSelMat(), RendPlace.selectable);
     }
 
-    protected override void connect()
-    {
-        tilePhy = getGrid().getUnstagedTilePhy();
-        if (tilePhy == null) Debug.LogError("IllegalStateException: Tile.connect() failed to set a tilePhy");
-    }
 
-    protected override void disconnect()
+    public override bool Equals(object obj)
     {
-        tilePhy = null;
+        if (!(obj is Tile)) return false;
+        Tile t = (Tile)obj;
+        return t.loc == loc;
+    }
+    public override int GetHashCode()
+    {
+        return loc.GetHashCode();
     }
 }

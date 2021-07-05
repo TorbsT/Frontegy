@@ -5,7 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public abstract class Loc
 {  // MY FIRST EVER INTERFACE (in C# atleast, made in Java for TDT4100 before)
-    public abstract Pos2 toPos();
+    // 21/07/03 - why would
+    // 21/07/04 - fuck this class, unused
 
-    public abstract bool sameLoc(Loc loc);
 }
