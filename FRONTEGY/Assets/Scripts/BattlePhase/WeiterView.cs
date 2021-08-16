@@ -15,16 +15,16 @@ public class WeiterView : View
         coonflict = bp.getStepCoonflict(step);
         // Should find some fancy way to auto-determine the pafs every troop will have in the end, also their fate? huummmmmmm
     }
-    protected override bool bupdateVirtual()
+    protected override bool bupdateVirtual(Control c)
     {
         addTime(0.01f);
-        getAllGroop().weiterUpdate(this);
+        AllGroop.Instance.weiterUpdate(this);
         return isDone();
     }
     private bool isDone() { return getSlid().isDone(); }
     private void addTime(float t)
     {
-        slid.add(t);
+        slid += t;
     }
     public int getStep() { return step; }
     public Slid getSlid() { return slid; }

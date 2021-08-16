@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
 public class Consequi
 {
     private List<Consequence> consequences;
@@ -9,7 +10,7 @@ public class Consequi
     {
         consequences = new List<Consequence>();
     }
-
+    public List<Consequence> filter
     private List<Consequence> getByTroop(Troop troop)
     {
         List<Consequence> cs = new List<Consequence>();
@@ -60,3 +61,4 @@ public class Consequi
     public void add(Consequence c) { getConsequences().Add(c); }
     public List<Consequence> getConsequences() { return consequences; }
 }
+*/

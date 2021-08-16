@@ -18,7 +18,7 @@ public class Coonflict
             Conflict conflict = getConflict(i);
             if (conflict.canMerge(newConflict))
             {
-                conflict.merge(newConflict);
+                conflict.mergeConflicts(newConflict);
                 return;
             }
         }
@@ -34,15 +34,6 @@ public class Coonflict
         }
     }
     private void addConflict(Conflict c) { getConflicts().Add(c); }  // Faster than mergeConflict(), but only use if you know what you're doing!
-    public Consequi getConsequi()
-    {
-        Consequi allConsequi = new Consequi();
-        foreach (Conflict conflict in getConflicts())
-        {
-            allConsequi.merge(conflict.makeConsequi());
-        }
-        return allConsequi;
-    }
     private bool sameTonflict(Conflict a, Conflict b)
     {  // same type of conflict
         return (a.GetType() == b.GetType());
@@ -72,7 +63,7 @@ public class Coonflict
         Coonflict coonflict = new Coonflict();
         foreach (Conflict c in getConflicts())
         {
-            if (c.isStep(step)) coonflict.addConflict(c);
+            if (c.step == step) coonflict.addConflict(c);
         }
         return coonflict;
     }

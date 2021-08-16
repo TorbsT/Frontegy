@@ -4,20 +4,19 @@ using UnityEngine;
 
 public class GameMaster : MonoBehaviour
 {
+    public Roster roster { get { return _roster; } }
+    public Mat notFoundMat { get { return _notFoundMat; } }
+
     [Header("Variables")]
-    [SerializeField] Vector2Int gridSize;
     [SerializeField] private bool randomSeed;
-    [SerializeField] private int seed;
+    [SerializeField] private CamConfig camConfig;
+    [SerializeField] private GridConfig gridConfig;
     [SerializeField] private float stepDuration = 1f;
     [SerializeField] public float heightScalar = 1f;
     [SerializeField] public float tileLineHeight = 1f;
+    [SerializeField] private Mat _notFoundMat;
 
-    [SerializeField] private int nonePlayerTileWeight = 1;
-    [SerializeField] private int player0TileWeight = 1;
-    [SerializeField] private int player1TileWeight = 1;
     [SerializeField] public float tileCreateAnimationSpeed = 1f;
-    [SerializeField] int playerStartingCards = 5;
-    [SerializeField] public List<Card> cardBlueprints;
     [SerializeField] public Material globalHoverMat;
     [SerializeField] public Material globalSelectMat;
     [SerializeField] public Material breadcrumbMat;
@@ -25,29 +24,41 @@ public class GameMaster : MonoBehaviour
     [Header("System")]
     public int displayHistory = 0;
     [SerializeField] public GameObject troopGOPrefab;
+    [SerializeField] private GameObject uiPrefab;
     [SerializeField] GameObject buildingPrefab;
     [SerializeField] public GameObject tileGOPrefab;
     [SerializeField] public GameObject cardGOPrefab;
     [SerializeField] public GameObject lineGOPrefab;
-    [SerializeField] public SelectionManager selectionManager;
-    [SerializeField] UIManager uiManager;
-    [SerializeField] CameraScript cameraScript;
-    [System.NonSerialized] public Grid grid;
+    [SerializeField] private Transform phyContainer;
+    [SerializeField] private Camera camera;
+    [SerializeField] private Cam cam;
+    [SerializeField] private Pools pools;
+    [SerializeReference] private Coontrol coontrol;
+    [SerializeField] private Control control;
+    [SerializeReference] public Grid grid;
     [SerializeField] public float stepTimeLeft;
 
     public List<Conflict> conflicts = new List<Conflict>();
     public List<Merge> merges = new List<Merge>();
     [SerializeField] private Playyer playyer;
-    private Rooster rooster;
+    [SerializeField] private Roster _roster;
+    [SerializeReference] private UIManager uiManager;
 
     GridPivotConfig gridNone;
     GridPivotConfig gridAnchored;
     GridPivotConfig gridCentered;
+    private List<Transive> transives = new List<Transive>();
 
-    public Playyer getPlayyer() { if (playyer == null) Debug.LogError("IllegalStateException"); return playyer; }
-
-
-    public static Groop getAllGroop() { return GetGM().internalGetAllGroop(); }
+    public Cam getCam()
+    {
+        if (cam == null) Debug.LogError("IllegalStateException");
+        return cam;
+    }
+    public GameObject getUIPrefab()
+    {
+        if (uiPrefab == null) Debug.LogError("InspectorException: Set uiPrefab in gm");
+        return uiPrefab;
+    }
 
 
 
@@ -63,95 +74,77 @@ public class GameMaster : MonoBehaviour
         if (gm == null) Debug.LogError("Couldn't find GM");
         return gm;
     }
-    public static Tile sfindTile(TileLoc tileLoc) { return GetGM().findTile(tileLoc); }
-    public Tile findTile(TileLoc tileLoc) { return grid.getAllTiile().find(tileLoc); }
-    public static CardPhy sgetUnstagedCardPhy() { return sgetRooster().getUnstagedCardPhy(); }
-    public static TilePhy sgetUnstagedTilePhy() { return sgetRooster().getUnstagedTilePhy(); }
-    public static TroopPhy sgetUnstagedTroopPhy() { return sgetRooster().getUnstagedTroopPhy(); }
-    public static PafPhy sgetUnstagedPafPhy() { return sgetRooster().getUnstagedPafPhy(); }
-    public static Rooster sgetRooster() { return GetGM().getRooster(); }
-    public Rooster getRooster() { if (rooster == null) Debug.LogError("Rooster should never be null"); return rooster; }
-
-    public SelectionManager getSelectionManager()
+    public Coontrol getCoontrol()
     {
-        if (selectionManager == null) Debug.LogError("IllegalStateException");
-        return selectionManager;
+        if (coontrol == null) Debug.LogError("IllegalStateException");
+        return coontrol;
     }
 
-    public static SelectionManager GetSelectionManager()
-    { return GetGM().selectionManager; }
-    public static CameraScript getCameraScript()
-    { return GetGM().cameraScript; }
-
-    private Groop internalGetAllGroop() { return grid.getAllGroop(); }
-    private AllCaard internalGetAllCaard() { return grid.getAllCaard(); }
-    private AllTiile internalGetAllTiile() { return grid.getAllTiile(); }
     void Start()
     {
-        rooster = new Rooster(20, 10, 200);
+        cam = new Cam(getCamera(), getCamConfig());
+        uiManager = new UIManager(2f);
+        playyer.init();
+        pools.init();
         Restart();
     }
     void Update()
     {
-        //CheckIfPhaseShouldBeSkipped();
-
-        CountDown();
-
-        ExecuteManualUpdates();
+        control = getCoontrol().record();
         
-        HandlePlayerInput();
+        ExecuteManualUpdates(control);
+        HandlePlayerInput(control);  // outdated - TODO
+        showAllTransives();
     }
-    void CountDown()
+    private void showAllTransives()
     {
-
-    }
-    public float GetStepTimeScalar()  // [0, 1]
-    { return 1 - Mathf.Clamp01(stepTimeLeft / stepDuration); }
-    /*
-    void CheckIfPhaseShouldBeSkipped()
-    {
-        if (phase.round == 1 && phase.type.skipIfFirstRound)
+        foreach (Transive transive in transives)
         {
-            NextPhase();
-            CheckIfPhaseShouldBeSkipped();
+            transive.showTransIfNecessary();
         }
     }
-    */
-    public Player getCurrentPlayer()
+    public void addTransive(Transive transive) { transives.Add(transive); }
+    private void ExecuteManualUpdates(Control c)  // Replacement for mono update
     {
-        return grid.getCurrentPlayer();
+        grid.update(c);
     }
-    void HandlePlayerInput()
+    private void Restart()
     {
-        if (Input.GetKeyDown("r")) Restart();
-        else if (Input.GetKeyDown("space")) grid.getPhaseManager().attemptSkip();
-    }
-    void ExecuteManualUpdates()  // Replacement for mono update
-    {
-        grid.update();
-        selectionManager.ManualUpdate();
-    }
-    void Restart()
-    {
+        uiManager.restart();
+        coontrol = new Coontrol();
         // destroys previous grid
         if (grid != null)
         {
-            getRooster().unstageAll();
+            pools.unstageAll();
         }
 
         // starts new grid
         Debug.Log("restarted");
         if (randomSeed)
         {
-            seed = Random.Range(0, 9999999);
+            gridConfig.setSeed(Random.Range(0, 9999999));
         }
-        grid = new Grid(this, seed, gridSize, nonePlayerTileWeight, player0TileWeight, player1TileWeight);
-
-        gridNone = new GridPivotConfig(0f, 0f);
-        gridAnchored = new GridPivotConfig(0f, 0.5f);
-        gridCentered = new GridPivotConfig(-0.5f, 0.5f);
-
-        grid.previousTileShape = Grid.TileShape.none;
+        grid = new Grid(this, gridConfig);
+    }
+    public Transform getPhyContainer()
+    {
+        if (phyContainer == null) Debug.LogError("InspectorException: set GameMaster.phyContainer");
+        return phyContainer;
+    }
+    private CamConfig getCamConfig()
+    {
+        if (camConfig == null) Debug.LogError("InspectorException: Set GameMaster.camConfig");
+        return camConfig;
+    }
+    private Camera getCamera()
+    {
+        if (camera == null) Debug.Log("InspectorException: Set GameMaster.camera");
+        return camera;
+    }
+    void HandlePlayerInput(Control c)
+    {
+        if (c.getRDown()) Restart();
+        //else if (c.getSpaceDown()) grid.getPhaseManager().attemptSkip();
     }
     /*
     public void StartingCards()
@@ -228,5 +221,5 @@ public class GameMaster : MonoBehaviour
         }
     }
     */
-   
+
 }

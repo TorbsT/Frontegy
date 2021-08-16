@@ -3,8 +3,8 @@
 [System.Serializable]
 public struct RoleStats
 {
-    private int POW;
-    private int RANGE;
+    [SerializeField] private int POW;
+    [SerializeField] private int RANGE;
     
     public RoleStats(int POW, int RANGE = 1)
     {  // ONLY MADE IN CONSTRUCTOR. SEE MOODIFIER FOR MORE INFO

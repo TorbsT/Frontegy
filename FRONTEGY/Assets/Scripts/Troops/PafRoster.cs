@@ -4,12 +4,5 @@ using UnityEngine;
 
 public class PafRoster : Roster
 {
-    public PafRoster(Rooster rooster, int phyCount) : base(rooster, phyCount) { }
-
-    protected override Phy genPhy()
-    {
-        return new PafPhy(this);
-    }
-
-    public static PafPhy sgetUnstagedPhy() { return GameMaster.sgetUnstagedPafPhy(); }
+    // 21/06/28 - unused; see Roster
 }

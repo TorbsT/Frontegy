@@ -3,9 +3,11 @@
 public class ViewBattles : View
 {
     public ViewBattles(Phase phase) : base(phase) { }
-    protected override bool bupdateVirtual()
+    protected override bool bupdateVirtual(Control c)
     {
-        cs.eagleView();
+        Debug.Log("penis");
+        cam.eagleView(c);
+        SelMan.Instance.resetSelections();
         return (life > 10000);
     }
 }

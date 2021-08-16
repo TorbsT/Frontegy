@@ -2,42 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class Djikstra
 {
-    private Grid grid;
-    private Breadcruumb marked;
-    private Tile startTile;
-    private int startRange;
+
+    [SerializeReference] private Breadcruumb marked;
+    private Breadcrumb _startBreadcrumb;
     
-    public Djikstra(Troop t)
+    public Djikstra(Breadcrumb startBreadcrumb)
     {
-        if (t == null) Debug.LogError("IllegalArgumentException");
-        startTile = t.getParentTile();
-        startRange = t.GetRange();
-        grid = t.getGrid();
-    }
-    public Djikstra(Tile startTile, int startRange)
-    {
-        this.startTile = startTile;
-        this.startRange = startRange;
-    }
-    public PafChy getPafTo(Tile destination)
-    {  // generates new paf, don't use too often
-        Breadcruumb m = getMarked();
-        Breadcrumb currentBreadcrumb = m.findByTile(destination);
-
-        Paf paf = new Paf();
-        while (true)
-        {
-            if (currentBreadcrumb.isInvalid()) return null;  // user clicks outside of green area
-            paf.bruteAdd(currentBreadcrumb);  // bruteAdd because performance is key here
-            if (currentBreadcrumb.isTile(startTile)) break;
-            currentBreadcrumb = m.getNeigsOf(currentBreadcrumb).getHighestStepsRemaining();
-        }
-
-        paf.reverse();  // The way this is implemented, the paf starts off in wrong order
-        PafChy pafChy = new PafChy(getGrid(), paf);
-        return pafChy;
+        _startBreadcrumb = startBreadcrumb;
+        compute();
     }
     public bool tileIsInRange(Tile t)
     {
@@ -49,37 +24,38 @@ public class Djikstra
         if (marked == null) Debug.LogError("Djikstra.compute() didn't do anything...? Should never happen");
         return marked;
     }
-    public void showMarks() { getMarked().showMarks(); }
+    public void showMarks() { Debug.Log("penuadsas"); getMarked().showMarks(); }
     public void hideMarks() { getMarked().hideMarks(); }
 
 
     private void compute()
     {  // gets called once trying to get info!
         marked = new Breadcruumb();
-        Breadcrumb startBC = Breadcrumb.makeStarter(startTile, startRange);
-        marked.tryAdd(startBC);
-        recursiveMarkNeigs(startBC);
+        recursiveMarkNeigs(_startBreadcrumb);
     }
     private void recursiveMarkNeigs(Breadcrumb breadcrumb)
     {
+        Debug.Log(IsAvailableForWalking(breadcrumb));
         if (IsAvailableForWalking(breadcrumb))
         {
-            // is this breadcrumb better (shorter path) to this tile than any other?
+            // Tries to add this breadcrumb to marked list.
+            // If the tile already exists there, compare the breadcrumbs and see which has highest stepsRemaining.
             bool bestBreadcrumbSoFar = tryMark(breadcrumb);
             if (bestBreadcrumbSoFar)  
             {
-                // If found the best path to this tile, recursively call neigs
-                // No point in spreading breadcrumbs multiple times from same tile (when breadcrumb isnt more optimal)!
-                Tiile neigs = breadcrumb.getNeigTiile();
+                // Recursively mark neigs
+                // No point in spreading breadcrumbs multiple times from same tile (when breadcrumb isn't more optimal)!
+                Tiile neigs = breadcrumb.getValidNeigTiile();
                 // these neigs are validated.
 
                 // stepsremaining and step for this breadcrumb, not its neigs
-                int stepsRemaining = breadcrumb.GetStepsRemaining();
-                int step = breadcrumb.getStep();
+                int stepsRemaining = breadcrumb.stepsRemaining;
 
+                Debug.Log(neigs);
                 foreach (Tile neig in neigs.getTiles())
                 {
-                    Breadcrumb neigBc = Breadcrumb.makeNeig(neig, stepsRemaining, step);
+                    Breadcrumb neigBc = Breadcrumb.makeNeig(neig, stepsRemaining);
+                    Debug.Log(neigBc);
                     recursiveMarkNeigs(neigBc);
                 }
             }
@@ -89,17 +65,12 @@ public class Djikstra
     private bool IsAvailableForWalking(Breadcrumb breadcrumb)
     {
         // add things like tile.isActive and shit
-        if (breadcrumb.GetStepsRemaining() < 0) return false;
+        if (breadcrumb.stepsRemaining < 0) return false;
         if (breadcrumb.getTile() == null) return false;  // This is checked twice: One here, and one in TryAddBreadcrumb. Without here, shit goes wild?
         return true;
     }
     private bool tryMark(Breadcrumb newBreadcrumb)  // returns FALSE if a better breadcrumb existed.
     {
         return marked.tryAdd(newBreadcrumb);
-    }
-    private Grid getGrid()
-    {
-        if (grid == null) Debug.LogError("IllegalStateException");
-        return grid;
     }
 }

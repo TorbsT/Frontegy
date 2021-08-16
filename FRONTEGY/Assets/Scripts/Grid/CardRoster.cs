@@ -4,12 +4,5 @@ using UnityEngine;
 
 public class CardRoster : Roster
 {
-    public CardRoster(Rooster rooster, int count) : base(rooster, count) { }  // MAYBUG what is this
-
-    protected override Phy genPhy()
-    {
-        return new TroopPhy(this);
-    }
-
-    public static CardPhy sgetUnstagedPhy() { return GameMaster.sgetUnstagedCardPhy(); }
+    // 21/06/28 - unused; see Roster
 }

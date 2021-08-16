@@ -1,16 +1,19 @@
 ﻿using UnityEngine;
-public class Role
+using System.Collections.Generic;
+using UnityEngine.UI;
+
+[CreateAssetMenu(fileName = "Role", menuName = "ScriptableObjects/Role", order = 1)]
+public class Role : ScriptableObject
 {  // This *could* be a class, which would make it possible to modify global role stats. But it would take some work
     // 21/05/05 - wdym it would take some work? Making it a class should be better for performance I think. Changing
-    private string name;
-    private RoleStats stats;
-    public Role(string name, RoleStats stats)
-    {
-        if (name == null) Debug.LogError("IllegalArgumentException: Role.name = null");
-        this.name = name;
-        this.stats = stats;
-    }
+    public int id { get { return _id; } }
+    public RoleStats baseStats { get { return _baseStats; } }
+    
+    [SerializeField] private int _id;
+    [SerializeField] private RoleStats _baseStats;
+    [SerializeField] private Role trumpRole;
 
-    public string getName() { if (name == null) Debug.LogError("IllegalStateException: role name == null"); return name; }
-    public RoleStats getStats() { return stats; }
+
+    public override string ToString() { return "{"+name+"}"; }
+    public bool trumps(Role role) { return role == trumpRole; }
 }

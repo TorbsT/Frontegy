@@ -7,19 +7,18 @@ public class Tiile
     // No assumptions made here.
     // Downside: longer search time
     // Upside: safer and more flexible
-    private List<Tile> tiles;
+    private List<Tile> tiles = new List<Tile>();
+    //private HashSet<Tile> map = new HashSet<Tile>(); couldn't get it to work :(
+    private Dictionary<TileLoc, Tile> dict = new Dictionary<TileLoc, Tile>();
 
-    public Tiile() { tiles = new List<Tile>(); }  // private here, let's see what happens
-    public Tiile(List<Tile> tiles) { if (tiles == null) Debug.LogError("Should never happen"); this.tiles = tiles; }
+    public Tiile(List<Tile> tiles) { if (tiles == null) Debug.LogError("Should never happen"); add(tiles); }
 
-    protected Tile getTile(Loc loc)
-    {  // OPT Slow
-        foreach (Tile t in getTiles())
-        {
-            bool sameLoc = loc.sameLoc(t.getLoc());  // ^ readability, v speed
-            if (sameLoc) return t;
-        }
-        return null;
+    public Tile getTile(TileLoc loc)
+    {
+        // Converting from TileLoc to Tile: Better to use dict/map.
+        // Tile and TileLoc share hashcode.
+        if (!dict.ContainsKey(loc)) return null;  // handle this some other place
+        return dict[loc];
     }
     public int getCount() { return getTiles().Count; }
     public List<Tile> getTiles()
@@ -27,8 +26,19 @@ public class Tiile
         if (tiles == null) Debug.LogError("Should never happen");
         return tiles;
     }
+    public void add(List<Tile> tiles)
+    {
+        if (tiles == null) Debug.LogError("IllegalArgumentException");
+        foreach (Tile t in tiles)
+        {
+            add(t);
+        }
+    }
     public void add(Tile t)
     {
+        TileLoc loc = t.loc;
+        if (dict.ContainsKey(loc)) Debug.LogError("IllegalArgumentException");
+        dict.Add(loc, t);
         getTiles().Add(t);
     }
     public virtual Tile find(TileLoc tileLoc)
@@ -109,4 +119,17 @@ public class Tiile
         return reservoirs[0];
     }
     */
+    public TileLooc getTileLooc()
+    {
+        List<TileLoc> locs = new List<TileLoc>();
+        foreach (Tile t in getTiles())
+        {
+            locs.Add(t.loc);
+        }
+        return new TileLooc(locs);
+    }
+    public override string ToString()
+    {
+        return getTileLooc().ToString();
+    }
 }

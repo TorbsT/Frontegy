@@ -4,11 +4,10 @@ using UnityEngine;
 public class PafChy : Chy
 {  // Path was used, sorry
     private Paf paf;
-    private PafPhy pafPhy;
     
     
     //
-    public PafChy(Grid grid, Paf paf) : base(grid)
+    public PafChy(Paf paf)
     {
         setPaf(paf);
     }
@@ -19,8 +18,10 @@ public class PafChy : Chy
 
 
     //
-    public int getPafCount() { return getPaf().GetBreadcrumbCount(); }
-    public Paf getPaf() { return paf; }
+    public Tile lastTile { get => getPaf().lastTile; }
+    public int getSteps { get => getPaf().count; }
+    public Paf getPaf() { if (paf == null) Debug.LogError("IllegalStateException"); return paf; }
+    public FromTo getFromTo(int step) { return getPaf().getFromTo(step); }
 
 
     //
@@ -31,17 +32,18 @@ public class PafChy : Chy
     }
 
 
-    protected override Phy getPhy()
+    public override Phy getPhy()
     {
-        return pafPhy;
+        return PafPool.Instance.getHost(this);
     }
-    protected override void connect()
+
+    public override void stage()
     {
-        if (pafPhy != null) Debug.LogError("PafChy already staged.");
-        pafPhy = PafRoster.sgetUnstagedPhy();
+        PafPool.Instance.stage(this);
     }
-    protected override void disconnect()
+
+    public override void unstage()
     {
-        pafPhy = null;  // TODO this is bad and not good
+        PafPool.Instance.unstage(this);
     }
 }

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4512607643891267965}
   - component: {fileID: 8767778248624321511}
   - component: {fileID: 903912273921579296}
+  - component: {fileID: 2679597466629613065}
   m_Layer: 0
   m_Name: Tile
   m_TagString: Untagged
@@ -96,6 +97,60 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3898236102231413406}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &2679597466629613065
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3898236102231413406}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a43f767dc51e4a46b8a0d37e4eb35ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _gfx:
+    name: Tile
+    reend:
+      rends:
+      - place: 2
+        renderer: {fileID: 8767778248624321511}
+        mat:
+          id: 0
+        col:
+          id: 0
+      - place: 3
+        renderer: {fileID: 525436779752349138}
+        mat:
+          id: 0
+        col:
+          id: 0
+    maat:
+      mats:
+      - place: 4
+        material: {fileID: 2100000, guid: 336b8f39c584ea54f904181e587f0399, type: 2}
+      - place: 5
+        material: {fileID: 2100000, guid: 5c41654410656924c9eec4c1b75f642a, type: 2}
+      - place: 6
+        material: {fileID: 2100000, guid: 5982d0e2dc3341d46b0e7792055645a7, type: 2}
+      - place: 2
+        material: {fileID: 2100000, guid: 390ff569dd7b3ae40b23228f388d038b, type: 2}
+      - place: 3
+        material: {fileID: 2100000, guid: fc36d38da941cb64f9214568e225b2bf, type: 2}
+      - place: 22
+        material: {fileID: 2100000, guid: b8fdc65123bf5ae46a8cac480a0a77a9, type: 2}
+    cool:
+      cols: []
+  hasBounds: 0
+  _colliderBounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
+  _chy:
+    id: 0
+  references:
+    version: 1
+    00000000:
+      type: {class: , ns: , asm: }
 --- !u!1 &6384891349568431233
 GameObject:
   m_ObjectHideFlags: 0

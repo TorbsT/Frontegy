@@ -1,21 +1,15 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class BorderConflict : Conflict
 {
-    public BorderConflict(int step, Troop a, Troop b) : base(step, a, b) { }
+    public BorderLoc borderLoc { get => _borderLoc; }
+    private BorderLoc _borderLoc;
+    public BorderConflict(int roundId, int stepId, List<int> involvedTroops) : base(roundId, stepId, involvedTroops) { }
 
-    private BorderLoc borderLoc;
-
-    public BorderLoc getBLoc()
-    {
-        return borderLoc;
-    }
     public override bool sameLoc(Conflict compare)
     {
-        BorderConflict comparable = compare as BorderConflict;
-        if (comparable == null) return false;
-        BorderLoc a = getBLoc();
-        BorderLoc b = comparable.getBLoc();
-        return a.sameBorderLoc(b);
+        if (!(compare is BorderConflict comparable)) return false;
+        return _borderLoc.sameBorderLoc(comparable._borderLoc);
     }
 }

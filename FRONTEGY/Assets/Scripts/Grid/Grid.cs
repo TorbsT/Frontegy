@@ -5,194 +5,168 @@ using UnityEngine;
 [System.Serializable]
 public class Grid
 {
-    [System.Serializable]
-    public enum GridConfigs
-    {
-        none,
-        anchored,
-        centered,
-    }
-    public enum TileShape
-    {
-        none,
-        trianglePrism,
-        squarePrism,
-        hexagonPrism
-    }
-
+    public static Grid Instance { get; private set; }
     [Header("Grid Variables")]
-    public TileShape tileShape;
-    public GridConfigs gridConfig;
     public Vector2Int gridSize;
     [Range(0.2f, 1.0f)]
     public float tileRatio;
 
-    internal Player getFirstPlayer()
-    {
-        return getPlayyer().getFirstPlayer();
-    }
-
-    [Range(0.0f, 1.0f)]
-    public float tileGap;
-    [Range(0.1f, 10.0f)]
-    public float tileSize;
-
-    // ONLY TEMPORARY
-    public int startingTroops;
-
     [Header("Grid Debug")]
-    public GameMaster gm;
-    private AllTiile allTiile;
-    private AllCaard allCaard;
-    private Groop allGroop;
+    private GridConfig config;
+
     private Rds rds;
-    private PhaseManager pm;
-    private Playyer playyer;
-    int debug;
-    public List<Reservoir> reservoirs;
-    //public List<Tile> tiles;
-    //public List<Troop> troopScripts;
+    [SerializeReference] private SelMan selectionManager;
 
+    public List<TileState> tileStates { get => _tileStates; }
+    public List<TroopState> troopStates { get => _troopStates; }
+    public List<CardState> cardStates { get => _cardStates; }
 
-    [System.NonSerialized] public GridPivotConfig currentGrid;
-    [System.NonSerialized] public TileShape previousTileShape;
+    public AllTiile allTiile { get => _allTiile; }
+    public AllCaard allCaard { get => _allCaard; }
+    public AllGroop allGroop { get => _allGroop; }
+    public List<TacticalHistory> tacticalHistories { get => _tacticalHistories; }
 
-    public Grid(GameMaster gm, int seed, Vector2Int size, int nonePlayerTileWeight, int player0TileWeight, int player1TileWeight)
+    private List<TileState> _tileStates = new List<TileState>();
+    private List<TroopState> _troopStates = new List<TroopState>();
+    private List<CardState> _cardStates = new List<CardState>();
+
+    private List<TacticalHistory> _tacticalHistories = new List<TacticalHistory>();
+    private AllTiile _allTiile;
+    private AllCaard _allCaard;
+    private AllGroop _allGroop;
+    private RoundManager pm;
+    private ActionManager _actionManager;
+    public Grid(GameMaster gm, GridConfig config)
     {
+        Instance = this;
         Debug.Log("grid restarted");
         if (gm == null) Debug.LogError("IllegalArgumentException");
-        if (size.x <= 0 || size.y <= 0) Debug.LogError("IllegalArgumentException");
-        if (nonePlayerTileWeight + player0TileWeight + player1TileWeight == 0) Debug.LogError("IllegalArgumentException: Please provide atleast one weight other than 0");
-        this.gm = gm;
+        if (config.getSize().x <= 0 || config.getSize().y <= 0) Debug.LogError("IllegalArgumentException");
+        //if (config.getNonePlayerTileWeight() + config.getPlayer0TileWeight() + config.getPlayer1TileWeight() == 0) Debug.LogError("IllegalArgumentException: Please provide atleast one weight other than 0");
+        this.config = config;
+        config.cardBPs.init();
+        config.getRoole().init();
+        pm = new RoundManager(this);
+        rds = new Rds(config.getSeed());
+        _allTiile = genRectTiile();
+        _allGroop = new AllGroop();
+        _actionManager = new ActionManager();
 
-        playyer = getGM().getPlayyer();
-        pm = new PhaseManager(this);
-        rds = new Rds(seed);
-        allTiile = genRectTiile(size, rds.getTiile(), nonePlayerTileWeight, player0TileWeight, player1TileWeight);
-        allTiile.updateVisuals();
-        allGroop = new Groop();
+        //allCaard = new AllCaard();  // temp
+        _allCaard = genStartCaard();
 
-        allCaard = new AllCaard();  // temp
-                                    //allCaard = AllCaard.genStartCaard(8);
-        
         //gameMaster.StartingCards();
+        selectionManager = new SelMan(Cam.Instance);
     }
+    public void update(Control c)
+    {
+        pm.update(c);
+    }
+    public void makeStatesForNewRound(Round oldRound)
+    {
 
-    public TilePhy getUnstagedTilePhy()
-    {
-        return getRooster().getUnstagedTilePhy();
-    }
-    public CardPhy getUnstagedCardPhy()
-    {
-        return getRooster().getUnstagedCardPhy();
-    }
-    public PafPhy getUnstagedPafPhy()
-    {
-        return getRooster().getUnstagedPafPhy();
-    }
-    public TroopPhy getUnstagedTroopPhy()
-    {
-        return getRooster().getUnstagedTroopPhy();
-    }
-    public Tile getHoveredTile() { return getSelectionManager().getHoveredTile(); }
-    public SelectionManager getSelectionManager() { return getGM().getSelectionManager(); }
+        // states should be updated independently, e.g. use oldRound.results when changing tile owners.
+        foreach (TileState tileState in _tileStates.FindAll(state => state.roundId == oldRound.roundId))
+        {
+            TileState newState = tileState.copy();
+            newState.roundId++;
 
-    private AllTiile genRectTiile(Vector2Int size, Rd rd, int nonePlayerTileWeight, int player0TileWeight, int player1TileWeight)
+            // Updates the Tile of corresponding loc. (should be exactly one)
+            Tile tile = _allTiile.find(newState.loc);
+            if (tile == null) Debug.LogError("what the hell is this");
+
+            // adds this state to list to be looked up later
+            _tileStates.Add(newState);
+        }
+        foreach (TroopState troopState in _troopStates.FindAll(state => state.roundId == oldRound.roundId))
+        {
+            TroopState newState = troopState.copy();
+            newState.roundId++;
+            Breadcrumb startBreadcrumb = new Breadcrumb(newState.parentTile, newState.role.baseStats.getRANGE());
+            newState.djikstra = new Djikstra(startBreadcrumb);
+            newState.paf = new Paf(startBreadcrumb);
+            if (!troopState.stepStates.currentDead)
+            {
+                Tile newParentTile = troopState.stepStates.currentBreadcrumb.tile;
+                newState.parentTile = newParentTile;
+                TileState newParentTileState = tileStates.Find(state => state.roundId == newState.roundId && state.loc == newParentTile.loc);
+                newParentTileState.ownerId = troopState.ownerId;
+            }
+
+            _troopStates.Add(newState);
+        }
+
+    }
+    private AllCaard genStartCaard()
+    {
+        AllCaard ac = new AllCaard();
+        int count = config.getStartCardCount();
+        if (count < 0) Debug.LogError("IllegalArgumentException");
+
+        
+        if (config.getGiveSameCards())
+        {
+            List<int> cardMap = new Weights(count, config.getCardWeights(), rds.getCaard0()).getOutput();
+
+            string write = "";
+            foreach (int id in cardMap)
+            {
+                SummonCardBP sbp = CardBPs.Instance.getSummonBP(id);
+                write += sbp + ", ";
+                foreach (Player player in Playyer.Instance.getPlayers())
+                {
+                    CardState state = new CardState();
+                    state.blueprint = sbp;
+                    state.owner = player;
+                    Card card = new Card(state);
+                    ac.add(card);
+                }
+            }
+            Debug.Log(write);
+        }
+        return ac;
+    }
+    private AllTiile genRectTiile()
     {  // dysfunction hihihihi
-        if (size.x <= 0 || size.y <= 0) Debug.LogError("IllegalArgumentException");
-        if (nonePlayerTileWeight + player0TileWeight + player1TileWeight == 0) Debug.LogError("IllegalArgumentException: Please provide atleast one weight other than 0");
-        GameMaster gm = GameMaster.GetGM();
-        int rows = size.x;
-        int cols = size.y;
+        // grow up you poopyhead
+        int rows = config.getSize().x;
+        int cols = config.getSize().y;
         int tileCount = rows * cols;
-        List<int> playerMap = new Weights(tileCount, new List<Vector2Int> { new Vector2Int(-1, nonePlayerTileWeight), new Vector2Int(0, player0TileWeight), new Vector2Int(1, player1TileWeight) }, rd).getOutput();
+        List<int> playerMap = new Weights(tileCount, config.getTileWeights(), rds.getTiile()).getOutput();
 
-        AllTiile tiile = new AllTiile(this);
-        string write = "";
+        List<Tile> tiles = new List<Tile>();
         for (int w = 0; w < cols; w++)
         {
             for (int l = 0; l < rows; l++)
             {
                 TileLoc tloc = new TileLoc(l, w);
                 // TODO randomize gen params
-                Tile tile = new Tile(this, true, tloc);
+                
 
                 int tempId = w * rows + l;
                 int p = playerMap[tempId];
 
                 Player player;
-                if (p == -1) player = getNonePlayer();
-                else player = getPlayerByIndex(p);
-                tile.setPlayer(player);
+                if (p == -1) player = Playyer.Instance.getNonePlayer();
+                else player = Playyer.Instance.getPlayerByIndex(p);
 
-                write += p + ", ";
-
-
-
-
-
-                tiile.add(tile);
+                TileState state = new TileState();
+                state.owner = player;
+                Tile tile = new Tile(state, tloc);
+                tiles.Add(tile);
             }
         }
-        Debug.Log(write);
+        AllTiile tiile = new AllTiile(this, tiles);
         return tiile;
     }
-
-
-
-    public Player getPlayerByIndex(int p)
-    {
-        return getPlayyer().getPlayerByIndex(p);
+    public Pos3 getCenterPos3()
+    {  // May be TileLoc or BorderLoc
+        // Assuming grid represents config
+        Vector2Int size = config.getSize();
+        int rows = size[0] - 1;
+        int cols = size[1] - 1;
+        float centerRowFloat = rows/2f;
+        float centerColFloat = cols/2f;
+        return TileLoc.toPos3(centerRowFloat, 0f, centerColFloat);
     }
-    public Player playerAfter(Player player)
-    {
-        return getPlayyer().playerAfter(player);
-    }
-    public Player getNonePlayer()
-    {
-        return getPlayyer().getNonePlayer();
-    }
-    public bool isLastPlayer(Player player)
-    {
-        return getPlayyer().isLastPlayer(player);
-    }
-    public Player getCurrentPlayer()
-    {
-        return pm.getPlayer();
-    }
-
-    public PhaseManager getPhaseManager()
-    {
-        if (pm == null) Debug.LogError("IllegalStateException");
-        return pm;
-    }
-    public void UpdateTroopTiles()
-    {
-        getAllGroop().resetParentTiles();
-    }
-
-
-    public Groop getAllGroop()
-    {
-        if (allGroop == null) Debug.LogError("IllegalStateException: bad construction of grid");
-        return allGroop;
-    }
-    public AllCaard getAllCaard()
-    {
-        if (allCaard == null) Debug.LogError("IllegalStateException: bad construction of grid");
-        return allCaard;
-    }
-    public AllTiile getAllTiile()
-    {
-        if (allTiile == null) Debug.LogError("IllegalStateException: bad construction of grid");
-        return allTiile;
-    }
-
-    public void update()
-    {
-        getPhaseManager().update();
-    }
-    private Rooster getRooster() { return getGM().getRooster(); }
-    private GameMaster getGM() { if (gm == null) Debug.LogError("IllegalStateException"); return gm; }
-    private Playyer getPlayyer() { if (playyer == null) Debug.LogError("IllegalStateException"); return playyer; }
 }

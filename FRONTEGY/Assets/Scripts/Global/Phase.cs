@@ -4,25 +4,50 @@ using UnityEngine;
 [System.Serializable]
 public abstract class Phase
 {
-    private PhaseManager pm;
+    public static Phase Instance;
 
-    public Phase(PhaseManager pm)
-    {
-        if (pm == null) Debug.LogError("IllegalArgumentException");
-        this.pm = pm;
-        // runs before the construction of any subclass!
-    }
+    public int roundId { get => round.roundId; }
+    public int phaseOwnerId { get => phaseOwner.id; }
+    public bool canSkipNow { get; set; }
 
+    private int life;
+    private Round round;
+    private Player phaseOwner;
     private PhaseType type;
 
+    public Phase(Round round, Player phaseOwner)
+    {
+        Instance = this;
+        if (round == null) Debug.LogError("IllegalArgumentException");
+        this.round = round;
+        if (phaseOwner == null) Debug.LogError("IllegalArgumentException");
+        this.phaseOwner = phaseOwner;
+        // runs before the construction of any subclass!
+    }
+    public bool isType(PhaseType type) { return this.type == type; }
     public PhaseType getType() { return type; }
     protected void setType(PhaseType t) { type = t; }
-    public bool bupdate()
+    public bool bupdate(Control c)
     {
         // common phase update method goes here
-        return bupdateAbstra();
+        if (life == 0) startAbstra();
+        bool x = bupdateAbstra(c);
+        life++;
+        return x;
     }
-    protected abstract bool bupdateAbstra();
-    public Grid getGrid() { return getPhaseManager().getGrid(); }
-    public PhaseManager getPhaseManager() { if (pm == null) Debug.LogError("IllegalStateException"); return pm; }
+    public Player getPhasePlayer()
+    {
+        if (phaseOwner == null) Debug.LogError("IllegalStateException");
+        return phaseOwner;
+    }
+    public bool trySkip()
+    {
+        if (canSkipNow) return round.skipPhase();
+        return false;
+    }
+    protected int getLife() { return life; }  // never
+
+    protected abstract void startAbstra();
+    protected abstract bool bupdateAbstra(Control c);
+    public Round getRound() { if (round == null) Debug.LogError("IllegalStateException"); return round; }
 }

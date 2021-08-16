@@ -2,56 +2,62 @@
 using UnityEngine;
 
 [System.Serializable]
-public class Troop : Chy  // "Must" be class since SetStats() should be able to modify these values
+public class Troop : SelChy  // "Must" be class since SetStats() should be able to modify these values
 {
-    public Troop(Grid grid, bool instantiate, Player player, Unit unit) : base(grid)
-    {
-        this.player = player;
-        this.unit = unit;
-        if (instantiate) troopPhy = TroopRoster.sgetUnstagedPhy();
-    }
-    private int id;
-    public Player player;
-    public float scale = 0.5f;
-    [SerializeReference] private Tile parentTile;
-    private TroopPhy troopPhy;
-    private Unit unit;
-    private Djikstra djikstra;
-    private PafChy pafChy;
+    public override Player owner { get => _state.owner; }
+    public int id { get => _id; }
+    public Paf paf { get => _state.paf; }
+    public Djikstra djikstra { get => _state.djikstra; }
+    public TroopState state { get => _state; set { _state = value; } }
 
-    public Player getPlayer()
+    
+    [SerializeField] private int _id;
+    [SerializeField] private TroopState _state;
+    [SerializeField] private PafChy _pafChy;
+
+    public Troop(TroopState state)
     {
-        return getUnit().getPlayer();
+        _state = state;
+        stage();
+        initMats();
+        displayOnParent();
+
+        _pafChy = new PafChy(paf);
+    }
+    public Player getOwner()
+    {
+        return state.owner;
     }
     public int GetRange()
     {
-        return getUnit().getRange();
+        return state.getRANGE();
     }
-    public Unit getUnit()
+    public int getPOW()
     {
-        return unit;
+        return state.getPOW();
     }
-    public void placeDownOn(Tile t)
+    
+    public void tacticalStart()
     {
-        if (parentTile != null) Debug.LogError("Already placed down");
-        parentTile = t;
+        Debug.Log("penIS");
+        displayOnParent();
+
     }
-    public FromTo getFromTo(int step) { return getPaf().getFromTo(step); }
-    public Paf getPaf() { return getPafChy().getPaf(); }
-    public PafChy getPafChy() { return pafChy; }
-    public bool noPaf() { return !hasPaf(); }
-    public bool hasPaf()
+    private void displayOnParent()
     {
-        if (getPafChy() == null) return false;
-        if (getPaf() == null) return false;
-        return true;
+        
+
+        Pos3 p3 = new Pos3(0f, getColliderBounds().extents.y, 0f);
+
+        trans.setParent(state.parentTile.surfaceTransform, true);
+        trans.pos3p.set(p3, true);
     }
-    public int getId() { return id; }
     public bool isThisTroop(Troop compareAgainst)
     {
         if (compareAgainst == null) return false;  // not possible to compare to nulls... i think
-        return (this.id == compareAgainst.getId());
+        return (this.id == compareAgainst._id);
     }
+    /*
     public Conflict findConflictByStepAndTroop(int step, Troop b)
     {  // MAYBUG doesn't take any consequi into account
         bool meet = meetOnStep(step, b);
@@ -62,80 +68,55 @@ public class Troop : Chy  // "Must" be class since SetStats() should be able to 
         if (pass) return new BorderConflict(step, this, b);
         return null;
     }
-    private bool meetOnStep(int step, Troop t)
-    {
-        FromTo a = getFromTo(step);
-        FromTo b = t.getFromTo(step);
-
-        return a.meets(b);
-    }
-    private bool passOnStep(int step, Troop t)
-    {
-        FromTo a = getFromTo(step);
-        FromTo b = t.getFromTo(step);
-
-        return a.passes(b);
-    }
+    */
     public void weiterUpdate(WeiterView wv)
     {
+        /*
         int step = wv.getStep();
         Slid slid = wv.getSlid();
 
         FromTo ft = getFromTo(step);
+        */
     }
-    public Tile getParentTile() { if (parentTile == null) Debug.LogError("Should probably not happen"); return parentTile; }
-    public void planPafTo(Tile t)
+    public bool planPafTo(Tile t)
     {
-        if (hasPaf()) getPafChy().unstage();
-        pafChy = djikstra.getPafTo(t);
-        pafChy.stage();
+        return state.planPafTo(t);
     }
-    public void select()
+    public override void primarySelect()
     {
-        getDjikstra().showMarks();
+        base.primarySelect();
+        Debug.Log("penus");
+        djikstra.showMarks();
     }
-    public void unselect()
+    public override void unselect()
     {
-        getDjikstra().hideMarks();
-    }
-    public void resetParentTile()
-    {
-        parentTile = getPaf().lastTile();
-        resetDjikstra();
-    }
-    private void resetDjikstra()
-    {
-        djikstra = null;
-        pafChy = null;
-    }
-    public Djikstra getDjikstra()
-    {  // If no exists, generate. use as often as you like
-        if (djikstra == null) computeDjikstra();
-        if (djikstra == null) Debug.LogError("you messed up you big stupid piece of feces");
-        return djikstra;
+        base.unselect();
+        djikstra.hideMarks();
     }
     public bool tileIsInRange(Tile t)
     {
-        return getDjikstra().tileIsInRange(t);
+        return djikstra.tileIsInRange(t);
     }
 
-
-
-    private void computeDjikstra()
+    public TroopPhy getTroopPhy() { return TroopPool.Instance.getHost(this); }
+    public override void initMats()
     {
-        djikstra = new Djikstra(this);
+        setMat(getPlayerMatPlace(), RendPlace.selectable);
     }
-
-    protected override Phy getPhy()
+    protected override MatPlace getInitialSelMat()
     {
-        return troopPhy;
+        return getPlayerMatPlace();
     }
-    protected override void connect()
+    public override Phy getPhy()
     {
-        troopPhy = TroopRoster.sgetUnstagedPhy();
+        return getTroopPhy();
     }
-    protected override void disconnect()
+    public override void stage()
     {
-        troopPhy = null;
+        TroopPool.Instance.stage(this);
+    }
+    public override void unstage()
+    {
+        TroopPool.Instance.unstage(this);
     }
 }

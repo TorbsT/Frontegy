@@ -1,80 +1,89 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class Tile : Chy
+public class Tile : SelChy
 {
+    public override Player owner { get => _state.owner; }
+    public TileState state { get => _state; }
+    public TileLoc loc { get { return _loc; } }
+    public Transform surfaceTransform { get { return getHost().surfaceTransform; } }
 
-    private TilePhy tilePhy;
-    private GameMaster gm;
-    [SerializeReference] private TileLoc loc;
-    [SerializeField] private bool active;
-    private Reservoir reservoir;
-    [SerializeReference] private Player player;
+    [SerializeField] private TileLoc _loc;
+    
+    private TileState _state;
 
-    public Tile(Grid grid, bool instantiate, TileLoc loc) : base(grid)
+    public Tile(TileState state, TileLoc loc)
     {
-        this.loc = loc;
-        gm = GameMaster.GetGM();
-        if (instantiate)
-        {
-            stage();
-            activate();
-        }
-    }
-
-    public void updateVisual()
-    {
-        getTilePhy().setPos2(getPos());
-        getTilePhy().updateVisual();
-    }
-    public Pos2 getPos()
-    {
-        return loc.toPos();
-    }
-    public Reservoir getReservoir() { return reservoir; }
-    public bool isActive() { return active; }
-    private void activate() { active = true; }
-    public TileLoc getLoc() { return loc; }
-    public bool sameTile(Tile t) { return getLoc().sameLoc(t.getLoc()); }
-    private GameMaster getGM() { if (gm == null) Debug.LogError("Should never happen"); return gm; }
-    public Tiile getNeigTiile()
-    {
-        return getLoc().getNeigTiile();
-    }
-    public bool isNeigOfTile(Tile t) { return isNeigOfTileLoc(t.getLoc()); }
-    public bool isNeigOfTileLoc(TileLoc tl) { return getLoc().isNeigOfTileLoc(tl); }
-    public void showMark(Breadcrumb bc) { getTilePhy().showMark(bc); }  // OH NO
-    public void hideMark() { getTilePhy().hideMark(); }
-
-    public void setPlayer(Player player)
-    {
-        this.player = player;
-    }
-    public Player getPlayer()
-    {
-        return player;
-    }
-    private TilePhy getTilePhy()
-    {
-        if (tilePhy == null) tilePhy = (TilePhy)getPhy();  // OH LORD THIS IS BAD TODO
-        return tilePhy;
+        _state = state;
+        _loc = loc;
+        stage();
+        initMats();
+        trans.pos3p.set(getPos3(), true);
     }
 
-    protected override Phy getPhy()
+    public Pos3 getPos3()
     {
-        return tilePhy;
+        return loc.toPos3();
+    }
+    public bool isNeigOfTile(Tile t) { return isNeigOfTileLoc(t.loc); }
+    public bool isNeigOfTileLoc(TileLoc tl) { return TileLoc.areNeigs(loc, tl); }
+    public void showMark(Breadcrumb bc)
+    {
+        setMat(MatPlace.breadcrumb, RendPlace.top);
+
+        float timeMod = Mathf.Pow(2, bc.stepsRemaining);
+        float timeOffset = (float)bc.stepsRemaining * 0.3f;
+        //setFloat(RendPlace.top, "TimeMod", timeMod);
+        setFloat(RendPlace.top, "TimeOffset", timeOffset);
+
+    }
+    public void hideMark() { setMat(owner.getMatPlace(), RendPlace.top); }//hehehehe
+
+    public TilePhy getHost()
+    {
+        return TilePool.Instance.getHost(this);
     }
 
-    protected override void connect()
+
+
+    public override Phy getPhy()
     {
-        tilePhy = getGrid().getUnstagedTilePhy();
-        if (tilePhy == null) Debug.LogError("IllegalStateException: Tile.connect() failed to set a tilePhy");
+        return getHost();
+    }
+    public override void stage()
+    {
+        TilePool.Instance.stage(this);
+    }
+    public override void unstage()
+    {
+        TilePool.Instance.unstage(this);
+    }
+    protected override MatPlace getInitialSelMat()
+    {
+        return getPlayerMatPlace();
+    }
+    public override void initMats()
+    {
+        setMat(getPlayerMatPlace(), RendPlace.top);
+        setMat(getInitialSelMat(), RendPlace.selectable);
     }
 
-    protected override void disconnect()
+
+    public override bool Equals(object obj)
     {
-        tilePhy = null;
+        if (!(obj is Tile)) return false;
+        Tile t = (Tile)obj;
+        return t.loc == loc;
+    }
+    public override int GetHashCode()
+    {
+        return loc.GetHashCode();
+    }
+    public override string ToString()
+    {
+        return loc.ToString();
     }
 }

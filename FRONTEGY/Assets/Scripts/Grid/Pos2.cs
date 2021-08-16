@@ -3,35 +3,33 @@
 [System.Serializable]
 public struct Pos2
 {  // having this as struct allows rapid instantiating without performance issues, apparently
-    private bool staged;
-    [SerializeField] private Vector2 v2;
+    public float x { get { return _v2.x; } }
+    public float z { get { return _v2.y; } }
+
+    [SerializeField] private Vector2 _v2;
 
     public Pos2(Vector2 v2)
     {
-        this.v2 = v2;
-        staged = true;
+        this._v2 = v2;
     }
     public Pos2(float x, float z)
     {
-        v2 = new Vector2(x, z);
-        staged = true;
+        _v2 = new Vector2(x, z);
+    }
+    public static Pos2 halfPoint(Pos2 a, Pos2 b)
+    {
+        return lerp(a, b, new Slid(0.5f));
+    }
+    public static Pos2 lerp(Pos2 a, Pos2 b, Slid slid)
+    {
+        return a + (b - a) * slid;
     }
 
-    public void mod(Vector2 m) { set(v2+m); }
-    public void setF(float x, float z) { set(new Vector2(x, z)); }
-    public void set(Vector2 v) { v2 = v; }
-    public Vector2 getV2() { return v2; }
-    public float getX() { return v2.x; }
-    public float getZ() { return v2.y; }
-    public static Pos2 halfPoint(Pos2 from, Pos2 to)
-    {
-        return Pos2.lerp(from, to, new Slid(0.5f));
-    }
-    public static Pos2 lerp(Pos2 from, Pos2 to, Slid slid)
-    {
-        float s = slid.get();
-        Vector2 f = from.getV2();
-        Vector2 t = to.getV2();
-        return new Pos2(f + s*(t-f));
-    }
+    public static Pos2 operator *(Pos2 p2, float f) => new Pos2(p2._v2 * f);
+    public static Pos2 operator *(float f, Pos2 p2) => new Pos2(p2._v2 * f);
+    public static Pos2 operator *(Pos2 p2, Slid s) => new Pos2(p2._v2 * s.f);
+    public static Pos2 operator *(Slid s, Pos2 p2) => new Pos2(p2._v2 * s.f);
+    public static Pos2 operator /(Pos2 p2, float f) => new Pos2(p2._v2 / f);
+    public static Pos2 operator +(Pos2 a, Pos2 b) => new Pos2(a._v2 + b._v2);
+    public static Pos2 operator -(Pos2 a, Pos2 b) => new Pos2(a._v2 - b._v2);
 }

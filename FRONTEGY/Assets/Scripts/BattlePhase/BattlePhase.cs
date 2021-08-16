@@ -2,26 +2,27 @@
 
 public class BattlePhase : Phase
 {
-    private Results results;
     View v;
     int stepId;
     int stepCount = -1;
 
-    public BattlePhase(PhaseManager pm) : base(pm)
+    public BattlePhase(Round round, Player phasePlayer) : base(round, phasePlayer)
     {
         // runs after Phase construction!
-        results = new Results();
         stepId = 0;
         makeWeiterView();
-        stepCount = results.getMaxSteps();
+        stepCount = getResults().maxSteps;
         setType(PhaseType.battle);
     }
-
-    protected override bool bupdateAbstra()
+    protected override void startAbstra()
+    {
+        UIManager.Instance.battleStart();
+    }
+    protected override bool bupdateAbstra(Control c)
     {
         bool done = false;
 
-        bool stepDone = v.bupdate();
+        bool stepDone = v.bupdate(c);
 
         if (stepDone) tryMakeNextStep();
 
@@ -40,7 +41,7 @@ public class BattlePhase : Phase
     private bool noConflicts() { return getConflictCount() == 0; }
     private int getConflictCount() { if (getAllCoonflict() == null) return 0; return getAllCoonflict().getCount(); }
     private Coonflict getAllCoonflict() { return getResults().getAllCoonflict(); }
-    private Results getResults() { return results; }
+    private Results getResults() { return getRound().getResults(); }  // not in Phase because not all should have access to Results
 
-    public Coonflict getStepCoonflict(int step) { return results.getStepCoonflict(step); }
+    public Coonflict getStepCoonflict(int step) { return getResults().getStepCoonflict(step); }
 }

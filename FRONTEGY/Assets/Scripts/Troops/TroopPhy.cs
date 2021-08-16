@@ -1,19 +1,18 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class TroopPhy : Selectable
+public class TroopPhy : SelPhy
 {  // never delete a Troop object, reuse.
-    public TroopPhy(Roster roster) : base(roster)
+    public TroopPhy()
     {
-        rndrr = getGO().GetComponent<Renderer>();
-        //rndrr.material = getGM().getCurrentPlayer().getMat();
+
     }
 
     [Header("Variables")]
     [SerializeField] private Troop troop;
 
     [Header("System/Debug")]
-    [SerializeField] Renderer rndrr;
+    [SerializeField] MeshRenderer rndrr;
     //[SerializeField] Selectable selectable;
     
     [SerializeField] int defaultLayer = 0;
@@ -51,6 +50,7 @@ public class TroopPhy : Selectable
         AdjustYByHeight();
     }
     */
+    /*
     public void weiterUpdate(int step, Slid slid)
     {
         getGO().layer = ignoreRaycastLayer;  // MAYBUG remember to add another for not weiterupdate
@@ -64,49 +64,20 @@ public class TroopPhy : Selectable
         setPos2(lerped);
         //updateVisual();
     }
+    */
     void AdjustYByHeight()
     {
-        getGO().transform.position += Vector3.up * getGO().transform.localScale[1];
+        //getGO().transform.position += Vector3.up * getGO().transform.localScale[1];
     }
 
 
-    public override Troop SelGetTroop() { return this.getTroop(); }
-    public override void SelHover()
+    protected Troop getTroop() { return TroopPool.Instance.getClient(this); }
+    public override SelChy getSelChy()
     {
-        if (!isSelected()) rndrr.material = getGM().globalHoverMat;
+        return getTroop();
     }
-    public override void SelUnHover()
+    public override void unstage()
     {
-        if (!isSelected()) rndrr.material = getGM().getCurrentPlayer().getMat();
-    }
-    public override void SelSelect()
-    {
-        rndrr.material = getGM().globalSelectMat;
-        getTroop().select();  // renders tiles green
-
-        //Conflict conflict = new Conflict(new List<TroopStats> { stats }, false);
-        //conflict.DebugTroops(conflict.GetRankedTroops(new List<TroopStats> { stats }));
-
-    }
-    public override void SelUnSelect()
-    {
-        getTroop().unselect();
-        rndrr.material = getGM().getCurrentPlayer().getMat();
-    }
-    public Troop getTroop() { return troop; }
-
-    protected override void setChy(Chy chy)
-    {
-        troop = (Troop)chy;
-    }
-
-    public override Chy getChy()
-    {
-        return troop;
-    }
-
-    protected override GameObject getPrefab()
-    {
-        return getGM().troopGOPrefab;
+        TroopPool.Instance.unstage(this);
     }
 }

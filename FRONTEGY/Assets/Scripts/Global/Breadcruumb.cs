@@ -40,7 +40,7 @@ public class Breadcruumb
             Breadcrumb oldBreadcrumb = GetBreadcrumb(i);
             if (newBreadcrumb.sameTileAs(oldBreadcrumb))
             {
-                if (newBreadcrumb.betterThan(oldBreadcrumb))
+                if (newBreadcrumb > oldBreadcrumb)
                 {
                     removeAt(i);
                     break;  // improves performance
@@ -73,7 +73,7 @@ public class Breadcruumb
         Breadcrumb best = Breadcrumb.makeInvalid();
         foreach (Breadcrumb b in getBreadcrumbs())
         {
-            int score = b.GetStepsRemaining();
+            int score = b.stepsRemaining;
             if (score > bestScore)
             {
                 bestScore = score;
@@ -122,14 +122,13 @@ public class Breadcruumb
 
         return getBreadcrumbs()[index];
     }
-    public Paf makePaf()
-    {
-        return new Paf(this);
-    }
     public void showMarks()
     {
+        Debug.Log("Show marks!");
+        Debug.Log(this);
         foreach (Breadcrumb bc in getBreadcrumbs())
         {
+            Debug.Log("Show mark for me!");
             bc.showMark();
         }
     }
@@ -139,5 +138,16 @@ public class Breadcruumb
         {
             bc.hideMark();
         }
+    }
+
+    public override string ToString()
+    {
+        string txt = "Breadcruumb [ ";
+        foreach (Breadcrumb bc in getBreadcrumbs())
+        {
+            txt += bc + " ";
+        }
+        txt += "]";
+        return txt;
     }
 }

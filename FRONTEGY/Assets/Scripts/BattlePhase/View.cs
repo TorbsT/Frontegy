@@ -2,25 +2,25 @@
 
 public abstract class View
 {
+    protected Cam cam { get => Cam.Instance; }
+    protected Grid grid { get => Grid.Instance; }
+
     private Phase phase;
     protected int life;
-    protected CameraScript cs;
+    private UIManager uiManager;
+    protected Player player { get { return phase.getPhasePlayer(); } }
     public View(Phase phase)
     {
         if (phase == null) Debug.LogError("IllegalArgumentException");
         this.phase = phase;
         life = 0;
-        cs = GameMaster.getCameraScript();
     }
-    public bool bupdate()
+    public bool bupdate(Control c)
     {
-        bool finished = bupdateVirtual();
+        bool finished = bupdateVirtual(c);
         life++;
         return finished;
     }
-    protected abstract bool bupdateVirtual();
-    protected Groop getAllGroop() { return getGrid().getAllGroop(); }
-    protected Grid getGrid() { return getPhaseManager().getGrid(); }
-    protected PhaseManager getPhaseManager() { return getPhase().getPhaseManager(); }
-    protected Phase getPhase() { if (phase == null) Debug.LogError("IllegalStateException: i feel like this will be relevant when resetting game"); return phase; }
+
+    protected abstract bool bupdateVirtual(Control c);
 }

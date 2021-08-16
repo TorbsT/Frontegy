@@ -4,29 +4,27 @@ using UnityEngine;
 
 public struct FromTo
 {
-    private Tile from;
-    private Tile to;
-    public FromTo(Tile from, Tile to)
+    public TileLoc from { get; private set; }
+    public TileLoc to { get; private set; }
+    public FromTo(TileLoc from, TileLoc to)
     {
         this.from = from;
         this.to = to;
-        validate();
+    }
+    public FromTo(Tile from, Tile to)
+    {
+        if (from == null) Debug.LogError("IllegalArgumentException");
+        if (to == null) Debug.LogError("IllegalArgumentException");
+        this.from = from.loc;
+        this.to = to.loc;
     }
 
-    public Tile getFrom() { validate(); return from; }
-    public Tile getTo() { validate(); return to; }
-    private void validate()
+    public static bool meet(FromTo a, FromTo b)
     {
-        if (from == null) Debug.LogError("Should never happen");
-        if (to == null) Debug.LogError("Should never happen");
+        return a.to == b.to;
     }
-
-    public bool meets(FromTo ft)
+    public static bool pass(FromTo a, FromTo b)
     {
-        return getTo().sameTile(ft.getTo());
-    }
-    public bool passes(FromTo ft)
-    {
-        return (getTo().sameTile(ft.getFrom()) && getFrom().sameTile(ft.getTo()));
+        return a.to == b.from && a.from == b.to;
     }
 }

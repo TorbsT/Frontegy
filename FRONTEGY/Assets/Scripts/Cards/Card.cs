@@ -1,63 +1,82 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
+//using TMPro; please dont use here
 
 [System.Serializable]
-public class Card : Chy  // changed to class since i didn't know why it should be struct
+public class Card : SelChy  // changed to class since i didn't know why it should be struct
 {  // TODO Currently only supports handCard, not upgrades
+    public override Player owner { get => _state.owner; }
+    public int roleId { get => blueprint.roleId; }
+    public Role role { get => blueprint.role; }
+    private SummonCardBP blueprint { get => _state.blueprint; }
 
-    public string title;
-    public string desc;
-    public string type;
-    public List<SpellCollection> spellCollections;
+    public CardState state { get => _state; }
+    private CardState _state;
 
-
-
-    private CardPhy phy;
-    private Player player;
-
-    public Card(Grid grid) : base(grid)
+    public Card(CardState state)
     {
-
-    }
-    public void setPlayer(Player player)
-    {
-        if (player == null) Debug.LogError("IllegalArgumentException");
-        this.player = player;
-    }
-    public Player getPlayer()
-    {
-        if (player == null) Debug.LogError("IllegalStateException");
-        return player;
+        _state = state;
+        stage();
+        initMats();
     }
 
-    public void Activate(string triggerTag)  // ownerId difficult when casting from tactical?
+    public void display(UIPlace place)
     {
-        foreach (SpellCollection spellCollection in spellCollections)
+        //getCardPhy().displayFGs(); MAYBUG
+
+        uize();
+    }
+
+    public override bool canSecondarySelectOn(SelChy selChy)
+    {
+        Tile tile = (Tile)selChy;
+        if (tile != null)
         {
-            if (triggerTag == spellCollection.triggerTag)
-            {
-                spellCollection.CastSpells(this);
-            }
+            if (tile.state.ownerId == state.ownerId) return true;
+        }
+        return false;
+    }
+    public override void secondarySelectOn(SelChy selChy)
+    {
+        Tile tile = (Tile)selChy;
+        if (tile != null)
+        {
+            blueprint.cast(this, tile, CastType.summon);
         }
     }
-    public Player getHolder() { if (player == null) Debug.LogError("Should probably not happen"); return player; }  // may be null 
+
+    public SummonCardBP getBlueprint() { if (blueprint == null) Debug.LogError("IllegalStateException"); return blueprint; }
+    public bool canCastOn(Tile tile)
+    {
+        return tile.owner == owner;
+    }
     public CardPhy getCardPhy()
     {
-        return phy;
+        return CardPool.Instance.getHost(this);
     }
 
-    protected override Phy getPhy()
+    public override void initMats()
+    {
+        setMat(blueprint.frontFGMatPlace, RendPlace.frontFG);
+        setMat(MatPlace.backFG, RendPlace.backFG);
+        setMat(MatPlace.initialSel, RendPlace.selectable);
+        setCol(getPlayerMatPlace(), RendPlace.FG);
+    }
+    protected override MatPlace getInitialSelMat()
+    {
+        return MatPlace.initialSel;
+    }
+    public override Phy getPhy()
     {
         return getCardPhy();
     }
-
-    protected override void connect()
+    public override void stage()
     {
-        phy = CardRoster.sgetUnstagedPhy();
+        CardPool.Instance.stage(this);
     }
-
-    protected override void disconnect()
+    public override void unstage()
     {
-        phy = null;
+        CardPool.Instance.unstage(this);
     }
 }

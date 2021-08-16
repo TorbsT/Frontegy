@@ -6,17 +6,35 @@ using UnityEngine;
 [System.Serializable]
 public class Playyer
 {
-    [SerializeField] private Player nonePlayer;
+    public static Playyer Instance;
+
+    [SerializeField] private NonePlayer nonePlayer;
     [SerializeField] private List<Player> players;
+
+    public void init()
+    {
+        Instance = this;
+        if (nonePlayer == null) Debug.LogError("InspectorException: set Playyer.nonePlayer");
+        nonePlayer.init();
+    }
 
     public Player getPlayerByIndex(int index)
     {
         if (outOfBounds(index)) Debug.LogError("IndexOutOfBoundsException");
         return getPlayers()[index];
     }
-
+    public Player getPlayer(int id)
+    {
+        foreach (Player player in players)
+        {
+            if (player.id == id) return player;
+        }
+        Debug.LogError("IllegalArgumentException: no player with id " + id);
+        return null;
+    }
     public Player playerAfter(Player player)
     {
+        if (player == null) Debug.LogError("IllegalArgumentException");
         if (isLastPlayer(player)) Debug.LogError("IllegalArgumentException: This is the last player, no players are after.");
 
         for (int i = 0; i < getPlayerCount(); i++)
@@ -35,6 +53,11 @@ public class Playyer
     {
         if (noPlayers()) Debug.LogError("IllegalStateException");
         return getPlayerByIndex(0);
+    }
+    public Player getLastPlayer()
+    {
+        if (noPlayers()) Debug.LogError("IllegalStateException");
+        return getPlayerByIndex(players.Count-1);
     }
 
     public Player getNonePlayer()
@@ -57,6 +80,7 @@ public class Playyer
     public List<Player> getPlayers()
     {
         if (players == null) Debug.LogError("IllegalStateException");
+        if (players.Count == 0) Debug.LogError("InspectorException: Assign players");
         return players;
     }
 }

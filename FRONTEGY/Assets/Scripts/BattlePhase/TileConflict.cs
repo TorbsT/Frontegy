@@ -1,19 +1,16 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class TileConflict : Conflict
 {
-    public TileConflict(int step, Troop a, Troop b) : base(step, a, b) { }
+    public TileLoc loc { get => _loc; }
+    private TileLoc _loc;
+    public TileConflict(int roundId, int stepId, List<int> involvedTroops) : base(roundId, stepId, involvedTroops) { }
 
-    private Loc loc;
-
-    public Loc getLoc()
-    {
-        return loc;
-    }
     public override bool sameLoc(Conflict c)
     {
         TileConflict comparable = c as TileConflict;
         if (comparable == null) return false;
-        return getLoc() == comparable.getLoc();
+        return _loc == comparable._loc;
     }
 }
