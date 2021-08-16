@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
 [System.Serializable]
 //[CreateAssetMenu(fileName = "SpellCollection.asset", menuName = "SpellCollection")]
 public class SpellCollection
@@ -25,3 +26,4 @@ public class SpellCollection
         }
     }
 }
+*/

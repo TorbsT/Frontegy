@@ -7,9 +7,9 @@ public abstract class Phy : MonoBehaviour, IPoolHost
 {
     // Properties
 
-    public bool staged { get; set; }
-    public Chy inspectorChy { set { _chy = value; } }
-    public Trans trans { get { if (staged) return getChy().trans; else return unstagedTrans; } }
+    public bool staged { get { return _staged; } }
+    public IPoolClient insChy { set { _chy = value; } }
+    public Transive trans { get { if (staged) return _transive; Debug.LogError("Tried accessing trans of unstaged phy '" + this + "'"); return null; } }
     public Bounds colliderBounds { get { if (hasBounds) return _colliderBounds; else
             {
                 Collider top = GetComponent<Collider>();
@@ -29,23 +29,28 @@ public abstract class Phy : MonoBehaviour, IPoolHost
     [SerializeField] private GFX _gfx;
 
     [Header("Observe")]
+    [SerializeField] private bool _staged;
+    [SerializeField] private Transive _transive;
     [SerializeField] private bool hasBounds;
     [SerializeField] private Bounds _colliderBounds;
-    [SerializeReference] private Chy _chy;
+    [SerializeReference] private IPoolClient _chy;
 
     // Hidden
-    private static Trans unstagedTrans = new Trans();
     private Roster roster;
     
 
     private void Awake()
     {
+        _transive = new Transive(transform);
         //unstage(); WHY IS THIS HERE?
     }
-    public void showTrans()
+    private void OnEnable()
     {
-        transform.position = trans.pos3.v3;
-        transform.rotation = trans.rot;
+        _staged = true;
+    }
+    private void OnDisable()
+    {
+        _staged = false;
     }
     public void setMat(MatPlace matPlace, RendPlace rendPlace)
     {

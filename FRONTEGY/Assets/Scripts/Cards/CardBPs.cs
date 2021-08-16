@@ -3,49 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class CardBPs : IVerifiable
+public class CardBPs
 {
-    [SerializeField] private List<SummonBP> bps = new List<SummonBP>();
+    public static CardBPs Instance { get; private set; }
+    public List<SummonCardBP> summonBPs { get => _summonBPs; }
 
 
-    public SummonBP getSummonBP(int id)
+    [SerializeField] private List<SummonCardBP> _summonBPs;
+
+    public void init()
     {
-        foreach (SummonBP bp in getSummonBPs())
-        {
-            if (bp.isRoleId(id)) return bp;
-        }
-        Debug.LogError("IllegalStateException");
-        return null;
+        Instance = this;
     }
-    public Roole makeRooleFromSummonBPs()
+    public SummonCardBP getSummonBP(int roleId)
     {
-        List<Role> roles = new List<Role>();
-        foreach (SummonBP sbp in getSummonBPs())
-        {
-            roles.Add(sbp.getRole());
-        }
-        return new Roole(roles);
+        if (_summonBPs == null) Debug.LogError("InspectorException: summonBPs is null");
+        if (_summonBPs.Count == 0) Debug.LogError("InspectorException: assign summonBPs");
+        SummonCardBP bp = _summonBPs.Find(match => match.roleId == roleId);
+        if (bp == null) Debug.LogError("IllegalStateException: No role with id " + roleId);
+        return bp;
     }
 
-
-    public void verify()
-    {
-        if (bps == null) Debug.LogError("InspectorException: Set cardBPs");
-        if (bps.Count == 0) Debug.LogError("InspectorException: empty cardBPs");
-        foreach (ICardBP bp in getBPs())
-        {
-            bp.verify();
-        }
-    }
-
-
-    private List<SummonBP> getSummonBPs()
-    {
-        return getBPs();
-    }
-    private List<SummonBP> getBPs()
-    {
-        if (bps == null) Debug.LogError("IllegalStateException");
-        return bps;
-    }
 }

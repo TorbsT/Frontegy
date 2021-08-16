@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public struct Pos3
+public struct Pos3 : ITransPropertyField<Pos3>
 {
     public float x { get { return _p2.x; } }
     public float y { get { return _y; } }
@@ -48,4 +48,19 @@ public struct Pos3
     public static Pos3 operator *(Pos3 p3, Slid s) => new Pos3(p3.v3 * s.f);
     public static Pos3 operator *(Slid s, Pos3 p3) => new Pos3(p3.v3 * s.f);
     public static Pos3 operator /(Pos3 p3, float f) => new Pos3(p3.v3 / f);
+    public static bool operator ==(Pos3 a, Pos3 b) => a.v3 == b.v3;
+    public static bool operator !=(Pos3 a, Pos3 b) => a.v3 != b.v3;
+    public override bool Equals(object obj)
+    {
+        if (!(obj is Pos3)) return false;
+        return (Pos3)obj == this;
+    }
+    public override int GetHashCode()
+    {
+        return v3.GetHashCode();
+    }
+
+    public Pos3 computeWorld(Transform parent) => new Pos3(parent.TransformPoint(v3));
+    public Pos3 computeLocal(Transform parent) => new Pos3(parent.InverseTransformPoint(v3));
+    public void update(Transform transform) { transform.localPosition = v3; }
 }

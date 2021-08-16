@@ -1,0 +1,16 @@
+a -> b -> c
+
+1 a.pos.set(new, world)
+2 a.pos.set(new, local)
+3 a.setParent(new, keepworld)
+4 a.setParent(new, keeplocal)
+
+
+must recalculate:
+1: (a) set-world, compute-local. (b) compute-world. (c) compute-world.
+2: (a) set-local, compute-world. (b) compute-world. (c) compute-world.
+3: (a) compute-local
+4: (a) compute-world.            (b) compute-world. (c) compute-world.
+
+
+system should now not at all call transforms when not necessary.

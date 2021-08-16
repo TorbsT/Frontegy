@@ -4,9 +4,11 @@ using UnityEngine;
 
 
 //[CreateAssetMenu(fileName = "SummonSpell.asset", menuName = "SummonSpell")]
+/*
 [System.Serializable]
 public class SummonSpell : Spell
 {
+    
     //[SerializeField] int unitId;  // Unit to spawn
     [SerializeField] private Role role; // unit spawned uses this role
     public Role Role { get { if (role == null) Debug.LogError("IllegalStateException"); return role; } }
@@ -23,4 +25,6 @@ public class SummonSpell : Spell
         // MAYBUG newTroop.parentTIle.instantiate()
     }
     public bool isRoleId(int id) { return role.isId(id); }
+    
 }
+*/

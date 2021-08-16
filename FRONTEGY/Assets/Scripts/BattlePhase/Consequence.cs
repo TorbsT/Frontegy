@@ -1,22 +1,20 @@
 ﻿public class Consequence
 {
-    private Troop troop;
-    private int step;
+    public int roundId { get => _roundId; }
+    public int troopId { get => _troopId; }
+    public int step { get => _step; }
+    public bool dies { get => _dies; }
+
+    private int _roundId;
+    private int _troopId;
+    private int _step;
+    private bool _dies;
     // Troop and step combined must be unique
-    private bool dies;
-    public Consequence(int step, Troop troop)
+    public Consequence(int roundId, int step, int troopId, bool dies)
     {
-        this.troop = troop;
-        this.step = step;
-
-        this.dies = false;
+        _roundId = roundId;
+        _troopId = troopId;
+        _step = step;
+        _dies = dies;
     }
-
-    public bool allMatches(int s, Troop t) { return stepMatches(s) && troopMatches(t); }
-    public bool troopMatches(Troop t) { return troop.Equals(t); }
-    public bool stepMatches(int s) { return s == step; }
-    private Troop getTroop() { return troop; }
-    private int getStep() { return step; }
-    public bool getDies() { return dies; }
-    public void setDies() { dies = true; }
 }

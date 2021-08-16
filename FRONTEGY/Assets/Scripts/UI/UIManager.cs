@@ -6,36 +6,20 @@ using TMPro;
 [System.Serializable]
 public class UIManager
 {
-
+    public static UIManager Instance { get; private set; }
     [System.NonSerialized] private GameMaster gm;
 
     [System.NonSerialized] private UILinker linker;
+    [SerializeField] private Transive transive;
     [SerializeReference] private UICaard uiCaard;
     [SerializeField] private float canvasDistance;
-
-    private Grid Grid
-    {
-        get
-        {
-            Grid g = gm.grid;
-            if (g == null) Debug.LogError("IllegalStateException");
-            return g;
-        }
-    }
-    private Cam Cam
-    {
-        get
-        {
-            Cam c = Grid.getCam();
-            if (c == null) Debug.LogError("IllegalStateException");
-            return c;
-        }
-    }
+    private Cam cam => Cam.Instance;
 
 
 
     public UIManager(float canvasDistance)
     {
+        Instance = this;
         gm = GameMaster.GetGM();
         this.canvasDistance = canvasDistance;
 
@@ -44,34 +28,28 @@ public class UIManager
         linker = go.GetComponent<UILinker>();
         if (linker == null) Debug.LogError("InspectorException: UIPrefab does not have UIController Component");
         linker.setUiManager(this);
+        transive = new Transive(linker.transform);
     }
 
     public void restart()
     {
-        uiCaard = new UICaard(this);
+        uiCaard = new UICaard();
     }
-
+    public Trans getTransAtPlace(UIPlace place)
+    {
+        return linker.getTransAtPlace(place);
+    }
+    public Transform getTransformAtPlace(UIPlace place)
+    {
+        return getRectAtPlace(place);
+    }
+    public RectTransform getRectAtPlace(UIPlace place)
+    {
+        return linker.getRectAtPlace(place);
+    }
     private GFX getGFX()
     {
         return getLinker().getGFX();
-    }
-    public Transform getUIPlace(UIPlace place)
-    {
-        if (place == UIPlace.caardBox) return getCaardBox();
-        Debug.LogError("IllegalStateException: UIPlace not associated with any Transform");
-        return null;
-    }
-    private RectTransform getCaardBox()
-    {
-        return getLinker().getCaardBox();
-    }
-    private Transform getTopTransform()
-    {  // The child of top transform. Doesn't have normal transform
-        return getLinker().getTop();
-    }
-    public RectTransform getCanvasTransform()
-    {
-        return getLinker().getCanvasTransform();
     }
     public Canvas getCanvas()
     {
@@ -105,13 +83,15 @@ public class UIManager
         unuizeAll();
         updateHeader(tp.getPhasePlayer());
 
-        Caard caard = tp.getCaardToShow();
-        uiCaard.setCaard(caard);
+        transive.pos3p.set(new Pos3());
+        Debug.Log("Tacticalstart");
+
+        List<Card> cards = tp.getCaardToShow();
+        uiCaard.setCards(cards);
     }
     public void tacticalUpdate()
     {
-        SetPosRot();
-        uiCaard.update();
+        showTrans();
     }
     private void updateHeader(Player player)
     {
@@ -120,12 +100,13 @@ public class UIManager
         header.text = player.getName();
         getGFX().setColAtPlace(player.getMatPlace(), RendPlace.header);
     }
-    void SetPosRot()
+    void showTrans()
     {
-        Transform t = getTopTransform();
-        Quaternion camRotation = Cam.getRotation();
-        Vector3 camPos = Cam.getV3();
+        Transform t = linker.transform;
+        Quaternion camRotation = cam.getRotation();
+        Vector3 camPos = cam.getV3();
         t.rotation = camRotation;
         t.position = camPos + t.forward * canvasDistance;
+
     }
 }

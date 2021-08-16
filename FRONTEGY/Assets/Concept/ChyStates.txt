@@ -1,0 +1,23 @@
+Troop id
+Round id
+
+getState returns a struct
+getState(roundId, troopId)
+
+getState accesses a "master state class"
+
+Gamestates:
+getTileState(roundId, tileId)
+getTroopState(roundId, troopId)
+getCardState(roundId, cardId)
+
+getTileStates(tileId)
+getTileStates(roundId)
+etc...
+
+
+States
+states.filterId()
+states.filterRound()
+states.filterSingle()
+tileStates.filterRoundTeam

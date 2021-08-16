@@ -6,6 +6,8 @@ using UnityEngine;
 [System.Serializable]
 public class Cam
 {  // OPT
+    public static Cam Instance { get; private set; }
+
     private Transform transform;
     private Camera camera;
     [SerializeField] private CamConfig config;
@@ -25,6 +27,7 @@ public class Cam
 
     public Cam(Camera camera, CamConfig config)
     {
+        Instance = this;
         if (config == null) Debug.LogError("IllegalArgumentException");
         this.config = config;
         if (camera == null) Debug.LogError("IllegalArgumentException");

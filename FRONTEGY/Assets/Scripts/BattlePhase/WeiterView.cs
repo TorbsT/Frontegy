@@ -18,7 +18,7 @@ public class WeiterView : View
     protected override bool bupdateVirtual(Control c)
     {
         addTime(0.01f);
-        getAllGroop().weiterUpdate(this);
+        AllGroop.Instance.weiterUpdate(this);
         return isDone();
     }
     private bool isDone() { return getSlid().isDone(); }

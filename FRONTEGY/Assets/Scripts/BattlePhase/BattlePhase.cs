@@ -11,12 +11,12 @@ public class BattlePhase : Phase
         // runs after Phase construction!
         stepId = 0;
         makeWeiterView();
-        stepCount = getResults().getMaxSteps();
+        stepCount = getResults().maxSteps;
         setType(PhaseType.battle);
     }
     protected override void startAbstra()
     {
-        getUiManager().battleStart();
+        UIManager.Instance.battleStart();
     }
     protected override bool bupdateAbstra(Control c)
     {

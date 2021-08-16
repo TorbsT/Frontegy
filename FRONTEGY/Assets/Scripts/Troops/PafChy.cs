@@ -7,7 +7,7 @@ public class PafChy : Chy
     
     
     //
-    public PafChy(Grid grid, Paf paf) : base(grid)
+    public PafChy(Paf paf)
     {
         setPaf(paf);
     }
@@ -18,8 +18,8 @@ public class PafChy : Chy
 
 
     //
-    public Tile lastTile() { return getPaf().lastTile(); }
-    public int getSteps() { return getPaf().GetBreadcrumbCount(); }
+    public Tile lastTile { get => getPaf().lastTile; }
+    public int getSteps { get => getPaf().count; }
     public Paf getPaf() { if (paf == null) Debug.LogError("IllegalStateException"); return paf; }
     public FromTo getFromTo(int step) { return getPaf().getFromTo(step); }
 
@@ -32,7 +32,7 @@ public class PafChy : Chy
     }
 
 
-    protected override Phy getPhy()
+    public override Phy getPhy()
     {
         return PafPool.Instance.getHost(this);
     }

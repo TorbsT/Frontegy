@@ -232,36 +232,23 @@ MonoBehaviour:
     - {x: 2, y: 2}
     startCardCount: 10
     giveSameCards: 1
-    cardBPs:
-      bps:
-      - spell:
-          role:
-            name: Ace
-            id: 0
-            frontFGPlace: 9
-            stats:
-              POW: 0
-              RANGE: 3
-      - spell:
-          role:
-            name: Two
-            id: 1
-            frontFGPlace: 10
-            stats:
-              POW: 1
-              RANGE: 2
-      - spell:
-          role:
-            name: King
-            id: 2
-            frontFGPlace: 21
-            stats:
-              POW: 100
-              RANGE: 3
+    roole:
+      _roles:
+      - {fileID: 11400000, guid: 1b4784c98f58b5b4a943419ff122853d, type: 2}
+      - {fileID: 11400000, guid: 974f9546158341d43b9aedc9de4d3f5b, type: 2}
+      - {fileID: 11400000, guid: 9247c4aa59152414d95cac3bbc3105c7, type: 2}
     backSprite: {fileID: 21300000, guid: cc427d52552a20c439b98cf8998573ae, type: 3}
+    _cardBPs:
+      _summonBPs:
+      - {fileID: 11400000, guid: 963697854cbb9584b89dfef1633dcc6b, type: 2}
+      - {fileID: 11400000, guid: 8d1f8a62517c5c4428960c1df9f891b5, type: 2}
+      - {fileID: 11400000, guid: 461564f9367f7ef4c8e5316e52929885, type: 2}
   stepDuration: 1
   heightScalar: 0
   tileLineHeight: 1
+  _notFoundMat:
+    place: 0
+    material: {fileID: 2100000, guid: f34a6904eaab0704f9207d13cba21480, type: 2}
   tileCreateAnimationSpeed: 1
   globalHoverMat: {fileID: 2100000, guid: fc36d38da941cb64f9214568e225b2bf, type: 2}
   globalSelectMat: {fileID: 2100000, guid: 390ff569dd7b3ae40b23228f388d038b, type: 2}
@@ -296,7 +283,9 @@ MonoBehaviour:
       x: 0
     circleRadius: 0
     focus:
-      v2: {x: 0, y: 0}
+      _p2:
+        _v2: {x: 0, y: 0}
+      _y: 0
   pools:
     tilePrefab: {fileID: 3898236102231413406, guid: c23a1cb9cbf0efa48a3e3befa623247d,
       type: 3}
@@ -321,20 +310,10 @@ MonoBehaviour:
     id: 0
   stepTimeLeft: 0
   playyer:
-    nonePlayer:
-      name: Belgium
-      mat:
-        place: 4
-        material: {fileID: 2100000, guid: 336b8f39c584ea54f904181e587f0399, type: 2}
+    nonePlayer: {fileID: 11400000, guid: 4bd63ee2a584ce844b96e388652f9a57, type: 2}
     players:
-    - name: RED
-      mat:
-        place: 5
-        material: {fileID: 2100000, guid: 5c41654410656924c9eec4c1b75f642a, type: 2}
-    - name: BLUE
-      mat:
-        place: 6
-        material: {fileID: 2100000, guid: 5982d0e2dc3341d46b0e7792055645a7, type: 2}
+    - {fileID: 11400000, guid: 32ceb39d6a9748749bf0ce445cb3685a, type: 2}
+    - {fileID: 11400000, guid: fe5788cd3cf97634bba175dd74011eaf, type: 2}
   uiManager:
     id: 0
   references:

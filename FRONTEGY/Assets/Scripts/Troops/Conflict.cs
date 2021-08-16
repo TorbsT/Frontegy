@@ -3,181 +3,127 @@ using UnityEngine;
 
 public abstract class Conflict
 {
-    public Conflict(int step, Troop a, Troop b)
+    public int step { get => _step; }
+    public int roundId { get => _roundId; }
+
+    private List<Duel> _duels;
+    private List<TroopState> _winners = new List<TroopState>();
+    private List<TroopState> _losers = new List<TroopState>();
+    private bool _computed = false;
+    private List<int> _involvedPlayers;
+    private List<TroopState> _involvedStateWrappers;
+
+    // Use an easier structure, not working at NASA here
+    // yes we are working at NASA, fuck easy structures
+    private List<int> _involvedTroops;
+    private int _step;
+    private int _roundId;
+
+    public Conflict(int roundId, int step, List<int> involvedTroops)
     {
         // Standardization:
         // When creating a new conflict, have two troops
         // More involved troops are found and can be merged
-        this.involvedTroops = new List<Troop>();
-        addTroop(a);
-        addTroop(b);
-        init(step);
-    }
-    public void init(int step)
-    {
-        modified = true;
-        this.step = step;
-        if (noInvolvedTroops()) Debug.LogError("Tried to make a conflict with 0 or null involvedTroops");
-    }
-    //public List<TroopStats> originalTroops;
-    // Use an easier structure, not working at NASA here
-    // yes we are working at NASA, fuck easy structures
-    private List<Troop> involvedTroops;
-    private List<Troop>[] winnersAndLosers;  // stored as state, since it should be calculated as rarely as possible
-    private bool modified;
-    private int step;
+        _involvedTroops = involvedTroops;
 
-
-    public void merge(Conflict c)
+        _roundId = roundId;
+        _step = step;
+        if (_involvedTroops.Count == 0) Debug.LogError("Tried to make a conflict with 0 or null involvedTroops");
+    }
+    public void mergeConflicts(Conflict c)
     {
-        foreach (Troop t in getInvolvedTroops())
+        foreach (int id in c._involvedTroops)
         {
-            addTroop(t);
+            addTroop(id);
         }
     }
-    private void addTroop(Troop t)
+    private void addTroop(int id)
     {
-        modified = true;
-        involvedTroops.Add(t);
+        _computed = false;
+        _involvedTroops.Add(id);
     }
 
-    public Consequi makeConsequi()
-    {  // TODO maybe change name to getConsequi, more standardized?
-        Consequi consequi = new Consequi();
-        foreach (Troop t in getLosers())
-        {
-            Consequence c = new Consequence(step, t);
-            c.setDies();
-            consequi.add(c);
-        }
-        return consequi;
-    }
-    public List<Troop> getInvolvedTroops() { return involvedTroops; }
-    private List<Troop> getWinners() { return getWinnersAndLosers()[0]; }
-    private List<Troop> getLosers() { return getWinnersAndLosers()[1]; }
-    private List<Troop>[] getWinnersAndLosers()
+    public void compute()
     {
-        if (modified) decideWinnersAndLosers();
-        return winnersAndLosers;
-    }
-    private List<Troop>[] decideWinnersAndLosers()
-    {  // 0 is winners, 1 is losers
-        modified = false;
+        _computed = true;
 
-        List<Troop>[] winnersAndLosers = new List<Troop>[2];
-        List<Troop> winners = new List<Troop>();
-        List<Troop> losers = new List<Troop>();
-
-        Player winningPlayer = getWinningPlayer();
-        winners = getTroopsOfPlayer(winningPlayer);
-        losers = getTroopsNotOfPlayer(winningPlayer);
-
-        winnersAndLosers[0] = winners;
-        winnersAndLosers[1] = losers;
-        return winnersAndLosers;
-    }
-    private Player getWinningPlayer()
-    {
-        
-        return winningPlayerByTroopCount();
-        
-    }
-    private Player winningPlayerByTroopCount()
-    {  // mostly used for debug purposes
-        List<Player> players = getInvolvedPlayers();
-        int record = 0;
-        Player recordHolder = null;
-        foreach (Player player in players)
+        // Sets up helper lists.
+        _involvedPlayers = new List<int>();
+        _involvedStateWrappers = new List<TroopState>();
+        List<TroopState> haventfought = new List<TroopState>();
+        for (int i = 0; i < _involvedTroops.Count; i++)
         {
-            int counter = getTroopsOfPlayer(player).Count;
-
-            if (counter > record)
-            {
-                recordHolder = player;
-                record = counter;
-            }
-        }
-        if (recordHolder == null) Debug.LogError("Something terribly wrong has happened");
-        return recordHolder;
-    }
-    private List<Troop> getTroopsNotOfPlayer(Player p)
-    {
-        List<Troop> troops = new List<Troop>();
-        foreach (Troop troop in involvedTroops)
-        {
-            if (!troop.getPlayer().isSamePlayer(p)) troops.Add(troop);
-        }
-        return troops;
-    }
-    private List<Troop> getTroopsOfPlayer(Player p)
-    {
-        List<Troop> troops = new List<Troop>();
-        foreach (Troop troop in involvedTroops)
-        {
-            if (troop.getPlayer().isSamePlayer(p)) troops.Add(troop);
-        }
-        return troops;
-    }
-    private List<Player> getInvolvedPlayers()
-    {
-        List<Player> players = new List<Player>();
-        for (int i = 0; i < involvedTroopsCount(); i++)
-        {
-            Troop troop = getTroop(i);
-            Player p = troop.getPlayer();
+            TroopState state = getTroopState(_involvedTroops[i]);
+            haventfought.Add(state);
+            _involvedStateWrappers.Add(state);
+            int playerId = state.ownerId;
             // is this player already registered?
-            bool newPlayer = true;
-            foreach (Player registeredPlayer in players)
+            if (!_involvedPlayers.Contains(playerId)) _involvedPlayers.Add(playerId);
+        }
+
+        // Sorts the involved state wrappers. This makes sure the strongest troops fight against eachother first
+        _involvedStateWrappers.Sort(TroopState.defaultTroopComparison);
+        while (true)
+        {
+            // THIS METHOD IS SHITTY. ONCE THE GAME WORKS, PLEASE FIX THIS TODO
+            // Gets one troop-statewrapper for each involved player
+            List<TroopState> duelTogether = new List<TroopState>();
+            foreach (int playerId in _involvedPlayers)
             {
-                if (p.isSamePlayer(registeredPlayer))
+                TroopState duellant = haventfought.Find(wrapper => wrapper.ownerId == playerId);
+                if (duellant == null) continue;
+                duelTogether.Add(duellant);
+            }
+            if (duelTogether.Count > 1)
+            {
+                Duel duel = new Duel(duelTogether);
+                _duels.Add(duel);
+                _winners.Add(duel.winner);
+                _losers.AddRange(duel.losers);
+
+                // Remove these so they don't fight again
+                haventfought.Remove(duel.winner);
+                foreach (TroopState loser in duel.losers)
                 {
-                    newPlayer = false;
-                    break;
+                    foreach (TroopState match in haventfought)
+                    {
+                        if (match.Equals(loser))
+                        {
+                            haventfought.Remove(loser);
+                            break;
+                        }
+                    }
                 }
             }
-            if (newPlayer) players.Add(p);
+            else if (duelTogether.Count == 1)
+            {
+                _winners.Add(duelTogether[0]);
+                break;
+            }
+            else
+            {
+                break;
+            }
+
         }
-        return players;
-    }
-    private Troop getTroop(int index)
-    {
-        if (troopOutOfRange(index))
+
+        
+
+        foreach (TroopState loser in _losers)
         {
-            Debug.LogError("Tried getting troop out of range");
-            return null;
+            loser.stepStates.addConsequence(new Consequence(_roundId, _step, loser.id, true));
         }
-        return involvedTroops[index];
     }
-    private bool troopOutOfRange(int index)
+    private TroopState getTroopState(int id)
     {
-        bool o = index < 0 || index >= involvedTroopsCount();
-        return o;
-    }
-    private bool noInvolvedTroops() { return involvedTroopsCount() == 0; }
-    private int involvedTroopsCount()
-    {
-        if (involvedTroops == null) return 0;
-        return involvedTroops.Count;
+        foreach (int i in _involvedTroops)
+        {
+            if (i == id) return Grid.Instance.troopStates.Find(troop => troop.id == id && troop.roundId == _roundId);
+        }
+        return null;
     }
 
     /*
-    public void ManualUpdate()
-    {
-
-    }
-    public void AutoResolve()
-    {
-        int winnerPlayerId;
-
-        float aPower = a.stats.units[0].myRole.stats.ATK;
-        float bPower = b.stats.units[0].myRole.stats.ATK;
-        if (aPower > bPower)
-        {
-            winnerPlayerId = a.stats.playerId;
-        }
-        else winnerPlayerId = b.stats.playerId;
-        Debug.Log("Winner: " + winnerPlayerId);
-    }
     public void DebugTroops(List<TroopData> troops)
     {
         foreach (TroopData troop in troops)
@@ -232,16 +178,25 @@ public abstract class Conflict
     */
     public bool canMerge(Conflict c)
     {
-        if (!sameStep(c)) return false;
+        if (_step != c._step) return false;
         if (!sameLoc(c)) return false;
         return true;
     }
-    private bool sameStep(Conflict c)
-    {
-        return getStep() == c.getStep();
-    }
     public abstract bool sameLoc(Conflict c);
+    public static Conflict makeConflict(int roundId, int stepId, TroopState a, TroopState b)
+    {
+        if (stepId <= 0) Debug.LogError("step should start at 1");
+        Tile af = a.stepStates.getStepState(stepId - 1).currentBreadcrumb.tile;
+        Tile at = a.stepStates.getStepState(stepId).currentBreadcrumb.tile;
+        Tile bf = b.stepStates.getStepState(stepId - 1).currentBreadcrumb.tile;
+        Tile bt = b.stepStates.getStepState(stepId).currentBreadcrumb.tile;
+        FromTo aft = new FromTo(af, at);
+        FromTo bft = new FromTo(bf, bt);
+        int aId = a.id;
+        int bId = b.id;
 
-    public bool isStep(int step) { return this.step == step; }
-    public int getStep() { return step; }
+        if (FromTo.meet(aft, bft)) return new TileConflict(roundId, stepId, new List<int> { aId, bId });
+        if (FromTo.pass(aft, bft)) return new BorderConflict(roundId, stepId, new List<int> { aId, bId });
+        return null;  // No appropriate conflict found for the two troops
+    }
 }

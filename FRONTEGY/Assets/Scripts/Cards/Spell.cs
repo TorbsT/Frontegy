@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+/*
 public abstract class Spell
 {
     // PARAMS WILL BE DEFINED IN STATIC OBJECTS  // ...excuse me what does that mean
@@ -18,3 +18,4 @@ public abstract class Spell
 
     protected abstract void use(Tile tile);
 }
+*/

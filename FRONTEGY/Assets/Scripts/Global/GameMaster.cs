@@ -5,6 +5,7 @@ using UnityEngine;
 public class GameMaster : MonoBehaviour
 {
     public Roster roster { get { return _roster; } }
+    public Mat notFoundMat { get { return _notFoundMat; } }
 
     [Header("Variables")]
     [SerializeField] private bool randomSeed;
@@ -13,6 +14,7 @@ public class GameMaster : MonoBehaviour
     [SerializeField] private float stepDuration = 1f;
     [SerializeField] public float heightScalar = 1f;
     [SerializeField] public float tileLineHeight = 1f;
+    [SerializeField] private Mat _notFoundMat;
 
     [SerializeField] public float tileCreateAnimationSpeed = 1f;
     [SerializeField] public Material globalHoverMat;
@@ -45,11 +47,8 @@ public class GameMaster : MonoBehaviour
     GridPivotConfig gridNone;
     GridPivotConfig gridAnchored;
     GridPivotConfig gridCentered;
+    private List<Transive> transives = new List<Transive>();
 
-    public UIManager UiManager { get { return uiManager; } }
-
-    public Playyer getPlayyer() { if (playyer == null) Debug.LogError("IllegalStateException"); return playyer; }
-    public static Groop getAllGroop() { return GetGM().internalGetAllGroop(); }
     public Cam getCam()
     {
         if (cam == null) Debug.LogError("IllegalStateException");
@@ -75,17 +74,12 @@ public class GameMaster : MonoBehaviour
         if (gm == null) Debug.LogError("Couldn't find GM");
         return gm;
     }
-    public static Tile sfindTile(TileLoc tileLoc) { return GetGM().findTile(tileLoc); }
-    public Tile findTile(TileLoc tileLoc) { return grid.getAllTiile().find(tileLoc); }
     public Coontrol getCoontrol()
     {
         if (coontrol == null) Debug.LogError("IllegalStateException");
         return coontrol;
     }
 
-    private Groop internalGetAllGroop() { return grid.getAllGroop(); }
-    private AllCaard internalGetAllCaard() { return grid.getAllCaard(); }
-    private AllTiile internalGetAllTiile() { return grid.getAllTiile(); }
     void Start()
     {
         cam = new Cam(getCamera(), getCamConfig());
@@ -100,7 +94,16 @@ public class GameMaster : MonoBehaviour
         
         ExecuteManualUpdates(control);
         HandlePlayerInput(control);  // outdated - TODO
+        showAllTransives();
     }
+    private void showAllTransives()
+    {
+        foreach (Transive transive in transives)
+        {
+            transive.showTransIfNecessary();
+        }
+    }
+    public void addTransive(Transive transive) { transives.Add(transive); }
     private void ExecuteManualUpdates(Control c)  // Replacement for mono update
     {
         grid.update(c);
@@ -122,12 +125,6 @@ public class GameMaster : MonoBehaviour
             gridConfig.setSeed(Random.Range(0, 9999999));
         }
         grid = new Grid(this, gridConfig);
-
-        gridNone = new GridPivotConfig(0f, 0f);
-        gridAnchored = new GridPivotConfig(0f, 0.5f);
-        gridCentered = new GridPivotConfig(-0.5f, 0.5f);
-
-        grid.previousTileShape = Grid.TileShape.none;
     }
     public Transform getPhyContainer()
     {
@@ -143,10 +140,6 @@ public class GameMaster : MonoBehaviour
     {
         if (camera == null) Debug.Log("InspectorException: Set GameMaster.camera");
         return camera;
-    }
-    public Player getCurrentPlayer()
-    {
-        return grid.getCurrentPlayer();
     }
     void HandlePlayerInput(Control c)
     {

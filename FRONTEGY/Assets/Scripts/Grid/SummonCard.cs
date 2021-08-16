@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+/*
 public class SummonCard : Card
 {  // UNUSED
     
@@ -19,3 +19,4 @@ public class SummonCard : Card
     }
     
 }
+*/

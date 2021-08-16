@@ -1,51 +1,44 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
 public class Tile : SelChy
 {
-    private GameMaster gm;
-    [SerializeReference] private TileLoc loc;
-    [SerializeField] private bool active;
-    private Reservoir reservoir;
+    public override Player owner { get => _state.owner; }
+    public TileState state { get => _state; }
+    public TileLoc loc { get { return _loc; } }
+    public Transform surfaceTransform { get { return getHost().surfaceTransform; } }
 
-    public Tile(Grid grid, bool instantiate, TileLoc loc, Player owner) : base(grid)
+    [SerializeField] private TileLoc _loc;
+    
+    private TileState _state;
+
+    public Tile(TileState state, TileLoc loc)
     {
-        this.loc = loc;
-        this.owner = owner;
-        gm = GameMaster.GetGM();
-        if (instantiate)
-        {
-            stage();
-        }
+        _state = state;
+        _loc = loc;
+        stage();
         initMats();
+        trans.pos3p.set(getPos3(), true);
     }
 
-    public void updateVisual()
-    {
-        trans.pos3 = getPos3();
-        showTrans();
-    }
     public Pos3 getPos3()
     {
         return loc.toPos3();
     }
-    public Reservoir getReservoir() { return reservoir; }
-    public bool isActive() { return active; }
-    private void activate() { active = true; }
-    public TileLoc getLoc() { return loc; }
-    private GameMaster getGM() { if (gm == null) Debug.LogError("Should never happen"); return gm; }
-    public Tiile getNeigTiile()
-    {
-        return getLoc().getValidNeigTiile();
-    }
-    public bool isNeigOfTile(Tile t) { return isNeigOfTileLoc(t.getLoc()); }
-    public bool isNeigOfTileLoc(TileLoc tl) { return TileLoc.areNeigs(getLoc(), tl); }
+    public bool isNeigOfTile(Tile t) { return isNeigOfTileLoc(t.loc); }
+    public bool isNeigOfTileLoc(TileLoc tl) { return TileLoc.areNeigs(loc, tl); }
     public void showMark(Breadcrumb bc)
     {
-        float timeOffset = (float)bc.stepsRemaining * 0.1f;
-        setFloat(RendPlace.top, "TimeOffset", timeOffset);  // REMEMBER TO ALSO CHANGE MAT BEFORE THIS, IF IT DOESN'T WORK
+        setMat(MatPlace.breadcrumb, RendPlace.top);
+
+        float timeMod = Mathf.Pow(2, bc.stepsRemaining);
+        float timeOffset = (float)bc.stepsRemaining * 0.3f;
+        //setFloat(RendPlace.top, "TimeMod", timeMod);
+        setFloat(RendPlace.top, "TimeOffset", timeOffset);
+
     }
     public void hideMark() { setMat(owner.getMatPlace(), RendPlace.top); }//hehehehe
 
@@ -56,9 +49,7 @@ public class Tile : SelChy
 
 
 
-
-
-    protected override Phy getPhy()
+    public override Phy getPhy()
     {
         return getHost();
     }
@@ -90,5 +81,9 @@ public class Tile : SelChy
     public override int GetHashCode()
     {
         return loc.GetHashCode();
+    }
+    public override string ToString()
+    {
+        return loc.ToString();
     }
 }

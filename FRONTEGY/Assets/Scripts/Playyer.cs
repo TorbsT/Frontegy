@@ -14,6 +14,7 @@ public class Playyer
     public void init()
     {
         Instance = this;
+        if (nonePlayer == null) Debug.LogError("InspectorException: set Playyer.nonePlayer");
         nonePlayer.init();
     }
 
@@ -22,7 +23,15 @@ public class Playyer
         if (outOfBounds(index)) Debug.LogError("IndexOutOfBoundsException");
         return getPlayers()[index];
     }
-
+    public Player getPlayer(int id)
+    {
+        foreach (Player player in players)
+        {
+            if (player.id == id) return player;
+        }
+        Debug.LogError("IllegalArgumentException: no player with id " + id);
+        return null;
+    }
     public Player playerAfter(Player player)
     {
         if (player == null) Debug.LogError("IllegalArgumentException");
@@ -45,6 +54,11 @@ public class Playyer
         if (noPlayers()) Debug.LogError("IllegalStateException");
         return getPlayerByIndex(0);
     }
+    public Player getLastPlayer()
+    {
+        if (noPlayers()) Debug.LogError("IllegalStateException");
+        return getPlayerByIndex(players.Count-1);
+    }
 
     public Player getNonePlayer()
     {
@@ -66,6 +80,7 @@ public class Playyer
     public List<Player> getPlayers()
     {
         if (players == null) Debug.LogError("IllegalStateException");
+        if (players.Count == 0) Debug.LogError("InspectorException: Assign players");
         return players;
     }
 }

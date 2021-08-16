@@ -11,7 +11,7 @@ public class Tiile
     //private HashSet<Tile> map = new HashSet<Tile>(); couldn't get it to work :(
     private Dictionary<TileLoc, Tile> dict = new Dictionary<TileLoc, Tile>();
 
-    public Tiile(List<Tile> tiles) { if (tiles == null) Debug.LogError("Should never happen"); this.tiles = tiles; }
+    public Tiile(List<Tile> tiles) { if (tiles == null) Debug.LogError("Should never happen"); add(tiles); }
 
     public Tile getTile(TileLoc loc)
     {
@@ -26,9 +26,17 @@ public class Tiile
         if (tiles == null) Debug.LogError("Should never happen");
         return tiles;
     }
+    public void add(List<Tile> tiles)
+    {
+        if (tiles == null) Debug.LogError("IllegalArgumentException");
+        foreach (Tile t in tiles)
+        {
+            add(t);
+        }
+    }
     public void add(Tile t)
     {
-        TileLoc loc = t.getLoc();
+        TileLoc loc = t.loc;
         if (dict.ContainsKey(loc)) Debug.LogError("IllegalArgumentException");
         dict.Add(loc, t);
         getTiles().Add(t);
@@ -111,4 +119,17 @@ public class Tiile
         return reservoirs[0];
     }
     */
+    public TileLooc getTileLooc()
+    {
+        List<TileLoc> locs = new List<TileLoc>();
+        foreach (Tile t in getTiles())
+        {
+            locs.Add(t.loc);
+        }
+        return new TileLooc(locs);
+    }
+    public override string ToString()
+    {
+        return getTileLooc().ToString();
+    }
 }

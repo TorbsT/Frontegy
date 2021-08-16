@@ -15,8 +15,8 @@ public struct FromTo
     {
         if (from == null) Debug.LogError("IllegalArgumentException");
         if (to == null) Debug.LogError("IllegalArgumentException");
-        this.from = from.getLoc();
-        this.to = to.getLoc();
+        this.from = from.loc;
+        this.to = to.loc;
     }
 
     public static bool meet(FromTo a, FromTo b)

@@ -29,11 +29,10 @@ public abstract class Pool<Client, Host> : IPool where Client : IPoolClient wher
         Host host = queue.Dequeue();
         hostDict.Add(client, host);
         clientDict.Add(host, client);
-        host.staged = true;
         client.staged = true;
         allHosts.Add(host);
         host.gameObject.SetActive(true);
-        host.insChy = (Chy)client;
+        host.insChy = (IPoolClient)client;
         //return host;
     }
     public void unstage(Client client)
@@ -61,7 +60,6 @@ public abstract class Pool<Client, Host> : IPool where Client : IPoolClient wher
         hostDict.Remove(client);
         clientDict.Remove(host);
         allHosts.Remove(host);
-        host.staged = false;
         client.staged = false;
         host.gameObject.SetActive(false);
     }

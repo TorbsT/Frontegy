@@ -4,9 +4,8 @@ using UnityEngine;
 
 public abstract class SelChy : Chy, IPlayerOwned
 {
-    public Player owner { get; set; }
-
-    public SelChy(Grid grid) : base(grid) { }
+    public abstract Player owner { get; }
+    public int ownerId { get => owner.id; }
 
 
 
@@ -24,13 +23,15 @@ public abstract class SelChy : Chy, IPlayerOwned
     }
     public virtual void hover()
     {
-        Debug.Log("pen");
         setMat(MatPlace.hover, RendPlace.selectable);
     }
     public virtual void primarySelect()
     {
         setMat(MatPlace.select, RendPlace.selectable);
     }
+    public virtual bool canSecondarySelectOn(SelChy selChy) => false;
+    public virtual void secondarySelectOn(SelChy selChy) { }
+
     protected MatPlace getPlayerMatPlace()
     {
         if (owner == null) Debug.LogError(this + " tried accessing playerMatPlace, but owner was null");

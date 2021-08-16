@@ -12,18 +12,28 @@ public class TileLooc
         if (locs == null) Debug.LogError("Should never happen");
         this.locs = locs;
 
-
+        
         List<Tile> tiles = new List<Tile>();
-        validTiile = new Tiile(tiles);
         foreach (TileLoc loc in locs)
         {
             Tile t = loc.findTile();
-            if (t != null) validTiile.add(t);
+            Debug.Log("Loc "+loc+" has tile : "+(t != null));
+            if (t != null) tiles.Add(t);
         }
         validTiile = new Tiile(tiles);
     }
     public Tiile getValidTiile()
     {
         return validTiile;
+    }
+    public override string ToString()
+    {
+        string txt = "TileLooc [ ";
+        foreach (TileLoc loc in locs)
+        {
+            txt += loc;
+        }
+        txt += "]";
+        return txt;
     }
 }

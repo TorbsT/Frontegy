@@ -8,17 +8,14 @@ public class UICaard : Caard
     private UIManager manager;
     private Quaternion rotation;
 
-    public UICaard(UIManager manager) : base()
+    public UICaard() : base()
     {
-        if (manager == null) Debug.LogError("IllegalArgumentException");
-        this.manager = manager;
+        manager = UIManager.Instance;
     }
-    public void update()
-    {
-        setUICaardPos();
-    }
+
     private void setUICaardPos()
     {
+        // called once
         rotation = Quaternion.identity;
         //rotation *= Quaternion.Euler(90, 0, 0);
         for (int index = 0; index < getCount(); index++)
@@ -35,9 +32,8 @@ public class UICaard : Caard
 
             Pos3 p3 = new Pos3(x, y, 0f);
             Quaternion rot = rotation;
-            c.trans.pos3 = p3;
-            c.trans.rot = rot;
-            c.showTrans();
+            c.trans.setParent(manager.getTransAtPlace(UIPlace.caardBox), true);
+            c.trans.pos3p.set(p3, true);
         }
     }
     public void unuizeAll()
@@ -54,13 +50,15 @@ public class UICaard : Caard
         List<Card> cards = caard.getCards();
         int count = caard.getCount();
         makeEmpty();
+        
         for (int i = count-1; i >= 0; i--)
         {
             Card c = cards[i];
             add(c);
-            c.display(UIPlace.caardBox);
+
         }
-        
+        setUICaardPos();
+
         /*
         foreach (Card c in caard.getCards())
         {

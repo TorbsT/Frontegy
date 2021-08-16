@@ -3,10 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class Player
+[CreateAssetMenu(fileName = "Player", menuName = "ScriptableObjects/Player", order = 2)]
+public class Player : ScriptableObject
 {
-    [SerializeField] private string name;
+    public int id { get => _id; }
+
+    [SerializeField] private int _id;
     [SerializeField] private Mat mat;  // 21/07/06 - ONLY DEFAULT. may be overriden in phys
 
     public bool isSamePlayer(Player p)

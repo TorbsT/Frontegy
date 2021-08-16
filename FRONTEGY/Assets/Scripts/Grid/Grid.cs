@@ -5,122 +5,98 @@ using UnityEngine;
 [System.Serializable]
 public class Grid
 {
-    [System.Serializable]
-    public enum GridConfigs
-    {
-        none,
-        anchored,
-        centered,
-    }
-    public enum TileShape
-    {
-        none,
-        trianglePrism,
-        squarePrism,
-        hexagonPrism
-    }
-
+    public static Grid Instance { get; private set; }
     [Header("Grid Variables")]
-    public TileShape tileShape;
-    public GridConfigs gridConfig;
     public Vector2Int gridSize;
     [Range(0.2f, 1.0f)]
     public float tileRatio;
 
-    internal Player getFirstPlayer()
-    {
-        return getPlayyer().getFirstPlayer();
-    }
-
-    [Range(0.0f, 1.0f)]
-    public float tileGap;
-    [Range(0.1f, 10.0f)]
-    public float tileSize;
-
-    // ONLY TEMPORARY
-    public int startingTroops;
-
     [Header("Grid Debug")]
-    public GameMaster gm;
     private GridConfig config;
-    private AllTiile allTiile;
-    private AllCaard allCaard;
-    private Groop allGroop;
+
     private Rds rds;
-    private PhaseManager pm;
-    private Playyer playyer;
-    private Roole roole;
     [SerializeReference] private SelMan selectionManager;
-    int debug;
-    public List<Reservoir> reservoirs;
 
-    //public List<Tile> tiles;
-    //public List<Troop> troopScripts;
+    public List<TileState> tileStates { get => _tileStates; }
+    public List<TroopState> troopStates { get => _troopStates; }
+    public List<CardState> cardStates { get => _cardStates; }
 
+    public AllTiile allTiile { get => _allTiile; }
+    public AllCaard allCaard { get => _allCaard; }
+    public AllGroop allGroop { get => _allGroop; }
+    public List<TacticalHistory> tacticalHistories { get => _tacticalHistories; }
 
-    [System.NonSerialized] public GridPivotConfig currentGrid;
-    [System.NonSerialized] public TileShape previousTileShape;
-    public UIManager UiManager { get { return gm.UiManager; } }
+    private List<TileState> _tileStates = new List<TileState>();
+    private List<TroopState> _troopStates = new List<TroopState>();
+    private List<CardState> _cardStates = new List<CardState>();
 
-
-
-
+    private List<TacticalHistory> _tacticalHistories = new List<TacticalHistory>();
+    private AllTiile _allTiile;
+    private AllCaard _allCaard;
+    private AllGroop _allGroop;
+    private RoundManager pm;
+    private ActionManager _actionManager;
     public Grid(GameMaster gm, GridConfig config)
     {
+        Instance = this;
         Debug.Log("grid restarted");
         if (gm == null) Debug.LogError("IllegalArgumentException");
         if (config.getSize().x <= 0 || config.getSize().y <= 0) Debug.LogError("IllegalArgumentException");
         //if (config.getNonePlayerTileWeight() + config.getPlayer0TileWeight() + config.getPlayer1TileWeight() == 0) Debug.LogError("IllegalArgumentException: Please provide atleast one weight other than 0");
-        this.gm = gm;
         this.config = config;
-
-        roole = config.getBPs().makeRooleFromSummonBPs();
-        roole.applyRoles();
-
-        playyer = getGM().getPlayyer();
-        pm = new PhaseManager(this);
+        config.cardBPs.init();
+        config.getRoole().init();
+        pm = new RoundManager(this);
         rds = new Rds(config.getSeed());
-        allTiile = genRectTiile();
-        allTiile.updateVisuals();
-        allGroop = new Groop();
+        _allTiile = genRectTiile();
+        _allGroop = new AllGroop();
+        _actionManager = new ActionManager();
 
         //allCaard = new AllCaard();  // temp
-        allCaard = genStartCaard();
+        _allCaard = genStartCaard();
 
         //gameMaster.StartingCards();
-        selectionManager = new SelMan(getCam());
+        selectionManager = new SelMan(Cam.Instance);
     }
-
-    public void planPaf(Troop troop, PafChy pafChy)
+    public void update(Control c)
+    {
+        pm.update(c);
+    }
+    public void makeStatesForNewRound(Round oldRound)
     {
 
-    }
-    public void removePaf(Troop troop)
-    {
+        // states should be updated independently, e.g. use oldRound.results when changing tile owners.
+        foreach (TileState tileState in _tileStates.FindAll(state => state.roundId == oldRound.roundId))
+        {
+            TileState newState = tileState.copy();
+            newState.roundId++;
+
+            // Updates the Tile of corresponding loc. (should be exactly one)
+            Tile tile = _allTiile.find(newState.loc);
+            if (tile == null) Debug.LogError("what the hell is this");
+
+            // adds this state to list to be looked up later
+            _tileStates.Add(newState);
+        }
+        foreach (TroopState troopState in _troopStates.FindAll(state => state.roundId == oldRound.roundId))
+        {
+            TroopState newState = troopState.copy();
+            newState.roundId++;
+            Breadcrumb startBreadcrumb = new Breadcrumb(newState.parentTile, newState.role.baseStats.getRANGE());
+            newState.djikstra = new Djikstra(startBreadcrumb);
+            newState.paf = new Paf(startBreadcrumb);
+            if (!troopState.stepStates.currentDead)
+            {
+                Tile newParentTile = troopState.stepStates.currentBreadcrumb.tile;
+                newState.parentTile = newParentTile;
+                TileState newParentTileState = tileStates.Find(state => state.roundId == newState.roundId && state.loc == newParentTile.loc);
+                newParentTileState.ownerId = troopState.ownerId;
+            }
+
+            _troopStates.Add(newState);
+        }
 
     }
-    public TroopPlan getTroopPlan(Troop troop)
-    {
-        return getPhaseManager().getTroopPlan(troop);
-    }
-    public Transform getPhyContainer()
-    {
-        return getGM().getPhyContainer();
-    }
-    private void setTransformParent(Transform p, Transform t)
-    {
-        t.SetParent(p, true);
-    }
-    private Transform getUIPlace(UIPlace place)
-    {
-        return UiManager.getUIPlace(place);
-    }
-    public SelMan getSelectionManager()
-    {
-        if (selectionManager == null) Debug.LogError("IllegalStateException");
-        return selectionManager;
-    }
-
     private AllCaard genStartCaard()
     {
         AllCaard ac = new AllCaard();
@@ -135,12 +111,16 @@ public class Grid
             string write = "";
             foreach (int id in cardMap)
             {
-                SummonBP sbp = config.getBPs().getSummonBP(id);
+                SummonCardBP sbp = CardBPs.Instance.getSummonBP(id);
                 write += sbp + ", ";
-                Card c0 = new Card(this, sbp, getPlayerByIndex(0));
-                Card c1 = new Card(this, sbp, getPlayerByIndex(1));
-                ac.add(c0);
-                ac.add(c1);
+                foreach (Player player in Playyer.Instance.getPlayers())
+                {
+                    CardState state = new CardState();
+                    state.blueprint = sbp;
+                    state.owner = player;
+                    Card card = new Card(state);
+                    ac.add(card);
+                }
             }
             Debug.Log(write);
         }
@@ -148,7 +128,7 @@ public class Grid
     }
     private AllTiile genRectTiile()
     {  // dysfunction hihihihi
-        GameMaster gm = GameMaster.GetGM();
+        // grow up you poopyhead
         int rows = config.getSize().x;
         int cols = config.getSize().y;
         int tileCount = rows * cols;
@@ -167,10 +147,12 @@ public class Grid
                 int p = playerMap[tempId];
 
                 Player player;
-                if (p == -1) player = getNonePlayer();
-                else player = getPlayerByIndex(p);
+                if (p == -1) player = Playyer.Instance.getNonePlayer();
+                else player = Playyer.Instance.getPlayerByIndex(p);
 
-                Tile tile = new Tile(this, true, tloc, player);
+                TileState state = new TileState();
+                state.owner = player;
+                Tile tile = new Tile(state, tloc);
                 tiles.Add(tile);
             }
         }
@@ -186,79 +168,5 @@ public class Grid
         float centerRowFloat = rows/2f;
         float centerColFloat = cols/2f;
         return TileLoc.toPos3(centerRowFloat, 0f, centerColFloat);
-        /*
-        bool centerIsOnBorder = Mathf.Floor(centerRowFloat) != centerRowFloat || Mathf.Floor(centerColFloat) != centerColFloat;
-        if (centerIsOnBorder)
-        {
-            // MiddleLoc is between two or more tiles. Must create a FloatLoc.
-            int centerRowA = Mathf.FloorToInt(centerRowFloat);
-            int centerColA = Mathf.FloorToInt(centerColFloat);
-            int centerRowB = Mathf.CeilToInt(centerRowFloat);
-            int centerColB = Mathf.CeilToInt(centerColFloat);
-
-            TileLoc a = new TileLoc(centerRowA, centerColA);
-            TileLoc b = new TileLoc(centerRowB, centerColB);
-
-            return new BorderLoc(a, b);
-        } else
-        {
-            // MiddleLoc is a TileLoc. Easy job.
-            int centerRow = rows / 2;
-            int centerCol = cols / 2;
-            return new TileLoc(centerRow, centerCol);
-        }
-        */
     }
-
-    public Player getPlayerByIndex(int p)
-    {
-        return getPlayyer().getPlayerByIndex(p);
-    }
-    public Player playerAfter(Player player)
-    {
-        return getPlayyer().playerAfter(player);
-    }
-    public Player getNonePlayer()
-    {
-        return getPlayyer().getNonePlayer();
-    }
-    public bool isLastPlayer(Player player)
-    {
-        return getPlayyer().isLastPlayer(player);
-    }
-    public Player getCurrentPlayer()
-    {
-        return pm.getPlayer();
-    }
-
-    public PhaseManager getPhaseManager()
-    {
-        if (pm == null) Debug.LogError("IllegalStateException");
-        return pm;
-    }
-    public Caard getCaardInHandOf(Player player) { return getAllCaard().getCaardOwnedBy(player); }
-
-    public Groop getAllGroop()
-    {
-        if (allGroop == null) Debug.LogError("IllegalStateException: bad construction of grid");
-        return allGroop;
-    }
-    public AllCaard getAllCaard()
-    {
-        if (allCaard == null) Debug.LogError("IllegalStateException: bad construction of grid");
-        return allCaard;
-    }
-    public AllTiile getAllTiile()
-    {
-        if (allTiile == null) Debug.LogError("IllegalStateException: bad construction of grid");
-        return allTiile;
-    }
-
-    public void update(Control c)
-    {
-        getPhaseManager().update(c);
-    }
-    public Cam getCam() { return getGM().getCam(); }
-    public GameMaster getGM() { if (gm == null) Debug.LogError("IllegalStateException"); return gm; }
-    private Playyer getPlayyer() { if (playyer == null) Debug.LogError("IllegalStateException"); return playyer; }
 }

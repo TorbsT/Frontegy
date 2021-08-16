@@ -122,14 +122,13 @@ public class Breadcruumb
 
         return getBreadcrumbs()[index];
     }
-    public Paf makePaf()
-    {
-        return new Paf(this);
-    }
     public void showMarks()
     {
+        Debug.Log("Show marks!");
+        Debug.Log(this);
         foreach (Breadcrumb bc in getBreadcrumbs())
         {
+            Debug.Log("Show mark for me!");
             bc.showMark();
         }
     }
@@ -139,5 +138,16 @@ public class Breadcruumb
         {
             bc.hideMark();
         }
+    }
+
+    public override string ToString()
+    {
+        string txt = "Breadcruumb [ ";
+        foreach (Breadcrumb bc in getBreadcrumbs())
+        {
+            txt += bc + " ";
+        }
+        txt += "]";
+        return txt;
     }
 }

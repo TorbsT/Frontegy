@@ -22,4 +22,5 @@
     jackFrontFG,
     queenFrontFG,
     kingFrontFG,
+    breadcrumb,
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public interface IPoolHost
 {
-    bool staged { get; set; }
-    Chy insChy { set; }
+    bool staged { get; }
+    IPoolClient insChy { set; }
     void unstage();  // E.g. when restarting and all Phys should be unstaged
 }

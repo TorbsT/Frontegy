@@ -4,7 +4,7 @@ using UnityEngine;
 public class TacticalPhase : Phase
 {
     private View v;
-    private RoundPlan phasePlan;
+    private TacticalHistory history;
 
     public TacticalPhase(Round round, Player phasePlayer) : base(round, phasePlayer)
     {
@@ -12,30 +12,28 @@ public class TacticalPhase : Phase
         v = new FreeView(this);
         setType(PhaseType.tactical);
 
-        
+
         // TODO NEXT URGENT
         // when tactical phase starts, get caard of the phase player and put them into uicaard.
         // how is phase player stored again...?
+        history = new TacticalHistory(roundId, phasePlayer.id);
+        Grid.Instance.tacticalHistories.Add(history);
     }
-    public Results getResults(RoundPlan phasePlan)
+    public List<Card> getCaardToShow()
     {
-        return null;
-    }
-    public Caard getCaardToShow()
-    {
-        return getGrid().getCaardInHandOf(getPhasePlayer());
+        return AllCaard.Instance.getCards().FindAll(match => match.state.ownerId == phaseOwnerId);
     }
 
     protected override void startAbstra()
     {
-        getUiManager().tacticalStart(this);
-        getAllGroop().tacticalStart();
+        UIManager.Instance.tacticalStart(this);
+        Grid.Instance.allGroop.tacticalStart();
     }
     protected override bool bupdateAbstra(Control c)
     {
         bool done = false;
         v.bupdate(c);
-        getUiManager().tacticalUpdate();
+        UIManager.Instance.tacticalUpdate();
         return done;
     }
 }

@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 [System.Serializable]  // for objectcopiers sake
 public struct Breadcrumb
@@ -8,7 +10,7 @@ public struct Breadcrumb
     //private int step;  // not affected by portals, unused
 
 
-    public Breadcrumb(Tile tile, int stepsRemaining, int step = 0)
+    public Breadcrumb(Tile tile, int stepsRemaining)
     {
         this.tile = tile;
         this.stepsRemaining = stepsRemaining;
@@ -17,7 +19,7 @@ public struct Breadcrumb
     public bool isNeigOfTile(Tile t) { return getTile().isNeigOfTile(t); }
     public bool sameTileAs(Breadcrumb b) { return isTile(b.getTile()); }
     public bool isTile(Tile t) { return getTile() == t; }
-    public Tiile getNeigTiile() { return getTile().getNeigTiile(); }
+    public Tiile getValidNeigTiile() { return getTile().loc.getValidNeigTiile(); }
     public Tile getTile() { if (isInvalid()) Debug.LogError("TRIED USING INVALID BREADCRUMB"); return tile; }
     public bool isInvalid() { return !isValid(); }  
     public bool isValid() { return tile != null; } // don't use getTile() here
@@ -26,7 +28,7 @@ public struct Breadcrumb
 
     public static Breadcrumb makeInvalid()
     {
-        return new Breadcrumb(null, -1, -1);
+        return new Breadcrumb(null, -1);
     }
     public static Breadcrumb makeStarter(Tile t, int stepsRemaining)
     {
@@ -37,6 +39,17 @@ public struct Breadcrumb
         return new Breadcrumb(t, stepsRemaining - 1);
     }
 
+    public List<Breadcrumb> getValidNeigBreadcrumbs()
+    {
+        List<Breadcrumb> bcs = new List<Breadcrumb>();
+        if (stepsRemaining == 0) return bcs;
+        foreach (Tile tile in getValidNeigTiile().getTiles())
+        {
+            Breadcrumb bc = new Breadcrumb(tile, stepsRemaining - 1);
+            bcs.Add(bc);
+        }
+        return bcs;
+    }
 
     public static bool sameTile(Breadcrumb a, Breadcrumb b) => a.tile == b.tile;
 
@@ -55,6 +68,10 @@ public struct Breadcrumb
     public override int GetHashCode()
     {
         return tile.GetHashCode();
+    }
+    public override string ToString()
+    {
+        return "(" + tile + " " + stepsRemaining + ")";
     }
 
 }

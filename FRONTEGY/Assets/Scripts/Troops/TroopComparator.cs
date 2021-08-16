@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
 public class TroopComparator : Comparer<Troop>
 {
     public override int Compare(Troop x, Troop y)
@@ -9,3 +10,4 @@ public class TroopComparator : Comparer<Troop>
         return x.getUnit().getPOW() - y.getUnit().getPOW();
     }
 }
+*/

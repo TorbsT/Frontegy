@@ -7,20 +7,6 @@ public class Reend
 {
     [SerializeField] private List<Rend> rends;
 
-    public void setMat(Mat mat)
-    {
-        foreach (Rend r in getRends())
-        {
-            r.setMat(mat);
-        }
-    }
-    public void setCol(Col col)
-    {
-        foreach (Rend r in getRends())
-        {
-            r.setCol(col);
-        }
-    }
     public bool setMatAtPlace(Mat mat, RendPlace place)
     {
         int counter = 0;

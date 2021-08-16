@@ -6,14 +6,17 @@ using UnityEngine;
 [System.Serializable]
 public class Card : SelChy  // changed to class since i didn't know why it should be struct
 {  // TODO Currently only supports handCard, not upgrades
-    [SerializeReference] private SummonBP blueprint;
+    public override Player owner { get => _state.owner; }
+    public int roleId { get => blueprint.roleId; }
+    public Role role { get => blueprint.role; }
+    private SummonCardBP blueprint { get => _state.blueprint; }
 
-    public Card(Grid grid, SummonBP blueprint, Player owner) : base(grid)
+    public CardState state { get => _state; }
+    private CardState _state;
+
+    public Card(CardState state)
     {
-        if (blueprint == null) Debug.LogError("IllegalArgumentException");
-        this.blueprint = blueprint;
-        if (owner == null) Debug.LogError("IllegalArgumentException");
-        this.owner = owner;
+        _state = state;
         stage();
         initMats();
     }
@@ -21,15 +24,29 @@ public class Card : SelChy  // changed to class since i didn't know why it shoul
     public void display(UIPlace place)
     {
         //getCardPhy().displayFGs(); MAYBUG
+
         uize();
     }
 
-    public void castOn(Tile tile, CastType type)  // ownerId difficult when casting from tactical?
+    public override bool canSecondarySelectOn(SelChy selChy)
     {
-        getBlueprint().cast(this, tile, type);
+        Tile tile = (Tile)selChy;
+        if (tile != null)
+        {
+            if (tile.state.ownerId == state.ownerId) return true;
+        }
+        return false;
+    }
+    public override void secondarySelectOn(SelChy selChy)
+    {
+        Tile tile = (Tile)selChy;
+        if (tile != null)
+        {
+            blueprint.cast(this, tile, CastType.summon);
+        }
     }
 
-    public SummonBP getBlueprint() { if (blueprint == null) Debug.LogError("IllegalStateException"); return blueprint; }
+    public SummonCardBP getBlueprint() { if (blueprint == null) Debug.LogError("IllegalStateException"); return blueprint; }
     public bool canCastOn(Tile tile)
     {
         return tile.owner == owner;
@@ -38,20 +55,10 @@ public class Card : SelChy  // changed to class since i didn't know why it shoul
     {
         return CardPool.Instance.getHost(this);
     }
-    public Role getRole()
-    {
-        return blueprint.getRole();
-    }
-
-    private MatPlace getRoleMatPlace()
-    {
-        MatPlace place = getRole().getFrontFGPlace();
-        return place;
-    }
 
     public override void initMats()
     {
-        setMat(getRoleMatPlace(), RendPlace.frontFG);
+        setMat(blueprint.frontFGMatPlace, RendPlace.frontFG);
         setMat(MatPlace.backFG, RendPlace.backFG);
         setMat(MatPlace.initialSel, RendPlace.selectable);
         setCol(getPlayerMatPlace(), RendPlace.FG);
@@ -60,7 +67,7 @@ public class Card : SelChy  // changed to class since i didn't know why it shoul
     {
         return MatPlace.initialSel;
     }
-    protected override Phy getPhy()
+    public override Phy getPhy()
     {
         return getCardPhy();
     }

@@ -9,12 +9,11 @@ public class UILinker : Linker
     // Also displays internal state of UIManager to inspector.
     [Header("View internal state")]
     [SerializeReference] private UIManager uiManager;
+    [SerializeField] private Transive _transive;
 
     [Header("Assign variables")]
-    [SerializeField] private Transform top;
     [SerializeField] private Canvas canvas;
-    [SerializeField] private RectTransform canvasTransform;
-    [SerializeField] private RectTransform caardBox;
+    [SerializeField] private List<UIRect> uiRects;
     [SerializeField] private TextMeshProUGUI header;
 
     public void setUiManager(UIManager uiManager)
@@ -22,27 +21,35 @@ public class UILinker : Linker
         if (uiManager == null) Debug.LogError("IllegalArgumentException");
         if (this.uiManager != null) Debug.LogError("IllegalStateException");
         this.uiManager = uiManager;
-    }
+        _transive = new Transive(transform);
 
-    public RectTransform getCaardBox()
-    {
-        if (caardBox == null) Debug.LogError("InspectorException: set UILinker.caardBox");
-        return caardBox;
+        foreach (UIRect uiRect in uiRects)
+        {
+            uiRect.setTransParent(_transive);
+        }
     }
-    public RectTransform getCanvasTransform()
+    public Trans getTransAtPlace(UIPlace place)
     {
-        if (canvasTransform == null) Debug.LogError("InspectorException: set UILinker.canvasTransform");
-        return canvasTransform;
+        return getUIRectAtPlace(place).trans;
+    }
+    public RectTransform getRectAtPlace(UIPlace place)
+    {
+        return getUIRectAtPlace(place).rect;
+    }
+    private UIRect getUIRectAtPlace(UIPlace place)
+    {
+        if (place == UIPlace.none) Debug.LogError("IllegalArgumentException");
+        foreach (UIRect rect in uiRects)
+        {
+            if (rect.place == place) return rect;
+        }
+        Debug.LogError("InspectorException: UIPlace '" + place + "' is unassigned but was tried accessed");
+        return null;
     }
     public Canvas getCanvas()
     {
         if (canvas == null) Debug.LogError("InspectorException: Set UILinker.canvas");
         return canvas;
-    }
-    public Transform getTop()
-    {
-        if (top == null) Debug.LogError("InspectorException: Set UILinker.top");
-        return top;
     }
     public TextMeshProUGUI getHeader()
     {

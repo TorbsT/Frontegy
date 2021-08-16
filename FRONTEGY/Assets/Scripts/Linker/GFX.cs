@@ -6,6 +6,7 @@ using UnityEngine;
 public class GFX
 {  // Provides a dictionary on renderers, materials and colors used in a GO.
     // as of now, public methods only use enums as arguments.
+    public static Mat notFoundMat { get { return GameMaster.GetGM().notFoundMat; } }
     [SerializeField] private string name;
     [SerializeField] private Reend reend;
     [SerializeField] private Maat maat;
@@ -13,43 +14,49 @@ public class GFX
 
     public void setMatAtPlace(MatPlace matPlace, RendPlace rendPlace)
     {
-        bool success = getReend().setMatAtPlace(getMatAtPlace(matPlace), rendPlace);
-        if (!success) rendNotFound(rendPlace);
+        Mat mat = getMatAtPlace(matPlace);
+        if (mat == null)
+        {
+            mat = notFoundMat;
+            Debug.LogWarning(this + " tried setting matPlace '" + matPlace + "' on RendPlace '" + rendPlace + "', but that matPlace wasn't assigned in inspector.");
+        }
+        bool success = getReend().setMatAtPlace(mat, rendPlace);
+        if (!success)
+        {
+            Debug.LogError(this + " tried setting matPlace '" + matPlace + "' on RendPlace '" + rendPlace + "', but that rendPlace wasn't assigned in inspector.");
+        }
     }
     public void setColAtPlace(MatPlace matPlace, RendPlace rendPlace)
     {
-        bool success = getReend().setColAtPlace(getColAtPlace(matPlace), rendPlace);
-        if (!success) rendNotFound(rendPlace);
+        Col col = getColAtPlace(matPlace);
+        if (col == null)
+        {
+            Debug.LogWarning(this + " tried setting colPlace '" + matPlace + "' on RendPlace '" + rendPlace + "', but that matPlace wasn't assigned in inspector.");
+            setMatAtPlace(MatPlace.none, rendPlace);
+        }
+        bool success = getReend().setColAtPlace(col, rendPlace);
+        if (!success)
+        {
+            Debug.LogError(this + " tried setting colPlace '" + matPlace + "' on RendPlace '" + rendPlace + "', but that rendPlace wasn't assigned in inspector.");
+        }
     }
     public void setFloat(RendPlace rendPlace, string name, float f)
     {
         bool success = getReend().setFloatAtPlace(rendPlace, name, f);
-        if (!success) rendNotFound(rendPlace);
+        if (!success)
+        {
+            Debug.LogError(this + " tried setting float '" + name + "' = "+f+" on RendPlace '"+rendPlace+"', but that rendPlace wasn't assigned in inspector.");
+        }
     }
 
-
-    private void rendNotFound(RendPlace place)
-    {
-        Debug.LogError("InspectorException: '" + this + "' has no assigned RendPlace.'" + place + "'");
-    }
-    private void matNotFound(MatPlace place)
-    {
-        Debug.LogError("InspectorException: '" + this + "' has no assigned MatPlace.'" + place + "'");
-    }
-    private void colNotFound(MatPlace place)
-    {
-        Debug.LogError("InspectorException: '" + this + "' has no assigned ColPlace.'" + place + "'");
-    }
     private Mat getMatAtPlace(MatPlace place)
     {
         Mat mat = getMaat().getMat(place);
-        if (mat == null) matNotFound(place);
         return mat;
     }
     private Col getColAtPlace(MatPlace place)
     {
         Col col = getCool().getCol(place);
-        if (col == null) colNotFound(place);
         return col;
     }
     private Reend getReend()

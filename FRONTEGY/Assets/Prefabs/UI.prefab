@@ -409,8 +409,9 @@ MonoBehaviour:
     id: 0
   top: {fileID: 3042128529628201326}
   canvas: {fileID: 3042128529179042352}
-  canvasTransform: {fileID: 3042128529179042359}
-  caardBox: {fileID: 3042128530922125569}
+  uiRects:
+  - _place: 1
+    _rect: {fileID: 3042128530922125569}
   header: {fileID: 3042128529832103468}
   references:
     version: 1

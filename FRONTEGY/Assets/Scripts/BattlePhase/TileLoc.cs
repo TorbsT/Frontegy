@@ -22,6 +22,8 @@ public struct TileLoc
     public Pos3 toPos3() => new Pos3(_xyz)*1f;
     public static int stepsBetween(TileLoc a, TileLoc b) { return (a-b).getLength(); }
     public int getLength() { return Mathf.Abs(x) + Mathf.Abs(z); }
+
+
     public Tiile getValidNeigTiile()
     {
         TileLooc looc = getNeigLooc();
@@ -49,7 +51,7 @@ public struct TileLoc
     public TileLoc west() { return new TileLoc(x, z-1); }
     public Tile findTile()
     {
-        return GameMaster.sfindTile(this);
+        return AllTiile.Instance.find(this);
     }
 
     public static bool operator ==(TileLoc a, TileLoc b) => a._xyz == b._xyz;
@@ -67,7 +69,10 @@ public struct TileLoc
     {
         return _xyz.GetHashCode();
     }
-
+    public override string ToString()
+    {
+        return "("+x+","+y+","+z+")";
+    }
     public static Pos3 toPos3(Vector3 v3) { return toPos3(v3.x, v3.y, v3.z); }
     public static Pos3 toPos3(float x, float y, float z) { return new Pos3(x, y, z); }
 }

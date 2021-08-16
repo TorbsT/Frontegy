@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+/*
 public class Unit
 {
     public Unit(Role role)
@@ -45,3 +45,4 @@ public class Unit
     public bool isDead() { return dead; }
     public void die() { if (dead) Debug.LogError("IllegalStateException: Can't die twice"); dead = true; }
 }
+*/

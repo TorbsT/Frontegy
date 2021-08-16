@@ -4,17 +4,24 @@ using UnityEngine;
 [System.Serializable]
 public abstract class Phase
 {
+    public static Phase Instance;
+
+    public int roundId { get => round.roundId; }
+    public int phaseOwnerId { get => phaseOwner.id; }
+    public bool canSkipNow { get; set; }
+
     private int life;
     private Round round;
-    private Player phasePlayer;
+    private Player phaseOwner;
     private PhaseType type;
 
-    public Phase(Round round, Player phasePlayer)
+    public Phase(Round round, Player phaseOwner)
     {
+        Instance = this;
         if (round == null) Debug.LogError("IllegalArgumentException");
         this.round = round;
-        if (phasePlayer == null) Debug.LogError("IllegalArgumentException");
-        this.phasePlayer = phasePlayer;
+        if (phaseOwner == null) Debug.LogError("IllegalArgumentException");
+        this.phaseOwner = phaseOwner;
         // runs before the construction of any subclass!
     }
     public bool isType(PhaseType type) { return this.type == type; }
@@ -30,20 +37,17 @@ public abstract class Phase
     }
     public Player getPhasePlayer()
     {
-        if (phasePlayer == null) Debug.LogError("IllegalStateException");
-        return phasePlayer;
+        if (phaseOwner == null) Debug.LogError("IllegalStateException");
+        return phaseOwner;
+    }
+    public bool trySkip()
+    {
+        if (canSkipNow) return round.skipPhase();
+        return false;
     }
     protected int getLife() { return life; }  // never
 
     protected abstract void startAbstra();
     protected abstract bool bupdateAbstra(Control c);
-
-
-    public SelMan getSelectionManager() { return getRound().getSelectionManager(); }
-    public PhaseManager getPhaseManager() { return getRound().getPhaseManager(); }
-    public Groop getAllGroop() { return getRound().getAllGroop(); }
-    public UIManager getUiManager() { return getRound().getUiManager(); }
-    public Grid getGrid() { return getRound().getGrid(); }
-    public Cam getCam() { return getRound().getCam(); }
     public Round getRound() { if (round == null) Debug.LogError("IllegalStateException"); return round; }
 }
