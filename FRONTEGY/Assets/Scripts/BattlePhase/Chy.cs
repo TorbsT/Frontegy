@@ -7,7 +7,7 @@ using UnityEngine;
 public abstract class Chy : IPoolClient  // Connector-Phy
 {  // The stuff Phys are connected to. Can be Troop, Tile, etc
     public bool staged { get; set; }
-    public Transive trans { get { if (getPhy() == null) Debug.LogError("Tried accessing trans of '"+this+"', but it's unstaged"); return getPhy().trans; } }
+    public Transive trans { get { if (getPhy() == null) Debug.LogError("Tried accessing trans of '"+this+"', but it's unstaged"); return getPhy().transive; } }
     public bool uized { get { return _uized; } }
 
 

@@ -11,6 +11,7 @@ public class TransProperty<T> where T : ITransPropertyField<T>  // bruh
     public Transform transform { get { return trans.transform; } }
     public Transform parentTransform { get { return trans.parentTransform; } }
     public Trans parent { get { return trans.parent; } }
+    private bool worldChanged { get => !_world.Equals(_lastWorld); }
 
     public Transive trans { get; private set; }
 
@@ -26,10 +27,6 @@ public class TransProperty<T> where T : ITransPropertyField<T>  // bruh
         this.trans = trans;
     }
 
-    private void update()  // Updates transform to match _world value.
-    {
-        _world.update(transform);
-    }
     public void computeLocal()
     {
         if (parent == null) _local = _world;
@@ -39,6 +36,7 @@ public class TransProperty<T> where T : ITransPropertyField<T>  // bruh
     {
         if (parent == null) _world = _local;
         else _world = _local.computeWorld(parentTransform);
+        if (worldChanged) Debug.Log(_local + " " + _world + " " + transform.gameObject);
     }
 
 
@@ -60,7 +58,11 @@ public class TransProperty<T> where T : ITransPropertyField<T>  // bruh
             computeLocal();
         }
 
-        trans.recursiveComputeWorld();
+        // Alerts children to recompute world
+        if (worldChanged)
+        {
+            trans.recursiveComputeWorld();
+        }
     }
     /// <summary>
     /// Gets the value.
@@ -85,7 +87,7 @@ public class TransProperty<T> where T : ITransPropertyField<T>  // bruh
         // If transform already matches _world, no update is needed.
         // transform always matches _lastWorld.
         // Therefore, if _world == _lastWorld, _world == transform.
-        if (_world.Equals(_lastWorld))
+        if (!worldChanged)
         {
             // Already up-to-date.
         } else
@@ -93,7 +95,7 @@ public class TransProperty<T> where T : ITransPropertyField<T>  // bruh
             // Update necessary
             _lastWorld = _world;
             _lastLocal = _local;
-            update();
+            _world.update(transform);
         }
     }
     public void parentChanged(bool keepWorldSpace = false)
@@ -103,6 +105,7 @@ public class TransProperty<T> where T : ITransPropertyField<T>  // bruh
         // If keeping local space, compute local space and outdate world space.
         set(get(keepWorldSpace), keepWorldSpace);
     }
+    
 }
 [System.Serializable]
 public class Pos3Property : TransProperty<Pos3> { public Pos3Property(Transive trans) : base(trans) { } }

@@ -63,4 +63,6 @@ public struct Pos3 : ITransPropertyField<Pos3>
     public Pos3 computeWorld(Transform parent) => new Pos3(parent.TransformPoint(v3));
     public Pos3 computeLocal(Transform parent) => new Pos3(parent.InverseTransformPoint(v3));
     public void update(Transform transform) { transform.localPosition = v3; }
+
+    public override string ToString() => v3.ToString();
 }

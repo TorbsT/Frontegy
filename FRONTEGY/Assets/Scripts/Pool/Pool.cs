@@ -32,7 +32,7 @@ public abstract class Pool<Client, Host> : IPool where Client : IPoolClient wher
         client.staged = true;
         allHosts.Add(host);
         host.gameObject.SetActive(true);
-        host.insChy = (IPoolClient)client;
+        host.chy = (IPoolClient)client;
         //return host;
     }
     public void unstage(Client client)

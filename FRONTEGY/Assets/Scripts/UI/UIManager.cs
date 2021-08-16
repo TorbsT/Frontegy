@@ -28,7 +28,9 @@ public class UIManager
         linker = go.GetComponent<UILinker>();
         if (linker == null) Debug.LogError("InspectorException: UIPrefab does not have UIController Component");
         linker.setUiManager(this);
-        transive = new Transive(linker.transform);
+        transive = new Transive(linker.transform, cam.transive);
+        transive.pos3p.set(new Pos3(-100f, 0f, 0f), true);
+        transive.rotp.set(new Rot(), true);
     }
 
     public void restart()
@@ -83,7 +85,6 @@ public class UIManager
         unuizeAll();
         updateHeader(tp.getPhasePlayer());
 
-        transive.pos3p.set(new Pos3());
         Debug.Log("Tacticalstart");
 
         List<Card> cards = tp.getCaardToShow();
@@ -102,11 +103,11 @@ public class UIManager
     }
     void showTrans()
     {
+        /*
         Transform t = linker.transform;
         Quaternion camRotation = cam.getRotation();
         Vector3 camPos = cam.getV3();
-        t.rotation = camRotation;
-        t.position = camPos + t.forward * canvasDistance;
-
+        t.SetPositionAndRotation(camPos + t.forward * canvasDistance, camRotation);
+        */
     }
 }

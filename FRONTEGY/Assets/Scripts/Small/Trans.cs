@@ -5,20 +5,20 @@ using UnityEngine;
 [System.Serializable]
 public abstract class Trans
 {  // May be Transive or Transtatic
-    public Transform transform { get { return _transform; } protected set { _transform = value; } }
-    [SerializeField] private Transform _transform;  // may NEVER be null
+    public Transform transform { get => _transform; set { _transform = value; } }
+
     [SerializeReference] private List<Trans> children = new List<Trans>();
-
-   
-
-
-
-
+    private Transform _transform;
+    public Trans(Transform transform)
+    {
+        _transform = transform;
+    }
     public void recursiveComputeWorld()
     {
         // DOES NOT COMPUTE FOR SELF.
         foreach (Trans child in children)
         {
+            Debug.Log("COCK");
             child.computeWorld();
             child.recursiveComputeWorld();
         }

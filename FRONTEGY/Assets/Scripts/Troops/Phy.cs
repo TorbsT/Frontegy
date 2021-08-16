@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
+[SelectionBase]
 public abstract class Phy : MonoBehaviour, IPoolHost
 {
     // Properties
 
     public bool staged { get { return _staged; } }
-    public IPoolClient insChy { set { _chy = value; } }
-    public Transive trans { get { if (staged) return _transive; Debug.LogError("Tried accessing trans of unstaged phy '" + this + "'"); return null; } }
+    public IPoolClient chy { set { _chy = value; } }
+    public Transive transive { get { if (!staged) Debug.LogError("Tried accessing trans of unstaged phy '" + this + "'"); return _transive; } }
     public Bounds colliderBounds { get { if (hasBounds) return _colliderBounds; else
             {
                 Collider top = GetComponent<Collider>();
@@ -41,8 +42,9 @@ public abstract class Phy : MonoBehaviour, IPoolHost
 
     private void Awake()
     {
+        //_transive = GetComponent<Transive>();
+        //if (_transive == null) Debug.LogError("InspectorException: " + this + " has no Transive component");
         _transive = new Transive(transform);
-        //unstage(); WHY IS THIS HERE?
     }
     private void OnEnable()
     {

@@ -4,11 +4,7 @@ using UnityEngine;
 
 public class Transtatic : Trans
 {
-    public Transtatic(Transform transform)
-    {
-        if (transform == null) Debug.LogError("IllegalArgumentException");
-        this.transform = transform;
-    }
+    public Transtatic(Transform transform) : base(transform) { }
     protected override void computeWorld()
     {
         
