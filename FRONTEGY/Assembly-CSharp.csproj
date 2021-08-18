@@ -134,6 +134,7 @@
     <Compile Include="Assets\Scripts\Grid\TroopRoster.cs" />
     <Compile Include="Assets\Scripts\UI\Cam.cs" />
     <Compile Include="Assets\Scripts\Global\SelPhy.cs" />
+    <Compile Include="Assets\Scripts\Cards\Card.cs" />
     <Compile Include="Assets\Scripts\Small\TransProperty.cs" />
     <Compile Include="Assets\Scripts\Small\Radian.cs" />
     <Compile Include="Assets\Scripts\Troops\PhyLinker.cs" />
@@ -197,7 +198,6 @@
     <Compile Include="Assets\Scripts\Linker\GFX.cs" />
     <Compile Include="Assets\Scripts\Linker\RendPlace.cs" />
     <Compile Include="Assets\Scripts\UIPlace.cs" />
-    <Compile Include="Assets\Scripts\Cards\Card.cs" />
     <Compile Include="Assets\CardLinker.cs" />
     <Compile Include="Assets\Scripts\Global\ObjectCopier.cs" />
     <Compile Include="Assets\Scripts\Grid\AllTiile.cs" />
@@ -440,9 +440,6 @@
     </Reference>
     <Reference Include="Unity.Analytics.StandardEvents">
       <HintPath>Library\PackageCache\com.unity.analytics@3.3.5\AnalyticsStandardEvents\Unity.Analytics.StandardEvents.dll</HintPath>
-    </Reference>
-    <Reference Include="InspectorGadgets.Lite">
-      <HintPath>Assets\Plugins\Inspector Gadgets\Misc\Inspector Gadgets Lite\InspectorGadgets.Lite.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.1.1f1\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\mscorlib.dll</HintPath>
@@ -869,10 +866,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="InspectorGadgets.csproj">
-      <Project>{F9B24D0F-D23A-A3B5-AB40-55F2BB72AFB7}</Project>
-      <Name>InspectorGadgets</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />
