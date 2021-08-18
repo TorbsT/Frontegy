@@ -10,6 +10,7 @@ public class Tile : SelChy
     public TileState state { get => _state; }
     public TileLoc loc { get { return _loc; } }
     public Transform surfaceTransform { get { return getHost().surfaceTransform; } }
+    public Transtatic surfaceTranstatic { get => getHost().surfaceTranstatic; }
 
     [SerializeField] private TileLoc _loc;
     

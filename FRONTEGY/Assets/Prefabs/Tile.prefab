@@ -141,12 +141,22 @@ MonoBehaviour:
         material: {fileID: 2100000, guid: b8fdc65123bf5ae46a8cac480a0a77a9, type: 2}
     cool:
       cols: []
+  _staged: 0
+  _transive:
+    _lastWorldComputation: 0
+    children: []
+    promg: 0
+    _pos3p:
+      id: 0
+    _rotp:
+      id: 0
   hasBounds: 0
   _colliderBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
   _chy:
     id: 0
+  _surfaceTransform: {fileID: 3233743479850838084}
   references:
     version: 1
     00000000:
@@ -162,6 +172,7 @@ GameObject:
   - component: {fileID: 3233743479850838084}
   - component: {fileID: 6207877395350167664}
   - component: {fileID: 525436779752349138}
+  - component: {fileID: 5979638504495913341}
   m_Layer: 0
   m_Name: Plane
   m_TagString: Untagged
@@ -232,3 +243,21 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5979638504495913341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6384891349568431233}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58de34b8262849e45a7e98fa68d2dd11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _transtatic:
+    id: 0
+  references:
+    version: 1
+    00000000:
+      type: {class: , ns: , asm: }

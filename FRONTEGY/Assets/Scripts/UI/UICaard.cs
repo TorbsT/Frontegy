@@ -7,13 +7,82 @@ public class UICaard
 {
     public List<Card> cards { get => _cards; }
 
-    private static Quaternion rotation;
+
+    private static Rot rot = new Rot(Quaternion.Euler(90f, 180f, 0f));
+    private static Rot[] rots = new Rot[] {
+        new Rot(Quaternion.Euler(-90f, -90f, -90f)),
+        new Rot(Quaternion.Euler(-90f, -90f, 0f)),
+        new Rot(Quaternion.Euler(-90f, -90f, 90f)),
+        new Rot(Quaternion.Euler(-90f, -90f, 180f)),
+                new Rot(Quaternion.Euler(-90f, 0f, -90f)),
+        new Rot(Quaternion.Euler(-90f, 0f, 0f)),
+        new Rot(Quaternion.Euler(-90f, 0f, 90f)),
+        new Rot(Quaternion.Euler(-90f, 0f, 180f)),
+                new Rot(Quaternion.Euler(-90f, 90f, -90f)),
+        new Rot(Quaternion.Euler(-90f, 90f, 0f)),
+        new Rot(Quaternion.Euler(-90f, 90f, 90f)),
+        new Rot(Quaternion.Euler(-90f, 90f, 180f)),
+                new Rot(Quaternion.Euler(-90f, 180f, -90f)),
+        new Rot(Quaternion.Euler(-90f, 180f, 0f)),
+        new Rot(Quaternion.Euler(-90f, 180f, 90f)),
+        new Rot(Quaternion.Euler(-90f, 180f, 180f)),
+
+                new Rot(Quaternion.Euler(0f, -90f, -90f)),
+        new Rot(Quaternion.Euler(0f, -90f, 0f)),
+        new Rot(Quaternion.Euler(0f, -90f, 90f)),
+        new Rot(Quaternion.Euler(0f, -90f, 180f)),
+                new Rot(Quaternion.Euler(0f, 0f, -90f)),
+        new Rot(Quaternion.Euler(0f, 0f, 0f)),
+        new Rot(Quaternion.Euler(0f, 0f, 90f)),
+        new Rot(Quaternion.Euler(0f, 0f, 180f)),
+                new Rot(Quaternion.Euler(0f, 90f, -90f)),
+        new Rot(Quaternion.Euler(0f, 90f, 0f)),
+        new Rot(Quaternion.Euler(0f, 90f, 90f)),
+        new Rot(Quaternion.Euler(0f, 90f, 180f)),
+                new Rot(Quaternion.Euler(0f, 180f, -90f)),
+        new Rot(Quaternion.Euler(0f, 180f, 0f)),
+        new Rot(Quaternion.Euler(0f, 180f, 90f)),
+        new Rot(Quaternion.Euler(0f, 180f, 180f)),
+
+                new Rot(Quaternion.Euler(90f, -90f, -90f)),
+        new Rot(Quaternion.Euler(90f, -90f, 0f)),
+        new Rot(Quaternion.Euler(90f, -90f, 90f)),
+        new Rot(Quaternion.Euler(90f, -90f, 180f)),
+                new Rot(Quaternion.Euler(90f, 0f, -90f)),
+        new Rot(Quaternion.Euler(90f, 0f, 0f)),
+        new Rot(Quaternion.Euler(90f, 0f, 90f)),
+        new Rot(Quaternion.Euler(90f, 0f, 180f)),
+                new Rot(Quaternion.Euler(90f, 90f, -90f)),
+        new Rot(Quaternion.Euler(90f, 90f, 0f)),
+        new Rot(Quaternion.Euler(90f, 90f, 90f)),
+        new Rot(Quaternion.Euler(90f, 90f, 180f)),
+                new Rot(Quaternion.Euler(90f, 180f, -90f)),
+        new Rot(Quaternion.Euler(90f, 180f, 0f)),
+        new Rot(Quaternion.Euler(90f, 180f, 90f)),
+        new Rot(Quaternion.Euler(90f, 180f, 180f)),
+
+                new Rot(Quaternion.Euler(180f, -90f, -90f)),
+        new Rot(Quaternion.Euler(180f, -90f, 0f)),
+        new Rot(Quaternion.Euler(180f, -90f, 90f)),
+        new Rot(Quaternion.Euler(180f, -90f, 180f)),
+                new Rot(Quaternion.Euler(180f, 0f, -90f)),
+        new Rot(Quaternion.Euler(180f, 0f, 0f)),
+        new Rot(Quaternion.Euler(180f, 0f, 90f)),
+        new Rot(Quaternion.Euler(180f, 0f, 180f)),
+                new Rot(Quaternion.Euler(180f, 90f, -90f)),
+        new Rot(Quaternion.Euler(180f, 90f, 0f)),
+        new Rot(Quaternion.Euler(180f, 90f, 90f)),
+        new Rot(Quaternion.Euler(180f, 90f, 180f)),
+                new Rot(Quaternion.Euler(180f, 180f, -90f)),
+        new Rot(Quaternion.Euler(180f, 180f, 0f)),
+        new Rot(Quaternion.Euler(180f, 180f, 90f)),
+        new Rot(Quaternion.Euler(180f, 180f, 180f)),
+    };
     private List<Card> _cards = new List<Card>();
 
     private void setUICaardPos()
     {
         // called once
-        rotation = Quaternion.identity;
         //rotation *= Quaternion.Euler(90, 0, 0);
         for (int index = 0; index < _cards.Count; index++)
         {
@@ -27,12 +96,13 @@ public class UICaard
             float y = cardHeight/2f;
 
 
-            Pos3 p3 = new Pos3(x, y, 0f);
-            Quaternion rot = rotation;
-            c.trans.setParent(UIManager.Instance.getTransAtPlace(UIPlace.caardBox), true);
+            Pos3 p3 = new Pos3((x-(float)_cards.Count/2f)*10, y*10, 0f);
+            Trans trans = UIManager.Instance.getTransAtPlace(UIPlace.caardBox);
+            Debug.Log(trans);
+            c.trans.setParent(trans, true);
             c.trans.pos3p.set(p3, true);
-            Debug.Log(c.trans.pos3p.get() + " " + c.trans.pos3p.get(false));
-            Debug.Log(c.trans.transform.position);
+            //if (index < rots.Length) c.trans.rotp.set(rots[index], true);
+            c.trans.rotp.set(rot, true);
         }
     }
     public void unuizeAll()

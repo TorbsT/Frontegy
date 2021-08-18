@@ -7,10 +7,11 @@ using TMPro;
 public class UIManager
 {
     public static UIManager Instance { get; private set; }
+    public Transive transive { get => _transive; }
     [System.NonSerialized] private GameMaster gm;
 
     [System.NonSerialized] private UILinker linker;
-    [SerializeField] private Transive transive;
+    [SerializeReference] private Transive _transive;
     [SerializeReference] private UICaard uiCaard;
     [SerializeField] private float canvasDistance;
     private Cam cam => Cam.Instance;
@@ -28,9 +29,10 @@ public class UIManager
         linker = go.GetComponent<UILinker>();
         if (linker == null) Debug.LogError("InspectorException: UIPrefab does not have UIController Component");
         linker.setUiManager(this);
-        transive = new Transive(linker.transform, cam.transive);
-        transive.pos3p.set(new Pos3(-100f, 0f, 0f), true);
-        transive.rotp.set(new Rot(), true);
+        _transive = new Transive(linker.transform, cam.transive);
+        _transive.pos3p.set(new Pos3(0, 0f, 10f), true);
+        Rot rot = new Rot(Quaternion.identity);
+        _transive.rotp.set(rot, true);
     }
 
     public void restart()

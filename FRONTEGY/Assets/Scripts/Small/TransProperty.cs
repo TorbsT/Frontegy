@@ -13,7 +13,7 @@ public class TransProperty<T> where T : ITransPropertyField<T>  // bruh
     public Trans parent { get { return trans.parent; } }
     private bool worldChanged { get => !_world.Equals(_lastWorld); }
 
-    public Transive trans { get; private set; }
+    public Trans trans { get; private set; }
 
     [SerializeField] private int tiss;
     [SerializeField] private T _local;
@@ -21,12 +21,17 @@ public class TransProperty<T> where T : ITransPropertyField<T>  // bruh
     [SerializeField] private T _lastLocal;
     [SerializeField] private T _lastWorld;  // Used for knowing when updating transform is unnecessary
 
-    public TransProperty(Transive trans)
+    public TransProperty(Trans trans)
     {
         if (trans == null) Debug.LogError("IllegalArgumentException");
         this.trans = trans;
     }
 
+    public void computeLocalByTransformProperty()
+    {
+        if (parent == null) Debug.LogError("very wrong");
+        else _local = _local.transformToProperty(transform);
+    }
     public void computeLocal()
     {
         if (parent == null) _local = _world;
@@ -36,7 +41,7 @@ public class TransProperty<T> where T : ITransPropertyField<T>  // bruh
     {
         if (parent == null) _world = _local;
         else _world = _local.computeWorld(parentTransform);
-        if (worldChanged) Debug.Log(_local + " " + _world + " " + transform.gameObject);
+        //if (worldChanged) Debug.Log(_local + " " + _world + " " + transform.gameObject);
     }
 
 
@@ -108,6 +113,6 @@ public class TransProperty<T> where T : ITransPropertyField<T>  // bruh
     
 }
 [System.Serializable]
-public class Pos3Property : TransProperty<Pos3> { public Pos3Property(Transive trans) : base(trans) { } }
+public class Pos3Property : TransProperty<Pos3> { public Pos3Property(Trans trans) : base(trans) { } }
 [System.Serializable]
-public class RotProperty : TransProperty<Rot> { public RotProperty(Transive trans) : base(trans) { } }
+public class RotProperty : TransProperty<Rot> { public RotProperty(Trans trans) : base(trans) { } }

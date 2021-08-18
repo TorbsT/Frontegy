@@ -9,7 +9,7 @@ public class UILinker : Linker
     // Also displays internal state of UIManager to inspector.
     [Header("View internal state")]
     [SerializeReference] private UIManager uiManager;
-    [SerializeField] private Transive _transive;
+    [SerializeReference] private Transive _transive;
 
     [Header("Assign variables")]
     [SerializeField] private Canvas canvas;

@@ -5,27 +5,57 @@ using UnityEngine;
 [System.Serializable]
 public abstract class Trans
 {  // May be Transive or Transtatic
-    public Transform transform { get => _transform; set { _transform = value; } }
+    public Transform transform { get { if (_transform == null) Debug.LogError("IllegalStateException: "+GetType()+" without transform"); return _transform; } protected set { _transform = value; } }
 
+    [SerializeField] protected float _lastWorldComputation = -1;
     [SerializeReference] private List<Trans> children = new List<Trans>();
     private Transform _transform;
-    public Trans(Transform transform)
+
+    public Transform parentTransform { get { return parent.transform; } }
+    public Trans parent { get { return _parent; } }
+
+
+    public Pos3Property pos3p { get { if (_pos3p == null) Debug.LogError(GetType() + " " + transform.gameObject + " has no pos3p"); return _pos3p; } }
+    public RotProperty rotp { get { return _rotp; } }
+
+
+
+    [System.NonSerialized] private Trans _parent;  // may be null
+    [SerializeField] private int promg;
+    [SerializeReference] protected Pos3Property _pos3p;
+    [SerializeReference] protected RotProperty _rotp;
+
+
+
+    public Trans()
     {
-        _transform = transform;
+        Debug.Log("PENIS "+GetType());
+        _pos3p = new Pos3Property(this);
+        _pos3p.set(new Pos3(0f, 0f, 0f));
+        _rotp = new RotProperty(this);
+        _rotp.set(new Rot(Quaternion.identity));
+    }
+
+    public void setParent(Trans parent, bool keepWorldSpace = false)
+    {
+        if (parent == null) Debug.LogError("IllegalArgumentException");
+
+        // if keepWorldSpace, showTrans = false
+        if (parent == this.parent) Debug.LogWarning("IllegalStateException: '" + parent + "' is already the parent of '" + this + "'");
+        if (_parent != null) _parent.unsubscribe(this);
+        if (parent != null) parent.subscribe(this);
+        _parent = parent;
+        if (keepWorldSpace) computeLocal();
+        else { computeWorld(); recursiveComputeWorld(); }
     }
     public void recursiveComputeWorld()
     {
         // DOES NOT COMPUTE FOR SELF.
         foreach (Trans child in children)
         {
-            Debug.Log("COCK");
             child.computeWorld();
             child.recursiveComputeWorld();
         }
-    }
-    public void stateChanged()
-    {
-
     }
     public void subscribe(Trans observer)
     {
@@ -36,4 +66,5 @@ public abstract class Trans
         children.Remove(observer);
     }
     protected abstract void computeWorld();
+    protected abstract void computeLocal();
 }

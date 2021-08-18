@@ -83,6 +83,7 @@
     <Compile Include="Assets\Scripts\Playyer.cs" />
     <Compile Include="Assets\Scripts\Grid\Geo.cs" />
     <Compile Include="Assets\Scripts\Grid\Caard.cs" />
+    <Compile Include="Assets\Scripts\Small\ITransParent.cs" />
     <Compile Include="Assets\Scripts\Grid\Loc.cs" />
     <Compile Include="Assets\Scripts\Global\GameMaster.cs" />
     <Compile Include="Assets\Scripts\PhyPlan.cs" />
@@ -143,6 +144,7 @@
     <Compile Include="Assets\Scripts\Cards\Effect.cs" />
     <Compile Include="Assets\Scripts\Small\TransObserver.cs" />
     <Compile Include="Assets\Scripts\Grid\Rooster.cs" />
+    <Compile Include="Assets\Scripts\Small\Transponent.cs" />
     <Compile Include="Assets\Scripts\Small\IComparable.cs" />
     <Compile Include="Assets\Scripts\Cards\CardPhy.cs" />
     <Compile Include="Assets\Scripts\Grid\TileTracker.cs" />
@@ -438,6 +440,9 @@
     </Reference>
     <Reference Include="Unity.Analytics.StandardEvents">
       <HintPath>Library\PackageCache\com.unity.analytics@3.3.5\AnalyticsStandardEvents\Unity.Analytics.StandardEvents.dll</HintPath>
+    </Reference>
+    <Reference Include="InspectorGadgets.Lite">
+      <HintPath>Assets\Plugins\Inspector Gadgets\Misc\Inspector Gadgets Lite\InspectorGadgets.Lite.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.1.1f1\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\mscorlib.dll</HintPath>
@@ -864,6 +869,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="InspectorGadgets.csproj">
+      <Project>{F9B24D0F-D23A-A3B5-AB40-55F2BB72AFB7}</Project>
+      <Name>InspectorGadgets</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

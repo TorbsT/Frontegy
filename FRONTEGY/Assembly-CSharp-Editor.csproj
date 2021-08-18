@@ -271,6 +271,9 @@
     <Reference Include="ICSharpCode.NRefactory">
       <HintPath>Library\PackageCache\com.unity.render-pipelines.core@8.2.0\Editor\ShaderGenerator\ICSharpCode.NRefactory.dll</HintPath>
     </Reference>
+    <Reference Include="InspectorGadgets.Lite">
+      <HintPath>Assets\Plugins\Inspector Gadgets\Misc\Inspector Gadgets Lite\InspectorGadgets.Lite.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll</HintPath>
     </Reference>
@@ -708,6 +711,10 @@
     <ProjectReference Include="Assembly-CSharp.csproj">
       <Project>{B81F20B7-A13A-18D2-D5A7-571D7D35E871}</Project>
       <Name>Assembly-CSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="InspectorGadgets.csproj">
+      <Project>{F9B24D0F-D23A-A3B5-AB40-55F2BB72AFB7}</Project>
+      <Name>InspectorGadgets</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

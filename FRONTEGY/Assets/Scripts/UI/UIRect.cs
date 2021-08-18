@@ -7,11 +7,11 @@ public class UIRect
 {
     public UIPlace place { get { return _place; } }
     public RectTransform rect { get { return _rect; } }
-    public Transtatic trans { get { if (_transtatic == null) _transtatic = new Transtatic(rect); return _transtatic; } }
+    public Transtatic trans { get { if (_transtatic == null) _transtatic = new Transtatic(rect, UIManager.Instance.transive); return _transtatic; } }
 
     [SerializeField] private UIPlace _place;
     [SerializeField] private RectTransform _rect;
-    [SerializeField] private Transtatic _transtatic;
+    [SerializeReference] private Transtatic _transtatic;
     [System.NonSerialized] private Trans parentTrans;
 
     public void setTransParent(Trans trans)

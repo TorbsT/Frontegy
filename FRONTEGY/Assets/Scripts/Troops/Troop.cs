@@ -49,7 +49,7 @@ public class Troop : SelChy  // "Must" be class since SetStats() should be able 
 
         Pos3 p3 = new Pos3(0f, getColliderBounds().extents.y, 0f);
 
-        trans.setParent(state.parentTile.surfaceTransform, true);
+        trans.setParent(state.parentTile.surfaceTranstatic, true);
         trans.pos3p.set(p3, true);
     }
     public bool isThisTroop(Troop compareAgainst)

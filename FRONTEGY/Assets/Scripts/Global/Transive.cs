@@ -11,57 +11,29 @@ public class Transive : Trans
     // transform component gets called a maximum of once per frame for every property (pos, rot etc)
     // if a world-property hasn't changed the last frame, transform isn't called at all for that property that frame.
 
-    public Transform parentTransform { get { return parent.transform; } }
-    public Trans parent { get { return _parent; } }
 
-
-    public Pos3Property pos3p { get { return _pos3p; } }
-    public RotProperty rotp { get { return _rotp; } }
-
-
-
-    [System.NonSerialized] private Trans _parent;  // may be null
-    [SerializeField] private int promg;
-    [SerializeReference] private Pos3Property _pos3p;
-    [SerializeField] private RotProperty _rotp;
-
-    public Transive(Transform transform) :base(transform) { construct(); }
-    public Transive(Transform transform, Trans parent) :base(transform) { construct(); setParent(parent, true); }
+    public Transive(Transform transform) { this.transform = transform; construct(); }
+    public Transive(Transform transform, Trans parent) { this.transform = transform; construct(); setParent(parent, true); }
 
 
     private void construct()
     {
-        _pos3p = new Pos3Property(this);
-        _rotp = new RotProperty(this);
+        if (transform == null) Debug.LogError("Tried constructing " + GetType() + " with null transform");
         GameMaster.GetGM().addTransive(this);  // Used for updating transes every frame
-    }
-
-    public void setParent(Trans parent, bool keepWorldSpace = false)
-    {
-        // if keepWorldSpace, showTrans = false
-        if (parent == this.parent) Debug.LogWarning("IllegalStateException: '" + parent + "' is already the parent of '" + this + "'");
-        if (_parent != null) _parent.unsubscribe(this);
-        if (parent != null) parent.subscribe(this);
-        _parent = parent;
-        if (keepWorldSpace) computeLocal();
-        else { computeWorld(); recursiveComputeWorld(); }
-    }
-    public void setParent(Transform parent, bool keepWorldSpace = false)
-    {
-        setParent(new Transtatic(parent), keepWorldSpace);
     }
     public void showTransIfNecessary()
     {
         _pos3p.showTransIfNecessary();
         _rotp.showTransIfNecessary();
     }
-    private void computeLocal()
+    protected override void computeLocal()
     {
         _pos3p.computeLocal();
         _rotp.computeLocal();
     }
     protected override void computeWorld()
     {
+        _lastWorldComputation = Time.time;
         _pos3p.computeWorld();
         _rotp.computeWorld();
     }

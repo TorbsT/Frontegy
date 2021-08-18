@@ -10,7 +10,7 @@ public abstract class Phy : MonoBehaviour, IPoolHost
 
     public bool staged { get { return _staged; } }
     public IPoolClient chy { set { _chy = value; } }
-    public Transive transive { get { if (!staged) Debug.LogError("Tried accessing trans of unstaged phy '" + this + "'"); return _transive; } }
+    public Transive transive { get => _transive; }
     public Bounds colliderBounds { get { if (hasBounds) return _colliderBounds; else
             {
                 Collider top = GetComponent<Collider>();
@@ -31,7 +31,7 @@ public abstract class Phy : MonoBehaviour, IPoolHost
 
     [Header("Observe")]
     [SerializeField] private bool _staged;
-    [SerializeField] private Transive _transive;
+    [SerializeReference] private Transive _transive;
     [SerializeField] private bool hasBounds;
     [SerializeField] private Bounds _colliderBounds;
     [SerializeReference] private IPoolClient _chy;
@@ -40,7 +40,7 @@ public abstract class Phy : MonoBehaviour, IPoolHost
     private Roster roster;
     
 
-    private void Awake()
+    protected virtual void Awake()
     {
         //_transive = GetComponent<Transive>();
         //if (_transive == null) Debug.LogError("InspectorException: " + this + " has no Transive component");
