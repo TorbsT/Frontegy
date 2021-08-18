@@ -11,7 +11,7 @@ public class Cam
     public Transive transive { get => _transive; }
     private Camera camera;
     [SerializeField] private CamConfig config;
-    private Transive _transive;
+    [SerializeReference] private Transive _transive;
 
     public void eagleView(Control c)
     {

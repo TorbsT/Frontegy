@@ -82,8 +82,9 @@ public class GameMaster : MonoBehaviour
 
     void Start()
     {
+        Application.targetFrameRate = 2;
         cam = new Cam(getCamera(), getCamConfig());
-        uiManager = new UIManager(2f);
+        uiManager = new UIManager();
         playyer.init();
         pools.init();
         Restart();
@@ -94,6 +95,9 @@ public class GameMaster : MonoBehaviour
         
         ExecuteManualUpdates(control);
         HandlePlayerInput(control);  // outdated - TODO
+    }
+    private void FixedUpdate()
+    {
         showAllTransives();
     }
     private void showAllTransives()

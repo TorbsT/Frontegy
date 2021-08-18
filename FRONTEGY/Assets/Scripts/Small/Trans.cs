@@ -5,31 +5,32 @@ using UnityEngine;
 [System.Serializable]
 public abstract class Trans
 {  // May be Transive or Transtatic
-    public Transform transform { get { if (_transform == null) Debug.LogError("IllegalStateException: "+GetType()+" without transform"); return _transform; } protected set { _transform = value; } }
+    public Transform transform { get { if (_transform == null) Debug.LogError("IllegalStateException: "+GetType()+" without transform"); return _transform; } }
 
-    [SerializeField] protected float _lastWorldComputation = -1;
-    [SerializeReference] private List<Trans> children = new List<Trans>();
-    private Transform _transform;
+
 
     public Transform parentTransform { get { return parent.transform; } }
     public Trans parent { get { return _parent; } }
+    public string name { get => _name; }
 
 
     public Pos3Property pos3p { get { if (_pos3p == null) Debug.LogError(GetType() + " " + transform.gameObject + " has no pos3p"); return _pos3p; } }
     public RotProperty rotp { get { return _rotp; } }
 
 
-
-    [System.NonSerialized] private Trans _parent;  // may be null
-    [SerializeField] private int promg;
+    [SerializeField] private string _name;
+    [SerializeReference] private List<Trans> children = new List<Trans>();
     [SerializeReference] protected Pos3Property _pos3p;
-    [SerializeReference] protected RotProperty _rotp;
+    [System.NonSerialized] protected RotProperty _rotp;
+    private Transform _transform;
+    [System.NonSerialized] private Trans _parent;  // may be null
 
 
 
-    public Trans()
+    public Trans(Transform transform)
     {
-        Debug.Log("PENIS "+GetType());
+        _transform = transform;
+        _name = transform.gameObject.name;
         _pos3p = new Pos3Property(this);
         _pos3p.set(new Pos3(0f, 0f, 0f));
         _rotp = new RotProperty(this);
@@ -50,6 +51,7 @@ public abstract class Trans
     }
     public void recursiveComputeWorld()
     {
+        //Debug.Log("recursed " + this + " at time " + Time.time);
         // DOES NOT COMPUTE FOR SELF.
         foreach (Trans child in children)
         {
@@ -67,4 +69,5 @@ public abstract class Trans
     }
     protected abstract void computeWorld();
     protected abstract void computeLocal();
+    public override string ToString() => "["+GetType()+" '"+_name+"']";
 }

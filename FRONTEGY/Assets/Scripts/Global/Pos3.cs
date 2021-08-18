@@ -5,33 +5,29 @@ using UnityEngine;
 [System.Serializable]
 public struct Pos3 : ITransPropertyField<Pos3>
 {
-    public float x { get { return _p2.x; } }
-    public float y { get { return _y; } }
-    public float z { get { return _p2.z; } }
-    public Vector3 v3 { get { return new Vector3(_p2.x, _y, _p2.z); } }
+    public float x { get { return _v3.x; } }
+    public float y { get { return _v3.y; } }
+    public float z { get { return _v3.z; } }
+    public Vector3 v3 { get => _v3; }
+    public Pos2 pos2 { get => new Pos2(_v3.x, _v3.z); }
 
-    [SerializeField] private Pos2 _p2;
-    [SerializeField] private float _y;
+    [SerializeField] private Vector3 _v3;
 
     public Pos3(Pos2 p2)
     {
-        _p2 = p2;
-        _y = 1f;  // TODO
+        _v3 = new Vector3(p2.x, 0f, p2.z);
     }
     public Pos3(Vector3 v3)
     {
-        _p2 = new Pos2(v3.x, v3.z);
-        _y = v3.y;
+        _v3 = v3;
     }
     public Pos3(Pos2 p2, float y)
     {
-        _p2 = p2;
-        _y = y;
+        _v3 = new Vector3(p2.x, y, p2.z);
     }
     public Pos3(float x, float y, float z)
     {
-        _p2 = new Pos2(x, z);
-        _y = y;
+        _v3 = new Vector3(x, y, z);
     }
     public static Pos3 halfPoint(Pos3 a, Pos3 b)
     {
@@ -59,9 +55,12 @@ public struct Pos3 : ITransPropertyField<Pos3>
     {
         return v3.GetHashCode();
     }
-
+    /*
     public Pos3 computeWorld(Transform parent) => new Pos3(parent.TransformPoint(v3));
     public Pos3 computeLocal(Transform parent) => new Pos3(parent.InverseTransformPoint(v3));
+    */
+    public Pos3 computeWorld(Pos3 parentPos) => this + parentPos;
+    public Pos3 computeLocal(Pos3 parentPos) => this - parentPos;
     public Pos3 transformToProperty(Transform transform) => new Pos3(transform.localPosition);
     public void update(Transform transform) { transform.localPosition = v3; }
 

@@ -230,7 +230,7 @@ MonoBehaviour:
     - {x: 0, y: 1}
     - {x: 1, y: 5}
     - {x: 2, y: 2}
-    startCardCount: 64
+    startCardCount: 16
     giveSameCards: 1
     roole:
       _roles:
@@ -273,6 +273,8 @@ MonoBehaviour:
       verAngleLimits: {x: 0, y: 0}
       horSpeed: 0
       verSpeed: 0
+    _transive:
+      id: 0
     horAngleDeg:
       x: 0
     verAngleDeg:
@@ -283,9 +285,7 @@ MonoBehaviour:
       x: 0
     circleRadius: 0
     focus:
-      _p2:
-        _v2: {x: 0, y: 0}
-      _y: 0
+      _v3: {x: 0, y: 0, z: 0}
   pools:
     tilePrefab: {fileID: 3898236102231413406, guid: c23a1cb9cbf0efa48a3e3befa623247d,
       type: 3}
@@ -507,7 +507,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 1
+  near clip plane: 0.01
   far clip plane: 1000
   field of view: 60
   orthographic: 0

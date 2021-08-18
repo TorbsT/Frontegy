@@ -9,11 +9,9 @@ public class Transtatic : Trans
     // Local properties are by definition constant, but not world.
     public Transponent transponent { get => _transponent; }
     private Transponent _transponent;
-    public Transtatic(Transform transform, Trans parent)
+    public Transtatic(Transform transform, Trans parent) : base(transform)
     {
         if (parent == null) Debug.LogError("IllegalArgumentException");
-
-        this.transform = transform;
         _transponent = transform.GetComponent<Transponent>();
         if (_transponent == null) Debug.LogError("InspectorException: Tried creating transtatic on " + transform.gameObject + ", but it has no Transponent component");
         _transponent.transtatic = this;
@@ -22,7 +20,6 @@ public class Transtatic : Trans
     }
     protected override void computeWorld()
     {
-        _lastWorldComputation = Time.time;
         _pos3p.computeWorld();
         _rotp.computeWorld();
     }

@@ -12,28 +12,29 @@ public class Transive : Trans
     // if a world-property hasn't changed the last frame, transform isn't called at all for that property that frame.
 
 
-    public Transive(Transform transform) { this.transform = transform; construct(); }
-    public Transive(Transform transform, Trans parent) { this.transform = transform; construct(); setParent(parent, true); }
+    public Transive(Transform transform) : base(transform) { construct(); }
+    public Transive(Transform transform, Trans parent) : base(transform) { construct(); setParent(parent, true); }
 
+    [SerializeField] private float _lastTransShow;
 
     private void construct()
     {
-        if (transform == null) Debug.LogError("Tried constructing " + GetType() + " with null transform");
         GameMaster.GetGM().addTransive(this);  // Used for updating transes every frame
     }
     public void showTransIfNecessary()
     {
+        _lastTransShow = Time.time;
         _pos3p.showTransIfNecessary();
         _rotp.showTransIfNecessary();
     }
     protected override void computeLocal()
     {
+        if (parent == null)
         _pos3p.computeLocal();
         _rotp.computeLocal();
     }
     protected override void computeWorld()
     {
-        _lastWorldComputation = Time.time;
         _pos3p.computeWorld();
         _rotp.computeWorld();
     }

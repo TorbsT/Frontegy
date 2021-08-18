@@ -13,16 +13,15 @@ public class UIManager
     [System.NonSerialized] private UILinker linker;
     [SerializeReference] private Transive _transive;
     [SerializeReference] private UICaard uiCaard;
-    [SerializeField] private float canvasDistance;
+    private static float canvasDistance = 0f;
     private Cam cam => Cam.Instance;
 
 
 
-    public UIManager(float canvasDistance)
+    public UIManager()
     {
         Instance = this;
         gm = GameMaster.GetGM();
-        this.canvasDistance = canvasDistance;
 
         GameObject go = Object.Instantiate(getPrefab());
         if (go == null) Debug.LogError("WhatException: WHat the actual fuck");
@@ -30,9 +29,12 @@ public class UIManager
         if (linker == null) Debug.LogError("InspectorException: UIPrefab does not have UIController Component");
         linker.setUiManager(this);
         _transive = new Transive(linker.transform, cam.transive);
-        _transive.pos3p.set(new Pos3(0, 0f, 10f), true);
-        Rot rot = new Rot(Quaternion.identity);
-        _transive.rotp.set(rot, true);
+        _transive.pos3p.set(new Pos3(0, 0f, -canvasDistance), true);
+        _transive.rotp.set(new Rot(Quaternion.identity), true);
+        foreach (UIRect uiRect in linker.uiRects)
+        {
+            uiRect.setTransParent(_transive);
+        }
     }
 
     public void restart()

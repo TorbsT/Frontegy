@@ -7,13 +7,14 @@ public class UILinker : Linker
 {
     // provides a reference to UIGOs for UIManager.
     // Also displays internal state of UIManager to inspector.
+    public List<UIRect> uiRects { get => _uiRects; }
+
     [Header("View internal state")]
     [SerializeReference] private UIManager uiManager;
-    [SerializeReference] private Transive _transive;
 
     [Header("Assign variables")]
     [SerializeField] private Canvas canvas;
-    [SerializeField] private List<UIRect> uiRects;
+    [SerializeField] private List<UIRect> _uiRects;
     [SerializeField] private TextMeshProUGUI header;
 
     public void setUiManager(UIManager uiManager)
@@ -21,12 +22,6 @@ public class UILinker : Linker
         if (uiManager == null) Debug.LogError("IllegalArgumentException");
         if (this.uiManager != null) Debug.LogError("IllegalStateException");
         this.uiManager = uiManager;
-        _transive = new Transive(transform);
-
-        foreach (UIRect uiRect in uiRects)
-        {
-            uiRect.setTransParent(_transive);
-        }
     }
     public Trans getTransAtPlace(UIPlace place)
     {

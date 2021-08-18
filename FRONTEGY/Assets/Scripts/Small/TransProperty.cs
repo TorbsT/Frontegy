@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class TransProperty<T> where T : ITransPropertyField<T>  // bruh
+public abstract class TransProperty<T> where T : ITransPropertyField<T>  // bruh
 {
     // whenever local changes, world gets outdated
     // whenever world changes, local gets outdates
@@ -11,15 +11,15 @@ public class TransProperty<T> where T : ITransPropertyField<T>  // bruh
     public Transform transform { get { return trans.transform; } }
     public Transform parentTransform { get { return trans.parentTransform; } }
     public Trans parent { get { return trans.parent; } }
-    private bool worldChanged { get => !_world.Equals(_lastWorld); }
-
+    private bool transformOutdated { get => !_world.Equals(_lastWorld); }
     public Trans trans { get; private set; }
+    public string name { get => trans.name; }
 
-    [SerializeField] private int tiss;
-    [SerializeField] private T _local;
+    [SerializeField] protected float _lastComputation = -1;
+    private T _local;
     [SerializeField] private T _world;
-    [SerializeField] private T _lastLocal;
-    [SerializeField] private T _lastWorld;  // Used for knowing when updating transform is unnecessary
+    private T _lastLocal;
+    [SerializeField] private T _lastWorld;  // The transform's current value
 
     public TransProperty(Trans trans)
     {
@@ -31,17 +31,23 @@ public class TransProperty<T> where T : ITransPropertyField<T>  // bruh
     {
         if (parent == null) Debug.LogError("very wrong");
         else _local = _local.transformToProperty(transform);
+        _lastComputation = Time.time;
     }
     public void computeLocal()
     {
         if (parent == null) _local = _world;
-        else _local = _world.computeLocal(parentTransform);
+        else _local = _world.computeLocal(getParentWorldProperty());
+        _lastComputation = Time.time;
     }
     public void computeWorld()
     {
         if (parent == null) _world = _local;
-        else _world = _local.computeWorld(parentTransform);
-        //if (worldChanged) Debug.Log(_local + " " + _world + " " + transform.gameObject);
+        else
+        {
+            _world = _local.computeWorld(getParentWorldProperty());
+            if (parent.name == "Main Camera") Debug.Log(_world);
+        }
+        _lastComputation = Time.time;
     }
 
 
@@ -64,7 +70,7 @@ public class TransProperty<T> where T : ITransPropertyField<T>  // bruh
         }
 
         // Alerts children to recompute world
-        if (worldChanged)
+        if (transformOutdated)
         {
             trans.recursiveComputeWorld();
         }
@@ -92,7 +98,7 @@ public class TransProperty<T> where T : ITransPropertyField<T>  // bruh
         // If transform already matches _world, no update is needed.
         // transform always matches _lastWorld.
         // Therefore, if _world == _lastWorld, _world == transform.
-        if (!worldChanged)
+        if (!transformOutdated)
         {
             // Already up-to-date.
         } else
@@ -110,9 +116,12 @@ public class TransProperty<T> where T : ITransPropertyField<T>  // bruh
         // If keeping local space, compute local space and outdate world space.
         set(get(keepWorldSpace), keepWorldSpace);
     }
+    protected abstract T getParentWorldProperty();  // WHAT IS THIS TRASH
     
 }
+
+// VERY beautiful subclasses
 [System.Serializable]
-public class Pos3Property : TransProperty<Pos3> { public Pos3Property(Trans trans) : base(trans) { } }
+public class Pos3Property : TransProperty<Pos3> { public Pos3Property(Trans trans) : base(trans) { } protected override Pos3 getParentWorldProperty() => parent.pos3p.get(false); }
 [System.Serializable]
-public class RotProperty : TransProperty<Rot> { public RotProperty(Trans trans) : base(trans) { } }
+public class RotProperty : TransProperty<Rot> { public RotProperty(Trans trans) : base(trans) { } protected override Rot getParentWorldProperty() => parent.rotp.get(false); }
