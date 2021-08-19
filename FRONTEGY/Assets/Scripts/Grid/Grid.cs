@@ -30,7 +30,7 @@ public class Grid
     private List<TroopState> _troopStates = new List<TroopState>();
     private List<CardState> _cardStates = new List<CardState>();
 
-    private List<TacticalHistory> _tacticalHistories = new List<TacticalHistory>();
+    [SerializeReference] private List<TacticalHistory> _tacticalHistories = new List<TacticalHistory>();
     private AllTiile _allTiile;
     private AllCaard _allCaard;
     private AllGroop _allGroop;

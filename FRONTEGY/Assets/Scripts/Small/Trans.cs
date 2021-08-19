@@ -16,12 +16,14 @@ public abstract class Trans
 
     public Pos3Property pos3p { get { if (_pos3p == null) Debug.LogError(GetType() + " " + transform.gameObject + " has no pos3p"); return _pos3p; } }
     public RotProperty rotp { get { return _rotp; } }
+    public ScaleProperty scalep { get => _scalep; }
 
 
     [SerializeField] private string _name;
     [SerializeReference] private List<Trans> children = new List<Trans>();
     [SerializeReference] protected Pos3Property _pos3p;
-    [System.NonSerialized] protected RotProperty _rotp;
+    [SerializeReference] protected RotProperty _rotp;
+    [SerializeReference] protected ScaleProperty _scalep;
     private Transform _transform;
     [System.NonSerialized] private Trans _parent;  // may be null
 
@@ -35,6 +37,8 @@ public abstract class Trans
         _pos3p.set(new Pos3(0f, 0f, 0f));
         _rotp = new RotProperty(this);
         _rotp.set(new Rot(Quaternion.identity));
+        _scalep = new ScaleProperty(this);
+        _scalep.set(Scale.identity());
     }
 
     public void setParent(Trans parent, bool keepWorldSpace = false)

@@ -143,13 +143,7 @@ MonoBehaviour:
       cols: []
   _staged: 0
   _transive:
-    _lastWorldComputation: 0
-    children: []
-    promg: 0
-    _pos3p:
-      id: 0
-    _rotp:
-      id: 0
+    id: 0
   hasBounds: 0
   _colliderBounds:
     m_Center: {x: 0, y: 0, z: 0}

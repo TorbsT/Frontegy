@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class SelectAction : ITacticalAction
 {
-    private SelChy target;
-    private bool _wasLegal;
+    [SerializeReference] private SelChy target;
+    [SerializeReference] private bool _wasLegal;
 
     public SelectAction(SelChy target)
     {

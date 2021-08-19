@@ -22,7 +22,8 @@ public class SelMan
     public void freeViewUpdate(Control control, Player player)
     {
         if (player == null) Debug.LogError("IllegalArgumentException");
-        hoverMechanic(getMousedGO(control));
+        GameObject go = getMousedGO(control);
+        hoverMechanic(go);
         if (control.getM0Down()) selectMechanic();
         if (control.getM1Down()) placeMechanic();
     }
@@ -45,11 +46,16 @@ public class SelMan
     {
         if (go == hoveredGO) return;
         // => hoveredObj changed.
-        if (hovered != null) hovered.unhover();
 
-        if (go == selectedGO) { return; }
+        SelChy nowHover = toSelChy(go);
+
+
+
+        if (hovered != null && hovered != selected) hovered.unhover();
+
+        if (go == selectedGO && go != null) { return; }
         hoveredGO = go;
-        hovered = toChy(go);
+        hovered = toSelChy(go);
         if (canHover(hovered))
         {
             if (hovered != null) hovered.hover();
@@ -60,11 +66,9 @@ public class SelMan
         if (selectedGO == hoveredGO) return;
         // => selectedObj changed.
 
-        if (hovered != null)
-        {
-            SelectAction action = new SelectAction(hovered);
-            ActionManager.Instance.doAction(action);
-        }
+
+        SelectAction action = new SelectAction(hovered);
+        ActionManager.Instance.doAction(action);
     }
     private void placeMechanic()
     {  // Right click
@@ -82,7 +86,7 @@ public class SelMan
     }
 
 
-    private SelChy toChy(GameObject go)
+    private SelChy toSelChy(GameObject go)
     {
         if (go == null) return null;
         SelPhy s = go.GetComponent<SelPhy>();  // Selectable is attached to the GO that has meshcollider.
@@ -97,8 +101,17 @@ public class SelMan
 
     public void select(SelChy selChy)
     {
+        if (selected != null)
+        {
+            selected.unselect();
+        }
         selected = selChy;
-        selectedGO = selChy.getGO();
+        if (selChy != null)
+        {
+            selectedGO = selChy.getGO();
+            selChy.primarySelect();
+        }
+        else selectedGO = null;
     }
     public bool canSelect(SelChy selChy)
     {

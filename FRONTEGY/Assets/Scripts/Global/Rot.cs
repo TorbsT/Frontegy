@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public struct Rot : ITransPropertyField<Rot>
+public struct Rot
 {
     public Quaternion q { get { return _q; } set { _q = value; } }
     [SerializeField] private Quaternion _q;
@@ -19,10 +19,8 @@ public struct Rot : ITransPropertyField<Rot>
     public Rot computeWorld(Transform parent) => new Rot(parent.rotation *_q);
     public Rot computeLocal(Transform parent) => new Rot(_q * Quaternion.Inverse(parent.rotation));
     */
-    public Rot computeWorld(Rot parentRot) => this * parentRot;
-    public Rot computeLocal(Rot parentRot) => this / parentRot;
-    public Rot transformToProperty(Transform transform) => new Rot(transform.localRotation);
-    public void update(Transform transform) { transform.localRotation = _q; }
+    public static Rot identity() => new Rot(Quaternion.identity);
     public static Rot operator *(Rot a, Rot b) => new Rot(a._q * b._q);
     public static Rot operator /(Rot a, Rot b) => new Rot(a._q * Quaternion.Inverse(b._q));
+    public override string ToString() => "Rot" + _q.ToString();
 }

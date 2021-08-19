@@ -79,4 +79,9 @@ public class Card : SelChy  // changed to class since i didn't know why it shoul
     {
         CardPool.Instance.unstage(this);
     }
+    public override void hover()
+    {
+        base.hover();
+        Debug.Log(trans.pos3p.get(false));
+    }
 }

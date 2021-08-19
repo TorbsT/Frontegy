@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public struct Pos3 : ITransPropertyField<Pos3>
+public struct Pos3
 {
     public float x { get { return _v3.x; } }
     public float y { get { return _v3.y; } }
@@ -29,6 +29,8 @@ public struct Pos3 : ITransPropertyField<Pos3>
     {
         _v3 = new Vector3(x, y, z);
     }
+
+    public static Pos3 identity() => new Pos3(Vector3.zero);
     public static Pos3 halfPoint(Pos3 a, Pos3 b)
     {
         return lerp(a, b, new Slid(0.5f));
@@ -37,12 +39,23 @@ public struct Pos3 : ITransPropertyField<Pos3>
     {
         return a + (b - a) * slid;
     }
-    public static Pos3 operator +(Pos3 a, Pos3 b) => new Pos3(a.v3 + b.v3);
-    public static Pos3 operator -(Pos3 a, Pos3 b) => new Pos3(a.v3 - b.v3);
+    public static Pos3 operator +(Pos3 a, Pos3 b) => a + b._v3;
+    public static Pos3 operator +(Pos3 p, Vector3 v) => new Pos3(p._v3 + v);
+    public static Pos3 operator -(Pos3 a, Pos3 b) => a - b._v3;
+    public static Pos3 operator -(Pos3 p, Vector3 v) => new Pos3(p._v3 - v);
     public static Pos3 operator *(Pos3 p3, float f) => new Pos3(p3.v3 * f);
     public static Pos3 operator *(float f, Pos3 p3) => new Pos3(p3.v3 * f);
+    public static Pos3 operator *(Pos3 p3, Scale s) => new Pos3(p3.x * s.x, p3.y * s.y, p3.z * s.z);
+    public static Pos3 operator *(Pos3 p3, Rot rot) => p3 * rot.q;
+    public static Pos3 operator *(Pos3 p3, Quaternion q) => new Pos3(q * p3._v3);
     public static Pos3 operator *(Pos3 p3, Slid s) => new Pos3(p3.v3 * s.f);
     public static Pos3 operator *(Slid s, Pos3 p3) => new Pos3(p3.v3 * s.f);
+    public static Pos3 operator /(Pos3 p3, Scale s)
+    {
+        if (s.x == 0 || s.y == 0 || s.z == 0) throw new System.DivideByZeroException("Tried to divide " + p3 + " by " + s);
+        return new Pos3(p3.x * s.x, p3.y * s.y, p3.z * s.z);
+    }
+    public static Pos3 operator /(Pos3 p3, Rot rot) => p3 * Quaternion.Inverse(rot.q); 
     public static Pos3 operator /(Pos3 p3, float f) => new Pos3(p3.v3 / f);
     public static bool operator ==(Pos3 a, Pos3 b) => a.v3 == b.v3;
     public static bool operator !=(Pos3 a, Pos3 b) => a.v3 != b.v3;
@@ -55,14 +68,5 @@ public struct Pos3 : ITransPropertyField<Pos3>
     {
         return v3.GetHashCode();
     }
-    /*
-    public Pos3 computeWorld(Transform parent) => new Pos3(parent.TransformPoint(v3));
-    public Pos3 computeLocal(Transform parent) => new Pos3(parent.InverseTransformPoint(v3));
-    */
-    public Pos3 computeWorld(Pos3 parentPos) => this + parentPos;
-    public Pos3 computeLocal(Pos3 parentPos) => this - parentPos;
-    public Pos3 transformToProperty(Transform transform) => new Pos3(transform.localPosition);
-    public void update(Transform transform) { transform.localPosition = v3; }
-
-    public override string ToString() => v3.ToString();
+    public override string ToString() => "Pos3"+v3.ToString();
 }

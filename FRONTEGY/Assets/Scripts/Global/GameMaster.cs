@@ -82,7 +82,7 @@ public class GameMaster : MonoBehaviour
 
     void Start()
     {
-        Application.targetFrameRate = 2;
+        //Application.targetFrameRate = 2;
         cam = new Cam(getCamera(), getCamConfig());
         uiManager = new UIManager();
         playyer.init();

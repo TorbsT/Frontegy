@@ -26,16 +26,18 @@ public class Transive : Trans
         _lastTransShow = Time.time;
         _pos3p.showTransIfNecessary();
         _rotp.showTransIfNecessary();
+        _scalep.showTransIfNecessary();
     }
     protected override void computeLocal()
     {
-        if (parent == null)
         _pos3p.computeLocal();
         _rotp.computeLocal();
+        _scalep.computeLocal();
     }
     protected override void computeWorld()
     {
         _pos3p.computeWorld();
         _rotp.computeWorld();
+        _scalep.computeWorld();
     }
 }

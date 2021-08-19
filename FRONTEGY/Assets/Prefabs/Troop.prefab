@@ -130,6 +130,9 @@ MonoBehaviour:
         material: {fileID: 2100000, guid: 5982d0e2dc3341d46b0e7792055645a7, type: 2}
     cool:
       cols: []
+  _staged: 0
+  _transive:
+    id: 0
   hasBounds: 0
   _colliderBounds:
     m_Center: {x: 0, y: 0, z: 0}
@@ -137,14 +140,7 @@ MonoBehaviour:
   _chy:
     id: 0
   troop:
-    player:
-      name: 
-      mat:
-        place: 0
-        material: {fileID: 0}
-    scale: 0
-    parentTile:
-      id: 0
+    _id: 0
   rndrr: {fileID: 0}
   defaultLayer: 0
   ignoreRaycastLayer: 2

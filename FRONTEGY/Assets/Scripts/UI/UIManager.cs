@@ -13,7 +13,8 @@ public class UIManager
     [System.NonSerialized] private UILinker linker;
     [SerializeReference] private Transive _transive;
     [SerializeReference] private UICaard uiCaard;
-    private static float canvasDistance = 0f;
+    private static float canvasDistance = 1f;
+    private static Scale scale = new Scale(0.1f, 0.1f, 0.1f);
     private Cam cam => Cam.Instance;
 
 
@@ -29,8 +30,9 @@ public class UIManager
         if (linker == null) Debug.LogError("InspectorException: UIPrefab does not have UIController Component");
         linker.setUiManager(this);
         _transive = new Transive(linker.transform, cam.transive);
-        _transive.pos3p.set(new Pos3(0, 0f, -canvasDistance), true);
-        _transive.rotp.set(new Rot(Quaternion.identity), true);
+        _transive.pos3p.set(new Pos3(0, 0f, canvasDistance), true);
+        //_transive.rotp.set(new Rot(Quaternion.Euler(90f, 0f, 0f)));
+        _transive.scalep.set(scale);
         foreach (UIRect uiRect in linker.uiRects)
         {
             uiRect.setTransParent(_transive);

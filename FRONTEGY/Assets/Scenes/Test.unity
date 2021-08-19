@@ -261,7 +261,7 @@ MonoBehaviour:
   buildingPrefab: {fileID: 0}
   tileGOPrefab: {fileID: 3898236102231413406, guid: c23a1cb9cbf0efa48a3e3befa623247d,
     type: 3}
-  cardGOPrefab: {fileID: 5407895529541383545, guid: 3a193e34215176e42b0d0847c25310fa,
+  cardGOPrefab: {fileID: 3128357671093214248, guid: 1e8486877235c604693fa67e8e320ffe,
     type: 3}
   lineGOPrefab: {fileID: 7648600365356990817, guid: ebd2a8db3738d3f4194d613e25033ae5,
     type: 3}
@@ -289,7 +289,7 @@ MonoBehaviour:
   pools:
     tilePrefab: {fileID: 3898236102231413406, guid: c23a1cb9cbf0efa48a3e3befa623247d,
       type: 3}
-    cardPrefab: {fileID: 5407895529541383545, guid: 3a193e34215176e42b0d0847c25310fa,
+    cardPrefab: {fileID: 3128357671093214248, guid: 1e8486877235c604693fa67e8e320ffe,
       type: 3}
     troopPrefab: {fileID: 8680780199558192526, guid: 03de2358d8424fc4bbcf6f0c0f56d9d0,
       type: 3}
