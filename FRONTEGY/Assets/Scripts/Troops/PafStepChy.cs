@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class PafStepChy : Chy
 {
+    private static Pos3 unselectedPos = new Pos3(0f, 1f / 32f, 0f);
+    private static Pos3 selectedPos = new Pos3(0f, 1f / 16f, 0f);
     private static Rot deg90 = Rot.eulerAngles(0f, 90f, 0f);
     private static Rot deg180 = Rot.eulerAngles(0f, 180f, 0f);
     private static Rot deg270 = Rot.eulerAngles(0f, 270f, 0f);
@@ -58,7 +60,7 @@ public class PafStepChy : Chy
 
         // Set correct position
         transive.setParent(_tile.surfaceTranstatic);
-        transive.pos3p.set(new Pos3(0f, 1/64f, 0f));
+        transive.pos3p.set(selectedPos);
         Rot rot = Rot.identity;
         if (_isEnd)
         {
@@ -84,8 +86,17 @@ public class PafStepChy : Chy
         getTurnGO().SetActive(_isTurn);
     }
 
-    public void showMark() { setMat(MatPlace.select, RendPlace.selectable); }
-    public void hideMark() { setMat(MatPlace.initialSel, RendPlace.selectable); }
+    public void showMark()
+    {
+        transive.pos3p.set(selectedPos);
+        setMat(MatPlace.select, RendPlace.selectable);
+        setFloat(RendPlace.selectable, "TimeOffset", _step * -0.3f);
+    }
+    public void hideMark()
+    {
+        transive.pos3p.set(unselectedPos);
+        setMat(MatPlace.initialSel, RendPlace.selectable);
+    }
     private void findDirection(Tile tile) { findDirection(tile.loc); }
     private void findDirection(TileLoc loc)
     {  // Which direction is this, relative to tile?

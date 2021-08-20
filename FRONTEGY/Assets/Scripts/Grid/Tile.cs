@@ -6,7 +6,7 @@ using UnityEngine;
 [System.Serializable]
 public class Tile : SelChy
 {
-    public static readonly float primaryMarkHeight = 1f;
+    public static readonly float primaryMarkHeight = 0f;
 
     public override Player owner { get => _state.owner; }
     public TileState state { get => _state; }

@@ -16,6 +16,10 @@ public struct Scale
     {
         _v3 = v3;
     }
+    public Scale(float s)
+    {
+        _v3 = new Vector3(s, s, s);
+    }
     public Scale(float x, float y, float z)
     {
         _v3 = new Vector3(x, y, z);

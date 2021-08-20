@@ -20,6 +20,7 @@ public class Troop : SelChy  // "Must" be class since SetStats() should be able 
         stage();
         initMats();
         displayOnParent();
+        transive.scalep.set(new Scale(0.5f, 1f, 0.5f));
     }
     public Player getOwner()
     {

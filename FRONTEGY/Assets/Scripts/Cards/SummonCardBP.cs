@@ -22,6 +22,8 @@ public class SummonCardBP : ScriptableObject, ICardBP
         TroopState state = new TroopState(tile, role);
         state.owner = card.owner;
         Troop troop = new Troop(state);
+
+        //card.unstage();  // don't do this lol
     }
 
     public override string ToString() { return role.ToString(); }
