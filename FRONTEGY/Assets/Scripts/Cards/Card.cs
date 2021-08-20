@@ -82,6 +82,6 @@ public class Card : SelChy  // changed to class since i didn't know why it shoul
     public override void hover()
     {
         base.hover();
-        Debug.Log(trans.pos3p.get(false));
+        
     }
 }

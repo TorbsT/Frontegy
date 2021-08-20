@@ -19,7 +19,7 @@ public class Pools
             new TilePool(tilePrefab),
             new CardPool(cardPrefab),
             new TroopPool(troopPrefab),
-            new PafPool(pafPrefab)
+            new PafStepPool(pafPrefab)
         };
     }
     public void unstageAll()

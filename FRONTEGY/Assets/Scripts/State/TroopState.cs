@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class TroopState
 {
     public Player owner { get => _owner; set { _owner = value; _ownerId = value.id; } }
@@ -16,13 +17,14 @@ public class TroopState
     public Djikstra djikstra { get => _djikstra; set { _djikstra = value; } }
     public TroopStepStates stepStates { get => _stepStates; set { _stepStates = value; } }
     public Paf paf { get => _paf; set { _paf = value; } }
+    public Breadcrumb startBreadcrumb { get => new Breadcrumb(_parentTile, getRANGE()); }
 
     private Player _owner;
     private int _ownerId;
     private TileLoc _parentTileLoc;
     private Tile _parentTile;
     private bool _dead;
-    private Role _role;
+    [SerializeReference] private Role _role;
     private int _roleId;
     private int _id;
     private int _roundId;
@@ -31,14 +33,19 @@ public class TroopState
     private Paf _paf;
     //List<Mods> mods;
 
-    public TroopState()
+    public TroopState(Tile parentTile, Role role)
     {
+        if (parentTile == null) Debug.LogError("You monkey");
+        if (role == null) Debug.LogError("stupod");
+        _parentTile = parentTile;
+        _role = role;
+        _djikstra = new Djikstra(this);
+        _paf = new Paf(this);
     }
     public TroopState copy()
     {
-        TroopState t = new TroopState();
+        TroopState t = new TroopState(_parentTile, role);
         t.owner = _owner;
-        t.parentTile = _parentTile;
         t._dead = _dead;
         t.role = _role;
         t._id = _id;

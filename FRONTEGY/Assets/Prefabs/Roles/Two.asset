@@ -15,5 +15,5 @@ MonoBehaviour:
   _id: 1
   _baseStats:
     POW: 0
-    RANGE: 0
+    RANGE: 8
   trumpRole: {fileID: 0}

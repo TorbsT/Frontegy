@@ -74,21 +74,13 @@ public class UIManager
         if (go == null) Debug.LogError("InspectorException: Remember setting UIPrefab in GameMaster");
         return go;
     }
-    private void unuizeAll()
-    {
-        if (uiCaard != null)
-        {
-            uiCaard.unuizeAll();
-        }
-    }
     public void battleStart()
     {
-        unuizeAll();
+        uiCaard.empty();
     }
     public void tacticalStart(TacticalPhase tp)
     {
         if (tp == null) Debug.LogError("IllegalArgumentException");
-        unuizeAll();
         updateHeader(tp.getPhasePlayer());
 
         Debug.Log("Tacticalstart");

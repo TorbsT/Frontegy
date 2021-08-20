@@ -86,4 +86,4 @@ public abstract class Pool<Client, Host> : IPool where Client : IPoolClient wher
 public class TilePool : Pool<Tile, TilePhy>  { public TilePool(GameObject go) : base(go) { } }
 public class CardPool : Pool<Card, CardPhy> { public CardPool(GameObject go) : base(go) { } }
 public class TroopPool : Pool<Troop, TroopPhy> { public TroopPool(GameObject go) : base(go) { } }
-public class PafPool : Pool<PafChy, PafPhy> { public PafPool(GameObject go) : base(go) { } }
+public class PafStepPool : Pool<PafStepChy, PafStepPhy> { public PafStepPool(GameObject go) : base(go) { } }

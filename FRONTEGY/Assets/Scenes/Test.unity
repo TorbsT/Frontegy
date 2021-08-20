@@ -223,7 +223,7 @@ MonoBehaviour:
     seed: 0
     size: {x: 9, y: 8}
     tileWeights:
-    - {x: -1, y: 5}
+    - {x: -1, y: 1}
     - {x: 0, y: 2}
     - {x: 1, y: 3}
     cardWeights:
@@ -293,7 +293,7 @@ MonoBehaviour:
       type: 3}
     troopPrefab: {fileID: 8680780199558192526, guid: 03de2358d8424fc4bbcf6f0c0f56d9d0,
       type: 3}
-    pafPrefab: {fileID: 7648600365356990817, guid: ebd2a8db3738d3f4194d613e25033ae5,
+    pafPrefab: {fileID: 8182245277471706774, guid: 57a8bb64259eec84199f4ab83a7574c9,
       type: 3}
   coontrol:
     id: 0
@@ -419,13 +419,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1067102728}
-  m_LocalRotation: {x: -0.182312, y: 0.000000014901158, z: -0.000000007450579, w: 0.9832408}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1362506142}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: -21.009, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1353482312
 GameObject:
   m_ObjectHideFlags: 0

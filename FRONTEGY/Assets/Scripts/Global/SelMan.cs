@@ -29,7 +29,6 @@ public class SelMan
     }
     private bool canHover(SelChy selChy)
     {  // For free view
-        return true;
         return canSelect(selChy) || canSecondarySelect(selChy);
     }
 
@@ -46,10 +45,6 @@ public class SelMan
     {
         if (go == hoveredGO) return;
         // => hoveredObj changed.
-
-        SelChy nowHover = toSelChy(go);
-
-
 
         if (hovered != null && hovered != selected) hovered.unhover();
 

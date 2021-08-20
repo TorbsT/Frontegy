@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Breadcruumb
 {
-    private List<Breadcrumb> breadcrumbs;
+    private List<Breadcrumb> _breadcrumbs = new List<Breadcrumb>();
 
     public Breadcruumb()
     {
@@ -22,7 +22,7 @@ public class Breadcruumb
     public Breadcrumb findByTile(Tile t)
     {
         // may produce INVALID breadcrumb
-        foreach (Breadcrumb bc in breadcrumbs)
+        foreach (Breadcrumb bc in _breadcrumbs)
         {
             if (bc.isTile(t)) return bc;
         }
@@ -94,8 +94,8 @@ public class Breadcruumb
         }
         return breadcruumb;
     }
-    public List<Breadcrumb> getBreadcrumbs() { return breadcrumbs; }
-    public void setBreadcrumbs(List<Breadcrumb> breadcrumbs) { this.breadcrumbs = breadcrumbs; }
+    public List<Breadcrumb> getBreadcrumbs() { return _breadcrumbs; }
+    public void setBreadcrumbs(List<Breadcrumb> breadcrumbs) { this._breadcrumbs = breadcrumbs; }
     public int GetIndexInRange(int index)
     {
         if (IsEmpty()) Debug.LogError("Tried converting potentially out-of-range index to in-range, but there is no path");
@@ -122,21 +122,21 @@ public class Breadcruumb
 
         return getBreadcrumbs()[index];
     }
-    public void showMarks()
+    public void showPrimaryMarks()
     {
         Debug.Log("Show marks!");
         Debug.Log(this);
         foreach (Breadcrumb bc in getBreadcrumbs())
         {
             Debug.Log("Show mark for me!");
-            bc.showMark();
+            bc.showPrimaryMark();
         }
     }
-    public void hideMarks()
+    public void hidePrimaryMarks()
     {
         foreach (Breadcrumb bc in getBreadcrumbs())
         {
-            bc.hideMark();
+            bc.hidePrimaryMark();
         }
     }
 

@@ -43,10 +43,10 @@ public abstract class Trans
 
     public void setParent(Trans parent, bool keepWorldSpace = false)
     {
-        if (parent == null) Debug.LogError("IllegalArgumentException");
+        //if (parent == null) Debug.LogError("IllegalArgumentException");
 
         // if keepWorldSpace, showTrans = false
-        if (parent == this.parent) Debug.LogWarning("IllegalStateException: '" + parent + "' is already the parent of '" + this + "'");
+        if (parent == this.parent) { Debug.LogWarning("IllegalStateException: '" + parent + "' is already the parent of '" + this + "'"); return; }
         if (_parent != null) _parent.unsubscribe(this);
         if (parent != null) parent.subscribe(this);
         _parent = parent;

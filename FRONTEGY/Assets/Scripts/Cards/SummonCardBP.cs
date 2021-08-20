@@ -19,10 +19,8 @@ public class SummonCardBP : ScriptableObject, ICardBP
     {
         if (card == null) Debug.LogError("IllegalArgumentException");
 
-        TroopState state = new TroopState();
-        state.parentTile = tile;
+        TroopState state = new TroopState(tile, role);
         state.owner = card.owner;
-        state.role = card.role;
         Troop troop = new Troop(state);
     }
 

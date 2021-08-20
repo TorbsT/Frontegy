@@ -9,6 +9,11 @@ public class Djikstra
     [SerializeReference] private Breadcruumb marked;
     private Breadcrumb _startBreadcrumb;
     
+    public Djikstra(TroopState state)
+    {
+        if (state == null) Debug.LogError("You fucking donkey");
+        _startBreadcrumb = state.startBreadcrumb;
+    }
     public Djikstra(Breadcrumb startBreadcrumb)
     {
         _startBreadcrumb = startBreadcrumb;
@@ -24,8 +29,8 @@ public class Djikstra
         if (marked == null) Debug.LogError("Djikstra.compute() didn't do anything...? Should never happen");
         return marked;
     }
-    public void showMarks() { Debug.Log("penuadsas"); getMarked().showMarks(); }
-    public void hideMarks() { getMarked().hideMarks(); }
+    public void showMarks() { Debug.Log("penuadsas"); getMarked().showPrimaryMarks(); }
+    public void hidePrimaryMarks() { getMarked().hidePrimaryMarks(); }
 
 
     private void compute()
@@ -35,7 +40,6 @@ public class Djikstra
     }
     private void recursiveMarkNeigs(Breadcrumb breadcrumb)
     {
-        Debug.Log(IsAvailableForWalking(breadcrumb));
         if (IsAvailableForWalking(breadcrumb))
         {
             // Tries to add this breadcrumb to marked list.
@@ -51,11 +55,10 @@ public class Djikstra
                 // stepsremaining and step for this breadcrumb, not its neigs
                 int stepsRemaining = breadcrumb.stepsRemaining;
 
-                Debug.Log(neigs);
                 foreach (Tile neig in neigs.getTiles())
                 {
                     Breadcrumb neigBc = Breadcrumb.makeNeig(neig, stepsRemaining);
-                    Debug.Log(neigBc);
+                    
                     recursiveMarkNeigs(neigBc);
                 }
             }

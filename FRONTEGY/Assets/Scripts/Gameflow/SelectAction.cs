@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class SelectAction : ITacticalAction
+public class SelectAction : ITacticalAction, IFailableAction
 {
     [SerializeReference] private SelChy target;
     [SerializeReference] private bool _wasLegal;
@@ -18,5 +18,9 @@ public class SelectAction : ITacticalAction
     public void apply()
     {
         SelMan.Instance.select(target);
+    }
+    public void failApply()
+    {
+        SelMan.Instance.select(null);
     }
 }

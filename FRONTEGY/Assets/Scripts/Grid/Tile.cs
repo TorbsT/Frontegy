@@ -6,6 +6,8 @@ using UnityEngine;
 [System.Serializable]
 public class Tile : SelChy
 {
+    public static readonly float primaryMarkHeight = 1f;
+
     public override Player owner { get => _state.owner; }
     public TileState state { get => _state; }
     public TileLoc loc { get { return _loc; } }
@@ -22,7 +24,7 @@ public class Tile : SelChy
         _loc = loc;
         stage();
         initMats();
-        trans.pos3p.set(getPos3(), true);
+        transive.pos3p.set(getPos3(), true);
     }
 
     public Pos3 getPos3()
@@ -31,17 +33,29 @@ public class Tile : SelChy
     }
     public bool isNeigOfTile(Tile t) { return isNeigOfTileLoc(t.loc); }
     public bool isNeigOfTileLoc(TileLoc tl) { return TileLoc.areNeigs(loc, tl); }
-    public void showMark(Breadcrumb bc)
+    public void showPrimaryMark(Breadcrumb bc)
     {
-        setMat(MatPlace.breadcrumb, RendPlace.top);
+        setMat(MatPlace.mark, RendPlace.top);
 
         float timeMod = Mathf.Pow(2, bc.stepsRemaining);
         float timeOffset = (float)bc.stepsRemaining * 0.3f;
-        //setFloat(RendPlace.top, "TimeMod", timeMod);
         setFloat(RendPlace.top, "TimeOffset", timeOffset);
-
+        transive.scalep.set(new Scale(1f, 1f+primaryMarkHeight, 1f));
     }
-    public void hideMark() { setMat(owner.getMatPlace(), RendPlace.top); }//hehehehe
+    public void showSecondaryMark(Breadcrumb bc)
+    {
+        setMat(MatPlace.secondaryMark, RendPlace.top);
+
+        float timeMod = Mathf.Pow(2, bc.stepsRemaining);
+        float timeOffset = (float)bc.stepsRemaining * 0.3f;
+        setFloat(RendPlace.top, "TimeOffset", timeOffset);
+    }
+    public void hidePrimaryMark()
+    {
+        setMat(owner.getMatPlace(), RendPlace.top);
+        transive.scalep.set(Scale.identity());
+    }//hehehehe
+    public void hideSecondaryMark(Breadcrumb bc) { showPrimaryMark(bc); }// what is wrong with you
 
     public TilePhy getHost()
     {

@@ -12,8 +12,7 @@ public class Troop : SelChy  // "Must" be class since SetStats() should be able 
 
     
     [SerializeField] private int _id;
-    [SerializeField] private TroopState _state;
-    [SerializeField] private PafChy _pafChy;
+    [SerializeReference] private TroopState _state;
 
     public Troop(TroopState state)
     {
@@ -21,8 +20,6 @@ public class Troop : SelChy  // "Must" be class since SetStats() should be able 
         stage();
         initMats();
         displayOnParent();
-
-        _pafChy = new PafChy(paf);
     }
     public Player getOwner()
     {
@@ -49,8 +46,8 @@ public class Troop : SelChy  // "Must" be class since SetStats() should be able 
 
         Pos3 p3 = new Pos3(0f, getColliderBounds().extents.y, 0f);
 
-        trans.setParent(state.parentTile.surfaceTranstatic, true);
-        trans.pos3p.set(p3, true);
+        transive.setParent(state.parentTile.surfaceTranstatic, true);
+        transive.pos3p.set(p3, true);
     }
     public bool isThisTroop(Troop compareAgainst)
     {
@@ -78,24 +75,31 @@ public class Troop : SelChy  // "Must" be class since SetStats() should be able 
         FromTo ft = getFromTo(step);
         */
     }
-    public bool planPafTo(Tile t)
-    {
-        return state.planPafTo(t);
-    }
     public override void primarySelect()
     {
         base.primarySelect();
         Debug.Log("penus");
         djikstra.showMarks();
+        paf.showMarks();
     }
     public override void unselect()
     {
         base.unselect();
-        djikstra.hideMarks();
+        paf.hideMarks();
+        djikstra.hidePrimaryMarks();
     }
-    public bool tileIsInRange(Tile t)
+    public override bool canSecondarySelectOn(SelChy selChy)
     {
-        return djikstra.tileIsInRange(t);
+        if (selChy is Tile t) return paf.isValidNext(t);
+        return false;
+    }
+    public override void secondarySelectOn(SelChy selChy)
+    {
+        if (selChy is Tile t)
+        {
+            paf.add(t);
+            paf.showMarks();
+        }
     }
 
     public TroopPhy getTroopPhy() { return TroopPool.Instance.getHost(this); }

@@ -31,11 +31,12 @@ public class TacticalHistory
     }
     public bool addActionAndApply(ITacticalAction action)
     {
-        if (action is SelectAction a) _selectActions.Add(a);
-        else if (action is SecondarySelectAction b) _secondarySelectActions.Add(b);
+        if (action is SelectAction selectAction) _selectActions.Add(selectAction);
+        else if (action is SecondarySelectAction secondarySelectAction) _secondarySelectActions.Add(secondarySelectAction);
 
         actions.Add(action);
         if (action.legal()) { action.apply(); return true; }
+        if (action is IFailableAction failure) failure.failApply();
         return false;
     }
 }
