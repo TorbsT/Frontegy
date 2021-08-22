@@ -11,10 +11,10 @@ public class SummonCardBP : ScriptableObject, ICardBP
 
     public int roleId { get => _role.id; }
     public Role role { get => _role; }
-    public MatPlace frontFGMatPlace { get => _frontFGMatPlace; }
+    public string frontFGMatPlace { get => _frontFGMatPlace; }
 
     [SerializeField] private Role _role;
-    [SerializeField] private MatPlace _frontFGMatPlace;
+    [SerializeField] private string _frontFGMatPlace;
     public void cast(Card card, Tile tile, CastType type)
     {
         if (card == null) Debug.LogError("IllegalArgumentException");

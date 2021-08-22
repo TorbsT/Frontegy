@@ -5,6 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public struct Pos3
 {
+    public static Pos3 identity => new Pos3(Vector3.zero);
     public float x { get { return _v3.x; } }
     public float y { get { return _v3.y; } }
     public float z { get { return _v3.z; } }
@@ -30,7 +31,6 @@ public struct Pos3
         _v3 = new Vector3(x, y, z);
     }
 
-    public static Pos3 identity() => new Pos3(Vector3.zero);
     public static Pos3 halfPoint(Pos3 a, Pos3 b)
     {
         return lerp(a, b, new Slid(0.5f));

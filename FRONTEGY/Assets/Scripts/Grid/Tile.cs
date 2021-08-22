@@ -35,25 +35,27 @@ public class Tile : SelChy
     public bool isNeigOfTileLoc(TileLoc tl) { return TileLoc.areNeigs(loc, tl); }
     public void showPrimaryMark(Breadcrumb bc)
     {
-        setMat(MatPlace.mark, RendPlace.top);
+        /*setMat("top", "mark");
 
         float timeMod = Mathf.Pow(2, bc.stepsRemaining);
         float timeOffset = (float)bc.stepsRemaining * 0.3f;
-        setFloat(RendPlace.top, "TimeOffset", timeOffset);
+        setFloat("top", "TimeOffset", timeOffset);
         transive.scalep.set(new Scale(1f, 1f+primaryMarkHeight, 1f));
+        */
     }
     public void showSecondaryMark(Breadcrumb bc)
     {
-        setMat(MatPlace.secondaryMark, RendPlace.top);
+        /*setMat("top", "select");
 
         float timeMod = Mathf.Pow(2, bc.stepsRemaining);
         float timeOffset = (float)bc.stepsRemaining * 0.3f;
-        setFloat(RendPlace.top, "TimeOffset", timeOffset);
+        setFloat("top", "TimeOffset", timeOffset);
+        */
     }
     public void hidePrimaryMark()
     {
-        setMat(owner.getMatPlace(), RendPlace.top);
-        transive.scalep.set(Scale.identity());
+        setMat("top", owner.getMatPlace());
+        transive.scalep.set(Scale.identity);
     }//hehehehe
     public void hideSecondaryMark(Breadcrumb bc) { showPrimaryMark(bc); }// what is wrong with you
 
@@ -76,14 +78,14 @@ public class Tile : SelChy
     {
         TilePool.Instance.unstage(this);
     }
-    protected override MatPlace getInitialSelMat()
+    protected override string getInitialSelMatPlace()
     {
         return getPlayerMatPlace();
     }
     public override void initMats()
     {
-        setMat(getPlayerMatPlace(), RendPlace.top);
-        setMat(getInitialSelMat(), RendPlace.selectable);
+        setMat("top", getPlayerMatPlace());
+        setMat("selectable", getInitialSelMatPlace());
     }
 
 

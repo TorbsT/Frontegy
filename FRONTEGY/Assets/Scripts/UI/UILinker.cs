@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class UILinker : Linker
+public class UILinker : MonoBehaviour
 {
     // provides a reference to UIGOs for UIManager.
     // Also displays internal state of UIManager to inspector.
     public List<UIRect> uiRects { get => _uiRects; }
 
     [Header("View internal state")]
-    [SerializeReference] private UIManager uiManager;
+    [SerializeReference] private UIManager uiManager = null;
 
     [Header("Assign variables")]
-    [SerializeField] private Canvas canvas;
-    [SerializeField] private List<UIRect> _uiRects;
-    [SerializeField] private TextMeshProUGUI header;
+    [SerializeField] private Canvas canvas = null;
+    [SerializeField] private TextMeshProUGUI header = null;
+    [SerializeField] private List<UIRect> _uiRects = new List<UIRect>();
 
     public void setUiManager(UIManager uiManager)
     {

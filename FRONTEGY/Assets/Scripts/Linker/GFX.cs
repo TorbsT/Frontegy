@@ -3,84 +3,56 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class GFX
+public class GFX : MonoBehaviour
 {  // Provides a dictionary on renderers, materials and colors used in a GO.
     // as of now, public methods only use enums as arguments.
     public static Mat notFoundMat { get { return GameMaster.GetGM().notFoundMat; } }
-    [SerializeField] private string name;
-    [SerializeField] private Reend reend;
-    [SerializeField] private Maat maat;
-    [SerializeField] private Cool cool;
+    [SerializeField] private List<Rend> _rends;
+    [SerializeField] private List<Mat> _mats;
+    [SerializeField] private List<Col> _cols;
 
-    public void setMatAtPlace(MatPlace matPlace, RendPlace rendPlace)
+    public void setMatAtPlace(string rendPlace, string matPlace)
     {
-        Mat mat = getMatAtPlace(matPlace);
+        Mat mat = _mats.Find(match => match.place == matPlace);
         if (mat == null)
         {
             mat = notFoundMat;
             Debug.LogWarning(this + " tried setting matPlace '" + matPlace + "' on RendPlace '" + rendPlace + "', but that matPlace wasn't assigned in inspector.");
         }
-        bool success = getReend().setMatAtPlace(mat, rendPlace);
+        List<Rend> rs = getRendsAtPlace(rendPlace);
+        rs.ForEach(r => r.setMat(mat));
+        bool success = rs.Count > 0;
         if (!success)
         {
             Debug.LogError(this + " tried setting matPlace '" + matPlace + "' on RendPlace '" + rendPlace + "', but that rendPlace wasn't assigned in inspector.");
         }
     }
-    public void setColAtPlace(MatPlace matPlace, RendPlace rendPlace)
+    public void setColAtPlace(string rendPlace, string colPlace)
     {
-        Col col = getColAtPlace(matPlace);
+        Col col = _cols.Find(match => match.place == colPlace);
         if (col == null)
         {
-            Debug.LogWarning(this + " tried setting colPlace '" + matPlace + "' on RendPlace '" + rendPlace + "', but that matPlace wasn't assigned in inspector.");
-            setMatAtPlace(MatPlace.none, rendPlace);
+            Debug.LogWarning(this + " tried setting colPlace '" + colPlace + "' on RendPlace '" + rendPlace + "', but that matPlace wasn't assigned in inspector.");
+            setMatAtPlace(rendPlace, null);
         }
-        bool success = getReend().setColAtPlace(col, rendPlace);
+        List<Rend> rs = getRendsAtPlace(rendPlace);
+        rs.ForEach(r => r.setCol(col));
+        bool success = rs.Count > 0;
         if (!success)
         {
-            Debug.LogError(this + " tried setting colPlace '" + matPlace + "' on RendPlace '" + rendPlace + "', but that rendPlace wasn't assigned in inspector.");
+            Debug.LogError(this + " tried setting colPlace '" + colPlace + "' on RendPlace '" + rendPlace + "', but that rendPlace wasn't assigned in inspector.");
         }
     }
-    public void setFloat(RendPlace rendPlace, string name, float f)
+    public void setFloat(string rendPlace, string name, float f)
     {
-        bool success = getReend().setFloatAtPlace(rendPlace, name, f);
+        List<Rend> rs = getRendsAtPlace(rendPlace);
+        rs.ForEach(r => r.setFloat(name, f));
+        bool success = rs.Count > 0;
         if (!success)
         {
             Debug.LogError(this + " tried setting float '" + name + "' = "+f+" on RendPlace '"+rendPlace+"', but that rendPlace wasn't assigned in inspector.");
         }
     }
-
-    private Mat getMatAtPlace(MatPlace place)
-    {
-        Mat mat = getMaat().getMat(place);
-        return mat;
-    }
-    private Col getColAtPlace(MatPlace place)
-    {
-        Col col = getCool().getCol(place);
-        return col;
-    }
-    private Reend getReend()
-    {
-        if (reend == null) Debug.LogError("IllegalStateException");
-        return reend;
-    }
-    private Maat getMaat()
-    {
-        if (maat == null) Debug.LogError("IllegalStateException");
-        return maat;
-    }
-    private Cool getCool()
-    {
-        if (cool == null) Debug.LogError("IllegalStateException");
-        return cool;
-    }
-    public override string ToString()
-    {
-        if (name == null || name == "")
-        {
-            Debug.LogError("Found an unnamed GFX, name it to help debugging");
-            return "Unnamed GFX";
-        }
-        return name + ".GFX";
-    }
+    private List<Rend> getRendsAtPlace(string place) => _rends.FindAll(match => match.place == place);
+    public override string ToString() => name + ".GFX";
 }

@@ -20,7 +20,7 @@ public class UICaard
         foreach (Card c in _cards)
         {
             c.transive.setParent(null, false);
-            c.transive.pos3p.set(Pos3.identity());
+            c.transive.pos3p.set(Pos3.identity);
         }
         _cards = cards;
         for (int index = 0; index < _cards.Count; index++)
@@ -43,6 +43,7 @@ public class UICaard
             c.transive.pos3p.set(p3, true);
             //if (index < rots.Length) c.trans.rotp.set(rots[index], true);
             c.transive.rotp.set(rot, true);
+            c.transive.scalep.set(Scale.identity, false);
         }
     }
 }

@@ -22,9 +22,9 @@ public class Player : ScriptableObject
         if (name.Equals("")) Debug.LogError("InspectorException: Player with empty name");
         return name;
     }
-    public MatPlace getMatPlace()
+    public string getMatPlace()
     {
-        return getMat().getPlace();
+        return getMat().place;
     }
     private Mat getMat()
     {

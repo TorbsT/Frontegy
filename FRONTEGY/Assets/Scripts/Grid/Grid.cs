@@ -89,8 +89,8 @@ public class Grid
             {
                 Tile newParentTile = troopState.stepStates.currentBreadcrumb.tile;
                 newState.parentTile = newParentTile;
-                TileState newParentTileState = tileStates.Find(state => state.roundId == newState.roundId && state.loc == newParentTile.loc);
-                newParentTileState.ownerId = troopState.ownerId;
+                //TileState newParentTileState = tileStates.Find(state => state.roundId == newState.roundId && state.loc == newParentTile.loc);
+                //newParentTileState.ownerId = troopState.ownerId;
             }
 
             _troopStates.Add(newState);

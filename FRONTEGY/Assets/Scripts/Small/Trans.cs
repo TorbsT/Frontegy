@@ -20,6 +20,7 @@ public abstract class Trans
 
 
     [SerializeField] private string _name;
+    [SerializeField] private string _type;
     [SerializeReference] private List<Trans> children = new List<Trans>();
     [SerializeReference] protected Pos3Property _pos3p;
     [SerializeReference] protected RotProperty _rotp;
@@ -32,13 +33,14 @@ public abstract class Trans
     public Trans(Transform transform)
     {
         _transform = transform;
+        _type = GetType().ToString();
         _name = transform.gameObject.name;
         _pos3p = new Pos3Property(this);
-        _pos3p.set(new Pos3(0f, 0f, 0f));
+        _pos3p.set(Pos3.identity);
         _rotp = new RotProperty(this);
-        _rotp.set(new Rot(Quaternion.identity));
+        _rotp.set(Rot.identity);
         _scalep = new ScaleProperty(this);
-        _scalep.set(Scale.identity());
+        _scalep.set(Scale.identity);
     }
 
     public void setParent(Trans parent, bool keepWorldSpace = false)

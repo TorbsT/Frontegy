@@ -9,18 +9,21 @@ public class Troop : SelChy  // "Must" be class since SetStats() should be able 
     public Paf paf { get => _state.paf; }
     public Djikstra djikstra { get => _state.djikstra; }
     public TroopState state { get => _state; set { _state = value; } }
+    public Pos3 heightAdjustment { get => new Pos3(0f, getColliderBounds().extents.y, 0f); }
 
     
-    [SerializeField] private int _id;
+    [SerializeField] private int _id = -1;
     [SerializeReference] private TroopState _state;
 
     public Troop(TroopState state)
     {
         _state = state;
+        Grid.Instance.troopStates.Add(state);
+        Grid.Instance.allGroop.add(this);
         stage();
         initMats();
-        displayOnParent();
         transive.scalep.set(new Scale(0.5f, 1f, 0.5f));
+        tacticalDisplay();
     }
     public Player getOwner()
     {
@@ -38,17 +41,12 @@ public class Troop : SelChy  // "Must" be class since SetStats() should be able 
     public void tacticalStart()
     {
         Debug.Log("penIS");
-        displayOnParent();
-
+        tacticalDisplay();
     }
-    private void displayOnParent()
+    private void tacticalDisplay()
     {
-        
-
-        Pos3 p3 = new Pos3(0f, getColliderBounds().extents.y, 0f);
-
         transive.setParent(state.parentTile.surfaceTranstatic, true);
-        transive.pos3p.set(p3, true);
+        transive.pos3p.set(heightAdjustment, true);
     }
     public bool isThisTroop(Troop compareAgainst)
     {
@@ -67,14 +65,25 @@ public class Troop : SelChy  // "Must" be class since SetStats() should be able 
         return null;
     }
     */
-    public void weiterUpdate(WeiterView wv)
+    public void weiterViewStart(WeiterView wv)
     {
-        /*
-        int step = wv.getStep();
-        Slid slid = wv.getSlid();
+        int step = wv.step;
+        Tile tile = _state.stepStates.getStepState(step).currentBreadcrumb.tile;
+        transive.setParent(tile.surfaceTranstatic);
+        transive.pos3p.set(Pos3.identity);
+        Debug.Log(step + " " + tile);
+    }
+    public void weiterViewUpdate(WeiterView wv)
+    {
+        int step = wv.step;
+        Slid slid = wv.slid;
 
-        FromTo ft = getFromTo(step);
-        */
+        Tile from = _state.stepStates.getStepState(step).currentBreadcrumb.tile;
+        Tile to = _state.stepStates.getStepState(step+1).currentBreadcrumb.tile;
+
+        Pos3 diff = to.transive.pos3p.get(false) - from.transive.pos3p.get(false);
+        diff *= slid;
+        transive.pos3p.set(diff+heightAdjustment, true);
     }
     public override void primarySelect()
     {
@@ -106,9 +115,9 @@ public class Troop : SelChy  // "Must" be class since SetStats() should be able 
     public TroopPhy getTroopPhy() { return TroopPool.Instance.getHost(this); }
     public override void initMats()
     {
-        setMat(getPlayerMatPlace(), RendPlace.selectable);
+        setMat("selectable", getPlayerMatPlace());
     }
-    protected override MatPlace getInitialSelMat()
+    protected override string getInitialSelMatPlace()
     {
         return getPlayerMatPlace();
     }

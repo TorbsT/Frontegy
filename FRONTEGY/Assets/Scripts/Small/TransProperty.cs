@@ -153,7 +153,7 @@ public abstract class TransProperty<T>// where T : ITransPropertyField<T>  // br
 [System.Serializable] public class ScaleProperty : TransProperty<Scale> { public ScaleProperty(Trans trans) : base(trans) { }
     protected override Scale computeWorldWithParentWorld() => get(true) * parent.scalep.get(false);
     protected override Scale computeLocalWithParentWorld() => get(false)/ parent.scalep.get(false);
-    protected override Scale getLocalPropertyFromTransform() => new Scale(transform.lossyScale);
+    protected override Scale getLocalPropertyFromTransform() => new Scale(transform.localScale);
     protected override void showTrans()
     {
         transform.localScale = get(false).v3;

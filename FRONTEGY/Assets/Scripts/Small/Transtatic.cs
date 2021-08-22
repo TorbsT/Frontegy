@@ -22,10 +22,12 @@ public class Transtatic : Trans
     {
         _pos3p.computeWorld();
         _rotp.computeWorld();
+        _scalep.computeWorld();
     }
     protected override void computeLocal()
     {
         _pos3p.computeLocalByTransformProperty();
         _rotp.computeLocalByTransformProperty();
+        _scalep.computeLocalByTransformProperty();
     }
 }

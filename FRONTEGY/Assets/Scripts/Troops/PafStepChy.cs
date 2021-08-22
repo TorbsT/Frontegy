@@ -3,8 +3,11 @@ using UnityEngine;
 
 public class PafStepChy : Chy
 {
-    private static Pos3 unselectedPos = new Pos3(0f, 1f / 32f, 0f);
-    private static Pos3 selectedPos = new Pos3(0f, 1f / 16f, 0f);
+    private static Pos3 defaultPos = new Pos3(0f, 1f / 32f, 0f);
+    private static Pos3 selectedPos = new Pos3(0f, 2f / 32f, 0f);
+    private static Pos3 furtherPos = new Pos3(0f, 2f / 32f, 0f);
+    private static Pos3 circlePos = new Pos3(0f, 2f / 32f, 0f);
+    private static Pos3 backtrackPos = new Pos3(0f, 2f / 32f, 0f);
     private static Rot deg90 = Rot.eulerAngles(0f, 90f, 0f);
     private static Rot deg180 = Rot.eulerAngles(0f, 180f, 0f);
     private static Rot deg270 = Rot.eulerAngles(0f, 270f, 0f);
@@ -25,20 +28,25 @@ public class PafStepChy : Chy
     private bool _isEnd;
     private bool _isStraight;
     private bool _isTurn;
+    private bool _isCircle;
+
+    [SerializeField] private bool _isBacktrack;
+    [SerializeField] private bool _isFurther;
 
 
     public PafStepChy(Paf paf, int step)
     {  // one is created for every step on a paf, every time that paf is edited
         if (paf == null) Debug.LogError("IllegalArgumentException");
-        if (step < 0 || step >= paf.count) Debug.LogError("OutOfRangeException");
         _paf = paf;
         _step = step;
-
         stage();
-
-        if (step >= 1) _previousTile = paf.getTile(step - 1);
-        _tile = paf.getTile(step);
-        if (step < _paf.count-1) _nextTile = paf.getTile(step + 1);
+    }
+    public void createRoadStep()
+    {
+        if (_step < 0 || _step >= _paf.count) Debug.LogError("OutOfRangeException");
+        if (_step >= 1) _previousTile = _paf.getTile(_step - 1);
+        _tile = _paf.getTile(_step);
+        if (_step < _paf.count - 1) _nextTile = _paf.getTile(_step + 1);
 
         if (_previousTile != null) findDirection(_previousTile);
         if (_nextTile != null) findDirection(_nextTile);
@@ -59,6 +67,81 @@ public class PafStepChy : Chy
         }
 
         // Set correct position
+        display();
+        showMark();
+    }
+    public void createFurtherPreview(Breadcrumb from, Breadcrumb to)
+    {
+        _isEnd = true;
+        _isFurther = true;
+        _tile = from.tile;
+        findDirection(to.tile);
+        display();
+        showMark();
+    }
+    public void createBacktrackPreview(Breadcrumb from, Breadcrumb to)
+    {
+        _isEnd = true;
+        _isBacktrack = true;
+        _tile = from.tile;
+        findDirection(to.tile);
+        display();
+        showMark();
+    }
+    public void createCircle()
+    {
+        _isCircle = true;
+        _tile = _paf.getTile(_step);
+        display();
+        showMark();
+    }
+    public void showMark()
+    {
+        if (_isCircle)
+        {
+            transive.pos3p.set(circlePos);
+            setMat("selectable", "circle");
+            setFloat("selectable", "TimeOffset", _step * -0.3f);
+        } else if (_isFurther)
+        {
+            Debug.Log(_tile + " is further");
+            transive.pos3p.set(furtherPos);
+            setMat("selectable", "further");
+            setFloat("selectable", "TimeOffset", _step * -0.3f);
+        } else if (_isBacktrack)
+        {
+            Debug.Log(_tile + " is backtrack");
+            transive.pos3p.set(backtrackPos);
+            setMat("selectable", "backtrack");
+            setFloat("selectable", "TimeOffset", _step * -0.3f);
+        } else
+        {
+            transive.pos3p.set(selectedPos);
+            setMat("selectable", "showroad");
+            setFloat("selectable", "TimeOffset", _step * -0.3f);
+        }
+    }
+    public void hideMark()
+    {
+        transive.pos3p.set(defaultPos);
+        setMat("selectable", "initial");
+    }
+
+
+
+    private GameObject getEndGO() => getPafStepPhy().endGO;
+    private GameObject getTurnGO() => getPafStepPhy().turnGO;
+    private GameObject getCircleGO() => getPafStepPhy().circleGO;
+    private GameObject getStraightGO() => getPafStepPhy().straightGO;
+    private PafStepPhy getPafStepPhy() => PafStepPool.Instance.getHost(this);
+
+    
+    
+
+
+
+    private void display()
+    {
         transive.setParent(_tile.surfaceTranstatic);
         transive.pos3p.set(selectedPos);
         Rot rot = Rot.identity;
@@ -68,35 +151,27 @@ public class PafStepChy : Chy
             if (_east) rot = deg270;
             if (_south) rot = deg180;
             if (_west) rot = deg90;
-        } else if (_isStraight)
+        }
+        else if (_isStraight)
         {
             if (_north && _south) rot = Rot.identity;
             if (_east && _west) rot = deg90;
-        } else if (_isTurn)
+        }
+        else if (_isTurn)
         {
-            if (_north && _east) rot = deg270; 
+            if (_north && _east) rot = deg270;
             if (_east && _south) rot = deg180;
             if (_south && _west) rot = deg90;  // CORRECT
-            if (_west && _north) rot = Rot.identity; 
+            if (_west && _north) rot = Rot.identity;
         }
         transive.rotp.set(rot);
 
         getEndGO().SetActive(_isEnd);
-        getStraightGO().SetActive(_isStraight);
         getTurnGO().SetActive(_isTurn);
+        getCircleGO().SetActive(_isCircle);
+        getStraightGO().SetActive(_isStraight);
     }
 
-    public void showMark()
-    {
-        transive.pos3p.set(selectedPos);
-        setMat(MatPlace.select, RendPlace.selectable);
-        setFloat(RendPlace.selectable, "TimeOffset", _step * -0.3f);
-    }
-    public void hideMark()
-    {
-        transive.pos3p.set(unselectedPos);
-        setMat(MatPlace.initialSel, RendPlace.selectable);
-    }
     private void findDirection(Tile tile) { findDirection(tile.loc); }
     private void findDirection(TileLoc loc)
     {  // Which direction is this, relative to tile?
@@ -107,13 +182,6 @@ public class PafStepChy : Chy
         else if (difference.isWest) _west = true;
         else Debug.LogError("WHAT");
     }
-
-
-    private GameObject getEndGO() => getPafStepPhy().endGO;
-    private GameObject getStraightGO() => getPafStepPhy().straightGO;
-    private GameObject getTurnGO() => getPafStepPhy().turnGO;
-    private PafStepPhy getPafStepPhy() => PafStepPool.Instance.getHost(this);
-
     public override Phy getPhy() => getPafStepPhy();
     public override void stage()
     {

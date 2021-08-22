@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Paf
 {  // Path was used, sorry
+    private static bool showDoublePreview = true;
+
     public int count { get => _breadcrumbs.Count; }
     public Tile lastTile { get => lastBreadcrumb.tile; }
     public Breadcrumb lastBreadcrumb { get => getBreadcrumb(_breadcrumbs.Count - 1); }
@@ -16,6 +18,7 @@ public class Paf
     private List<Breadcrumb> _breadcrumbs;
     private List<Breadcrumb> _availableNext = new List<Breadcrumb>();
     private List<PafStepChy> _stepChies = new List<PafStepChy>();  // "CHIES" LMAO
+    private List<PafStepChy> _previewStepChies = new List<PafStepChy>();
 
 
     public Paf(TroopState state)
@@ -65,25 +68,28 @@ public class Paf
         }
 
         computeAvailableNext();
+        showAvailableNext();
 
         // Reset arrow visuals
         foreach (PafStepChy chy in _stepChies)
         {
             chy.unstage();
         }
+
         _stepChies = new List<PafStepChy>();
-        for (int index = 0; index < _breadcrumbs.Count; index++)
+        
+        int index = 0;
+        for (index = 0; index < _breadcrumbs.Count; index++)
         {
             PafStepChy chy = new PafStepChy(this, index);
+            chy.createRoadStep();
             _stepChies.Add(chy);
         }
     }
     public void showMarks()
     {
-        Debug.Log("Showing");
         foreach (Breadcrumb bc in _availableNext)
         {
-            Debug.Log("Showing for " + bc);
             bc.showSecondaryMark();
         }
         // Show marks on road
@@ -91,12 +97,18 @@ public class Paf
         {
             chy.showMark();
         }
+        showAvailableNext();
     }
     public void hideMarks()
     {
         foreach (PafStepChy chy in _stepChies)
         {
             chy.hideMark();
+        }
+        foreach (PafStepChy chy in _previewStepChies)
+        {
+            chy.hideMark();
+            chy.unstage();
         }
         foreach (Breadcrumb bc in _availableNext)
         {
@@ -105,11 +117,6 @@ public class Paf
     }
     private void computeAvailableNext()
     {
-        foreach (Breadcrumb bc in _availableNext)
-        {
-            bc.hideSecondaryMark();
-        }
-
         _availableNext = new List<Breadcrumb>();
         if (_breadcrumbs.Count >= 2)
         {  // Add backtracking as an option
@@ -122,8 +129,52 @@ public class Paf
             if (_availableNext.Exists(match => match >= a)) continue;
             _availableNext.Add(a);
         }
-    }
 
+
+
+
+    }
+    private void showAvailableNext()
+    {
+        // Show visuals
+        foreach (PafStepChy chy in _previewStepChies)
+        {
+            if (chy.staged)
+            chy.unstage();
+        }
+        _previewStepChies = new List<PafStepChy>();
+        int index = _breadcrumbs.Count-1;
+        foreach (Breadcrumb bc in _availableNext)
+        {
+            PafStepChy chy1 = new PafStepChy(this, index);
+            if (bc.stepsRemaining > lastBreadcrumb.stepsRemaining)
+            {  // Backtracking
+                chy1.createBacktrackPreview(bc, lastBreadcrumb);
+            }
+            else
+            {  // Further preview
+                chy1.createFurtherPreview(bc, lastBreadcrumb);
+            }
+            _previewStepChies.Add(chy1);
+
+            if (showDoublePreview)
+            {
+                PafStepChy chy2 = new PafStepChy(this, index);
+                if (bc.stepsRemaining > lastBreadcrumb.stepsRemaining)
+                {  // Backtracking
+                    chy2.createBacktrackPreview(lastBreadcrumb, bc);
+                }
+                else
+                {  // Further preview
+                    chy2.createFurtherPreview(lastBreadcrumb, bc);
+                }
+                _previewStepChies.Add(chy2);
+            } 
+        }
+        PafStepChy circle = new PafStepChy(this, index);
+        circle.createCircle();
+        _previewStepChies.Add(circle);
+    }
     
     public Tile getTile(int step) => getBreadcrumb(step).tile;
     public Breadcrumb getBreadcrumb(int step)

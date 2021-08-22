@@ -14,15 +14,15 @@ public abstract class Chy : IPoolClient  // Connector-Phy
     private bool _uized;
 
 
-    public void setMat(MatPlace matPlace, RendPlace rendPlace)
+    public void setMat(string rendPlace, string matPlace)
     {
-        getPhy().setMat(matPlace, rendPlace);
+        getPhy().setMat(rendPlace, matPlace);
     }
-    public void setCol(MatPlace matPlace, RendPlace rendPlace)
+    public void setCol(string rendPlace, string colPlace)
     {
-        getPhy().setCol(matPlace, rendPlace);
+        getPhy().setCol(rendPlace, colPlace);
     }
-    public void setFloat(RendPlace rendPlace, string name, float f)
+    public void setFloat(string rendPlace, string name, float f)
     {
         getPhy().setFloat(rendPlace, name, f);
     }

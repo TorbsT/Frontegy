@@ -26,8 +26,7 @@ public abstract class Phy : MonoBehaviour, IPoolHost
             } } }
     public GFX gfx { get { return _gfx; } }
 
-    [Header("Assign")]
-    [SerializeField] private GFX _gfx;
+    private GFX _gfx;
 
     [Header("Observe")]
     [SerializeField] private bool _staged;
@@ -45,6 +44,8 @@ public abstract class Phy : MonoBehaviour, IPoolHost
         //_transive = GetComponent<Transive>();
         //if (_transive == null) Debug.LogError("InspectorException: " + this + " has no Transive component");
         _transive = new Transive(transform);
+        _gfx = GetComponent<GFX>();
+        if (_gfx == null) Debug.LogError("InspectorException: " + this + " has no GFX component");
     }
     private void OnEnable()
     {
@@ -54,15 +55,15 @@ public abstract class Phy : MonoBehaviour, IPoolHost
     {
         _staged = false;
     }
-    public void setMat(MatPlace matPlace, RendPlace rendPlace)
+    public void setMat(string rendPlace, string matPlace)
     {
-        gfx.setMatAtPlace(matPlace, rendPlace);
+        gfx.setMatAtPlace(rendPlace, matPlace);
     }
-    public void setCol(MatPlace matPlace, RendPlace rendPlace)
+    public void setCol(string rendPlace, string colPlace)
     {
-        gfx.setColAtPlace(matPlace, rendPlace);
+        gfx.setColAtPlace(rendPlace, colPlace);
     }
-    public void setFloat(RendPlace rendPlace, string name, float f)
+    public void setFloat(string rendPlace, string name, float f)
     {
         gfx.setFloat(rendPlace, name, f);
     }

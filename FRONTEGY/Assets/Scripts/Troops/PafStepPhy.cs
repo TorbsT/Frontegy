@@ -5,12 +5,14 @@ using UnityEngine;
 public class PafStepPhy : Phy
 {
     public GameObject endGO { get => _endGO; }
-    public GameObject straightGO { get => _straightGO; }
     public GameObject turnGO { get => _turnGO; }
+    public GameObject circleGO { get => _circleGO; }
+    public GameObject straightGO { get => _straightGO; }
 
     [SerializeField] private GameObject _endGO;
-    [SerializeField] private GameObject _straightGO;
     [SerializeField] private GameObject _turnGO;
+    [SerializeField] private GameObject _circleGO;
+    [SerializeField] private GameObject _straightGO;
 
 
     public PafStepPhy() { }
@@ -20,8 +22,9 @@ public class PafStepPhy : Phy
     {
         base.Awake();
         if (_endGO == null) Debug.LogError("InspectorException: assign PafStep.endGO");
-        if (_straightGO == null) Debug.LogError("InspectorException: assign PafStep.straightGO");
         if (_turnGO == null) Debug.LogError("InspectorException: assign PafStep.turnGO");
+        if (_circleGO == null) Debug.LogError("InspectorException: assign PafStep.circleGO");
+        if (_straightGO == null) Debug.LogError("InspectorException: assign PafStep.straightGO");
     }
 
     public PafStepChy getPafChy() { return PafStepPool.Instance.getClient(this); }

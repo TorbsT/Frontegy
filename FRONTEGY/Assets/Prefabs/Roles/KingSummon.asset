@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: KingSummon
   m_EditorClassIdentifier: 
   _role: {fileID: 11400000, guid: 9247c4aa59152414d95cac3bbc3105c7, type: 2}
-  _frontFGMatPlace: 21
+  _frontFGMatPlace: kingFG

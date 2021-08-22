@@ -129,7 +129,7 @@ public class Breadcruumb
         foreach (Breadcrumb bc in getBreadcrumbs())
         {
             Debug.Log("Show mark for me!");
-            bc.showPrimaryMark();
+            //bc.showPrimaryMark();
         }
     }
     public void hidePrimaryMarks()

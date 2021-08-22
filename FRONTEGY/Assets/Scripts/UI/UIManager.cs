@@ -13,8 +13,10 @@ public class UIManager
     [System.NonSerialized] private UILinker linker;
     [SerializeReference] private Transive _transive;
     [SerializeReference] private UICaard uiCaard;
+    private GFX _gfx;
     private static float canvasDistance = 1f;
     private static Scale scale = new Scale(0.1f, 0.1f, 0.1f);
+    //private static Scale scale = Scale.identity;
     private Cam cam => Cam.Instance;
 
 
@@ -29,6 +31,8 @@ public class UIManager
         linker = go.GetComponent<UILinker>();
         if (linker == null) Debug.LogError("InspectorException: UIPrefab does not have UIController Component");
         linker.setUiManager(this);
+        _gfx = linker.GetComponent<GFX>();
+        if (_gfx == null) Debug.LogError("InspectorException: UIManager does not have GFX component");
         _transive = new Transive(linker.transform, cam.transive);
         _transive.pos3p.set(new Pos3(0, 0f, canvasDistance), true);
         //_transive.rotp.set(new Rot(Quaternion.Euler(90f, 0f, 0f)));
@@ -54,10 +58,6 @@ public class UIManager
     public RectTransform getRectAtPlace(UIPlace place)
     {
         return linker.getRectAtPlace(place);
-    }
-    private GFX getGFX()
-    {
-        return getLinker().getGFX();
     }
     public Canvas getCanvas()
     {
@@ -97,7 +97,7 @@ public class UIManager
         if (player == null) Debug.LogError("IllegalArgumentException");
         TextMeshProUGUI header = getLinker().getHeader();
         header.text = player.getName();
-        getGFX().setColAtPlace(player.getMatPlace(), RendPlace.header);
+        _gfx.setColAtPlace("header", player.getMatPlace());
     }
     void showTrans()
     {
