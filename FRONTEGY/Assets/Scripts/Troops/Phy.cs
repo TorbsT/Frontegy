@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
+[SelectionBase]
 public abstract class Phy : MonoBehaviour, IPoolHost
 {
     // Properties
 
     public bool staged { get { return _staged; } }
-    public IPoolClient insChy { set { _chy = value; } }
-    public Transive trans { get { if (staged) return _transive; Debug.LogError("Tried accessing trans of unstaged phy '" + this + "'"); return null; } }
+    public IPoolClient chy { set { _chy = value; } }
+    public Transive transive { get => _transive; }
     public Bounds colliderBounds { get { if (hasBounds) return _colliderBounds; else
             {
                 Collider top = GetComponent<Collider>();
@@ -25,12 +26,11 @@ public abstract class Phy : MonoBehaviour, IPoolHost
             } } }
     public GFX gfx { get { return _gfx; } }
 
-    [Header("Assign")]
-    [SerializeField] private GFX _gfx;
+    private GFX _gfx;
 
     [Header("Observe")]
     [SerializeField] private bool _staged;
-    [SerializeField] private Transive _transive;
+    [SerializeReference] private Transive _transive;
     [SerializeField] private bool hasBounds;
     [SerializeField] private Bounds _colliderBounds;
     [SerializeReference] private IPoolClient _chy;
@@ -39,10 +39,13 @@ public abstract class Phy : MonoBehaviour, IPoolHost
     private Roster roster;
     
 
-    private void Awake()
+    protected virtual void Awake()
     {
+        //_transive = GetComponent<Transive>();
+        //if (_transive == null) Debug.LogError("InspectorException: " + this + " has no Transive component");
         _transive = new Transive(transform);
-        //unstage(); WHY IS THIS HERE?
+        _gfx = GetComponent<GFX>();
+        if (_gfx == null) Debug.LogError("InspectorException: " + this + " has no GFX component");
     }
     private void OnEnable()
     {
@@ -52,15 +55,15 @@ public abstract class Phy : MonoBehaviour, IPoolHost
     {
         _staged = false;
     }
-    public void setMat(MatPlace matPlace, RendPlace rendPlace)
+    public void setMat(string rendPlace, string matPlace)
     {
-        gfx.setMatAtPlace(matPlace, rendPlace);
+        gfx.setMatAtPlace(rendPlace, matPlace);
     }
-    public void setCol(MatPlace matPlace, RendPlace rendPlace)
+    public void setCol(string rendPlace, string colPlace)
     {
-        gfx.setColAtPlace(matPlace, rendPlace);
+        gfx.setColAtPlace(rendPlace, colPlace);
     }
-    public void setFloat(RendPlace rendPlace, string name, float f)
+    public void setFloat(string rendPlace, string name, float f)
     {
         gfx.setFloat(rendPlace, name, f);
     }

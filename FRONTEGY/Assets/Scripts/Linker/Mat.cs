@@ -5,17 +5,9 @@ using UnityEngine;
 [System.Serializable]
 public class Mat
 {
-    [SerializeField] private MatPlace place;
-    [SerializeField] private Material material;
+    public string place { get => _place; }
+    public Material material { get => _material; }
 
-    public bool isPlace(MatPlace place) { return this.place == place; }
-    public MatPlace getPlace()
-    {
-        return place;
-    }
-    public Material getMaterial()
-    {
-        //if (material == null) Debug.LogError("IllegalStateException: Mat at MatPlace.'"+place+"' has no material");
-        return material;
-    }
+    [SerializeField] private string _place;
+    [SerializeField] private Material _material;
 }

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8680780199558192520}
   - component: {fileID: 1098856059038350818}
   - component: {fileID: -5454622180869016854}
+  - component: {fileID: -15793246904814831}
   m_Layer: 0
   m_Name: Troop
   m_TagString: Untagged
@@ -108,28 +109,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ccbecafd53e0844d8aa8c39b783d1e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gfx:
-    name: Troop
-    reend:
-      rends:
-      - place: 2
-        renderer: {fileID: 8680780199558192520}
-        mat:
-          id: 0
-        col:
-          id: 0
-    maat:
-      mats:
-      - place: 2
-        material: {fileID: 2100000, guid: 390ff569dd7b3ae40b23228f388d038b, type: 2}
-      - place: 3
-        material: {fileID: 2100000, guid: fc36d38da941cb64f9214568e225b2bf, type: 2}
-      - place: 5
-        material: {fileID: 2100000, guid: 5c41654410656924c9eec4c1b75f642a, type: 2}
-      - place: 6
-        material: {fileID: 2100000, guid: 5982d0e2dc3341d46b0e7792055645a7, type: 2}
-    cool:
-      cols: []
+  _staged: 0
+  _transive:
+    id: 0
   hasBounds: 0
   _colliderBounds:
     m_Center: {x: 0, y: 0, z: 0}
@@ -137,13 +119,8 @@ MonoBehaviour:
   _chy:
     id: 0
   troop:
-    player:
-      name: 
-      mat:
-        place: 0
-        material: {fileID: 0}
-    scale: 0
-    parentTile:
+    _id: 0
+    _state:
       id: 0
   rndrr: {fileID: 0}
   defaultLayer: 0
@@ -152,3 +129,25 @@ MonoBehaviour:
     version: 1
     00000000:
       type: {class: , ns: , asm: }
+--- !u!114 &-15793246904814831
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8680780199558192526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9674a04eda90397429b9725dee236a96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rends:
+  - _place: selectable
+    _renderers:
+    - {fileID: 8680780199558192520}
+  _mats:
+  - _place: RED
+    _material: {fileID: 2100000, guid: 5c41654410656924c9eec4c1b75f642a, type: 2}
+  - _place: BLUE
+    _material: {fileID: 2100000, guid: 5982d0e2dc3341d46b0e7792055645a7, type: 2}
+  _cols: []

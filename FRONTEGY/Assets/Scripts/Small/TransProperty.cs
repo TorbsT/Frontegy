@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class TransProperty<T> where T : ITransPropertyField<T>  // bruh
+public abstract class TransProperty<T>// where T : ITransPropertyField<T>  // bruh
 {
     // whenever local changes, world gets outdated
     // whenever world changes, local gets outdates
@@ -11,34 +11,45 @@ public class TransProperty<T> where T : ITransPropertyField<T>  // bruh
     public Transform transform { get { return trans.transform; } }
     public Transform parentTransform { get { return trans.parentTransform; } }
     public Trans parent { get { return trans.parent; } }
+    private bool transformOutdated { get => !_world.Equals(_lastWorld); }
+    public Trans trans { get; private set; }
+    public string name { get => trans.name; }
 
-    public Transive trans { get; private set; }
-
-    [SerializeField] private int tiss;
+    [SerializeField] protected float _lastComputation = -1;
     [SerializeField] private T _local;
     [SerializeField] private T _world;
     [SerializeField] private T _lastLocal;
-    [SerializeField] private T _lastWorld;  // Used for knowing when updating transform is unnecessary
+    [SerializeField] private T _lastWorld;  // The transform's current value
 
-    public TransProperty(Transive trans)
+    public TransProperty(Trans trans)
     {
         if (trans == null) Debug.LogError("IllegalArgumentException");
         this.trans = trans;
     }
 
-    private void update()  // Updates transform to match _world value.
+    public void computeLocalByTransformProperty()
     {
-        _world.update(transform);
+        if (parent == null) Debug.LogError("very wrong");
+        else _local = getLocalPropertyFromTransform();
+        _lastComputation = Time.time;
     }
     public void computeLocal()
     {
         if (parent == null) _local = _world;
-        else _local = _world.computeLocal(parentTransform);
+        else
+        {
+            _local = computeLocalWithParentWorld();
+        }
+        _lastComputation = Time.time;
     }
     public void computeWorld()
     {
         if (parent == null) _world = _local;
-        else _world = _local.computeWorld(parentTransform);
+        else
+        {
+            _world = computeWorldWithParentWorld();
+        }
+        _lastComputation = Time.time;
     }
 
 
@@ -60,7 +71,11 @@ public class TransProperty<T> where T : ITransPropertyField<T>  // bruh
             computeLocal();
         }
 
-        trans.recursiveComputeWorld();
+        // Alerts children to recompute world
+        if (transformOutdated)
+        {
+            trans.recursiveComputeWorld();
+        }
     }
     /// <summary>
     /// Gets the value.
@@ -85,7 +100,7 @@ public class TransProperty<T> where T : ITransPropertyField<T>  // bruh
         // If transform already matches _world, no update is needed.
         // transform always matches _lastWorld.
         // Therefore, if _world == _lastWorld, _world == transform.
-        if (_world.Equals(_lastWorld))
+        if (!transformOutdated)
         {
             // Already up-to-date.
         } else
@@ -93,18 +108,54 @@ public class TransProperty<T> where T : ITransPropertyField<T>  // bruh
             // Update necessary
             _lastWorld = _world;
             _lastLocal = _local;
-            update();
+            showTrans();
         }
     }
-    public void parentChanged(bool keepWorldSpace = false)
+    protected abstract T computeWorldWithParentWorld();  // parent must not be null
+    protected abstract T computeLocalWithParentWorld();  // parent must not be null
+    protected abstract T getLocalPropertyFromTransform();
+    protected abstract void showTrans();
+}
+
+// VERY beautiful subclasses
+[System.Serializable] public class Pos3Property : TransProperty<Pos3> { public Pos3Property(Trans trans) : base(trans) { }
+    protected override Pos3 computeWorldWithParentWorld()
     {
-        // Not very intuitive:
-        // If keeping world space, compute world space and outdate local space.
-        // If keeping local space, compute local space and outdate world space.
-        set(get(keepWorldSpace), keepWorldSpace);
+        // take parent pos, rot, and scale into account.
+        Pos3 diffPos = get(true);  // get from local
+        diffPos *= parent.scalep.get(false);  // Scale difference with parent scale
+        diffPos *= parent.rotp.get(false);  // Rotate difference with parent rotation
+        return parent.pos3p.get(false) + diffPos;  // Add parent world and difference to get this.world
+    }
+    protected override Pos3 computeLocalWithParentWorld()
+    {
+        // take parent pos, rot, and scale into account.
+        Pos3 diffPos = get(false);  // get from world
+        diffPos /= parent.scalep.get(false);  // Undo scale to find local distance
+        diffPos /= parent.rotp.get(false);  // Undo rotation to get correct local direction
+        return parent.pos3p.get(false) + diffPos;  // Add parent world and difference to get this.world
+    }
+    protected override Pos3 getLocalPropertyFromTransform() => new Pos3(transform.localPosition);
+    protected override void showTrans()
+    {
+        transform.localPosition = get(false).v3;
     }
 }
-[System.Serializable]
-public class Pos3Property : TransProperty<Pos3> { public Pos3Property(Transive trans) : base(trans) { } }
-[System.Serializable]
-public class RotProperty : TransProperty<Rot> { public RotProperty(Transive trans) : base(trans) { } }
+[System.Serializable] public class RotProperty : TransProperty<Rot> { public RotProperty(Trans trans) : base(trans) { }
+    protected override Rot computeWorldWithParentWorld() => parent.rotp.get(false)*get(true);
+    protected override Rot computeLocalWithParentWorld() => get(false)/ parent.rotp.get(false);
+    protected override Rot getLocalPropertyFromTransform() => new Rot(transform.localRotation);
+    protected override void showTrans()
+    {
+        transform.localRotation = get(false).q;
+    }
+}
+[System.Serializable] public class ScaleProperty : TransProperty<Scale> { public ScaleProperty(Trans trans) : base(trans) { }
+    protected override Scale computeWorldWithParentWorld() => get(true) * parent.scalep.get(false);
+    protected override Scale computeLocalWithParentWorld() => get(false)/ parent.scalep.get(false);
+    protected override Scale getLocalPropertyFromTransform() => new Scale(transform.localScale);
+    protected override void showTrans()
+    {
+        transform.localScale = get(false).v3;
+    }
+}

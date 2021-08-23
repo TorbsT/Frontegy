@@ -9,20 +9,21 @@ public class Troop : SelChy  // "Must" be class since SetStats() should be able 
     public Paf paf { get => _state.paf; }
     public Djikstra djikstra { get => _state.djikstra; }
     public TroopState state { get => _state; set { _state = value; } }
+    public Pos3 heightAdjustment { get => new Pos3(0f, getColliderBounds().extents.y, 0f); }
 
     
-    [SerializeField] private int _id;
-    [SerializeField] private TroopState _state;
-    [SerializeField] private PafChy _pafChy;
+    [SerializeField] private int _id = -1;
+    [SerializeReference] private TroopState _state;
 
     public Troop(TroopState state)
     {
         _state = state;
+        Grid.Instance.troopStates.Add(state);
+        Grid.Instance.allGroop.add(this);
         stage();
         initMats();
-        displayOnParent();
-
-        _pafChy = new PafChy(paf);
+        transive.scalep.set(new Scale(0.5f, 1f, 0.5f));
+        tacticalDisplay();
     }
     public Player getOwner()
     {
@@ -40,17 +41,12 @@ public class Troop : SelChy  // "Must" be class since SetStats() should be able 
     public void tacticalStart()
     {
         Debug.Log("penIS");
-        displayOnParent();
-
+        tacticalDisplay();
     }
-    private void displayOnParent()
+    private void tacticalDisplay()
     {
-        
-
-        Pos3 p3 = new Pos3(0f, getColliderBounds().extents.y, 0f);
-
-        trans.setParent(state.parentTile.surfaceTransform, true);
-        trans.pos3p.set(p3, true);
+        transive.setParent(state.parentTile.surfaceTranstatic, true);
+        transive.pos3p.set(heightAdjustment, true);
     }
     public bool isThisTroop(Troop compareAgainst)
     {
@@ -69,41 +65,59 @@ public class Troop : SelChy  // "Must" be class since SetStats() should be able 
         return null;
     }
     */
-    public void weiterUpdate(WeiterView wv)
+    public void weiterViewStart(WeiterView wv)
     {
-        /*
-        int step = wv.getStep();
-        Slid slid = wv.getSlid();
-
-        FromTo ft = getFromTo(step);
-        */
+        int step = wv.step;
+        Tile tile = _state.stepStates.getStepState(step).currentBreadcrumb.tile;
+        transive.setParent(tile.surfaceTranstatic);
+        transive.pos3p.set(Pos3.identity);
+        Debug.Log(step + " " + tile);
     }
-    public bool planPafTo(Tile t)
+    public void weiterViewUpdate(WeiterView wv)
     {
-        return state.planPafTo(t);
+        int step = wv.step;
+        Slid slid = wv.slid;
+
+        Tile from = _state.stepStates.getStepState(step).currentBreadcrumb.tile;
+        Tile to = _state.stepStates.getStepState(step+1).currentBreadcrumb.tile;
+
+        Pos3 diff = to.transive.pos3p.get(false) - from.transive.pos3p.get(false);
+        diff *= slid;
+        transive.pos3p.set(diff+heightAdjustment, true);
     }
     public override void primarySelect()
     {
         base.primarySelect();
         Debug.Log("penus");
         djikstra.showMarks();
+        paf.showMarks();
     }
     public override void unselect()
     {
         base.unselect();
-        djikstra.hideMarks();
+        paf.hideMarks();
+        djikstra.hidePrimaryMarks();
     }
-    public bool tileIsInRange(Tile t)
+    public override bool canSecondarySelectOn(SelChy selChy)
     {
-        return djikstra.tileIsInRange(t);
+        if (selChy is Tile t) return paf.isValidNext(t);
+        return false;
+    }
+    public override void secondarySelectOn(SelChy selChy)
+    {
+        if (selChy is Tile t)
+        {
+            paf.add(t);
+            paf.showMarks();
+        }
     }
 
     public TroopPhy getTroopPhy() { return TroopPool.Instance.getHost(this); }
     public override void initMats()
     {
-        setMat(getPlayerMatPlace(), RendPlace.selectable);
+        setMat("selectable", getPlayerMatPlace());
     }
-    protected override MatPlace getInitialSelMat()
+    protected override string getInitialSelMatPlace()
     {
         return getPlayerMatPlace();
     }

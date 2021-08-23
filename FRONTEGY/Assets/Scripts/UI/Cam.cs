@@ -8,9 +8,10 @@ public class Cam
 {  // OPT
     public static Cam Instance { get; private set; }
 
-    private Transform transform;
+    public Transive transive { get => _transive; }
     private Camera camera;
     [SerializeField] private CamConfig config;
+    [SerializeReference] private Transive _transive;
 
     public void eagleView(Control c)
     {
@@ -36,8 +37,7 @@ public class Cam
         CamLinker linker = camera.GetComponent<CamLinker>();
         if (linker == null) Debug.LogError("InspectorException: Camera has no CamLinker");
         linker.setCam(this);
-        transform = camera.transform;
-        if (transform == null) Debug.LogError("IllegalStateException");
+        _transive = new Transive(camera.transform);
 
         horAngleDeg = new Degree(0f);
         verAngleDeg = new Degree(0f, getVerAngleLimits());
@@ -58,13 +58,13 @@ public class Cam
     {
         updateCircleRadius();
 
-        Quaternion newRotation = Quaternion.Euler(new Vector3(getVerAngleDeg().get(), getHorAngleDeg().get(), 0f));
+        Rot newRotation = new Rot(Quaternion.Euler(new Vector3(getVerAngleDeg().get(), getHorAngleDeg().get(), 0f)));
         Vector2 periferalVector = getPeriferalVector();
-        Vector3 newPosition = new Vector3(periferalVector[0]+focus.x, getHeight(), periferalVector[1]+focus.z);
+        Pos3 newPosition = new Pos3(periferalVector[0]+focus.x, getHeight(), periferalVector[1]+focus.z);
 
 
-        getTransform().position = newPosition;
-        getTransform().rotation = newRotation;
+        _transive.pos3p.set(newPosition, true);
+        _transive.rotp.set(newRotation, true);
         //Debug.Log("camMove: " + getTransform().position);
     }
     Vector2 getPeriferalVector()
@@ -91,7 +91,7 @@ public class Cam
         //Debug.Log("selMan: "+getTransform().position);
         RaycastHit hit;
         Ray ray = getCamera().ScreenPointToRay(control.getMousePosition());
-        Debug.DrawRay(getTransform().position, ray.direction, Color.red, 1f);
+        Debug.DrawRay(_transive.pos3p.get().v3, ray.direction, Color.red, 1f);
 
         if (Physics.Raycast(ray, out hit))
         {
@@ -156,19 +156,5 @@ public class Cam
     {
         if (camera == null) Debug.LogError("IllegalStateException");
         return camera;
-    }
-
-    public Vector3 getV3()
-    {
-        return getTransform().position;
-    }
-    public Quaternion getRotation()
-    {
-        return getTransform().rotation;
-    }
-    private Transform getTransform()
-    {
-        if (transform == null) Debug.LogError("IllegalStateException");
-        return transform;
     }
 }

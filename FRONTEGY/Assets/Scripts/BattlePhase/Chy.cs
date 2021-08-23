@@ -7,22 +7,22 @@ using UnityEngine;
 public abstract class Chy : IPoolClient  // Connector-Phy
 {  // The stuff Phys are connected to. Can be Troop, Tile, etc
     public bool staged { get; set; }
-    public Transive trans { get { if (getPhy() == null) Debug.LogError("Tried accessing trans of '"+this+"', but it's unstaged"); return getPhy().trans; } }
+    public Transive transive { get { Phy p = getPhy(); if (p == null) Debug.LogError("Tried accessing trans of '"+this+"', but it's unstaged"); if (p.transive == null) Debug.LogError("Staged Phy '" + p + "' has no transive"); return p.transive; } }
     public bool uized { get { return _uized; } }
 
 
     private bool _uized;
 
 
-    public void setMat(MatPlace matPlace, RendPlace rendPlace)
+    public void setMat(string rendPlace, string matPlace)
     {
-        getPhy().setMat(matPlace, rendPlace);
+        getPhy().setMat(rendPlace, matPlace);
     }
-    public void setCol(MatPlace matPlace, RendPlace rendPlace)
+    public void setCol(string rendPlace, string colPlace)
     {
-        getPhy().setCol(matPlace, rendPlace);
+        getPhy().setCol(rendPlace, colPlace);
     }
-    public void setFloat(RendPlace rendPlace, string name, float f)
+    public void setFloat(string rendPlace, string name, float f)
     {
         getPhy().setFloat(rendPlace, name, f);
     }

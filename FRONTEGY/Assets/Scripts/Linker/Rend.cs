@@ -5,49 +5,47 @@ using UnityEngine;
 [System.Serializable]
 public class Rend
 {
-    [SerializeField] private RendPlace place;
-    [SerializeField] private MeshRenderer renderer;
+    public string place { get => _place; }
 
-    [Header("Reading only")]
-    [SerializeReference] private Mat mat;
-    [SerializeReference] private Col col;
-    [SerializeReference] private Dictionary<string, float> floats = new Dictionary<string, float>();
+    [SerializeField] private string _place;
+    [SerializeField] private List<MeshRenderer> _renderers;
+
+    private Mat _mat;
+    private Col _col;
+    private Dictionary<string, float> _floats = new Dictionary<string, float>();
 
 
     public void setMat(Mat mat)
     {
-        this.mat = mat;
+        _mat = mat;
         refresh();
     }
     public void setCol(Col col)
     {
-        this.col = col;
+        _col = col;
         refresh();
     }
     public void setFloat(string name, float f)
     {
         if (name == null || name == "") Debug.LogError("IllegalArgumentException");
-        if (floats.ContainsKey(name)) floats[name] = f;
-        else floats.Add(name, f);
+        if (_floats.ContainsKey(name)) _floats[name] = f;
+        else _floats.Add(name, f);
         refresh();
     }
-
-    public bool isPlace(RendPlace place) { return this.place == place; }
     
 
     private void refresh()
     {
-        if (hasMat()) getRenderer().material = getMat().getMaterial();
+        if (hasMat()) _renderers.ForEach(r => r.material = getMat().material);
         //else getRenderer().material = null;
-        if (hasCol()) getRenderer().material.color = getCol().getColor();
-        foreach (string name in floats.Keys)
+        if (hasCol()) _renderers.ForEach(r => r.material.color = getCol().color);
+        foreach (string name in _floats.Keys)
         {
-            getRenderer().material.SetFloat(name, floats[name]);
+            _renderers.ForEach(r => r.material.SetFloat(name, _floats[name]));
         }
     }
-    private bool hasMat() { return mat != null; }
-    private bool hasCol() { return col != null; }
-    private Mat getMat() { return mat; }
-    private Col getCol() { return col; }
-    private MeshRenderer getRenderer() { if (renderer == null) Debug.LogError("InspectorException: " + this + " has no renderer"); return renderer; }
+    private bool hasMat() { return _mat != null; }
+    private bool hasCol() { return _col != null; }
+    private Mat getMat() { return _mat; }
+    private Col getCol() { return _col; }
 }

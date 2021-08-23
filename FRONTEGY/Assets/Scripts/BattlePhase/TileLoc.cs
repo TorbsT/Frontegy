@@ -4,6 +4,11 @@ using UnityEngine;
 
 public struct TileLoc
 {
+    public bool isNorth { get => _x > 0; }
+    public bool isEast { get => _z > 0; }
+    public bool isSouth { get => _x < 0; }
+    public bool isWest { get => _z < 0; }
+
     public int x { get { return _x; } }
     public int y { get { return _y; } }
     public int z { get { return _z; } }

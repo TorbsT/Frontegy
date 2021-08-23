@@ -21,13 +21,6 @@ public class Card : SelChy  // changed to class since i didn't know why it shoul
         initMats();
     }
 
-    public void display(UIPlace place)
-    {
-        //getCardPhy().displayFGs(); MAYBUG
-
-        uize();
-    }
-
     public override bool canSecondarySelectOn(SelChy selChy)
     {
         Tile tile = (Tile)selChy;
@@ -58,14 +51,14 @@ public class Card : SelChy  // changed to class since i didn't know why it shoul
 
     public override void initMats()
     {
-        setMat(blueprint.frontFGMatPlace, RendPlace.frontFG);
-        setMat(MatPlace.backFG, RendPlace.backFG);
-        setMat(MatPlace.initialSel, RendPlace.selectable);
-        setCol(getPlayerMatPlace(), RendPlace.FG);
+        setMat("frontFG", blueprint.frontFGMatPlace);
+        setMat("backFG", "backFG");
+        setMat("selectable", "initial");
+        setCol("FG", getPlayerMatPlace());
     }
-    protected override MatPlace getInitialSelMat()
+    protected override string getInitialSelMatPlace()
     {
-        return MatPlace.initialSel;
+        return "initial";
     }
     public override Phy getPhy()
     {
@@ -78,5 +71,10 @@ public class Card : SelChy  // changed to class since i didn't know why it shoul
     public override void unstage()
     {
         CardPool.Instance.unstage(this);
+    }
+    public override void hover()
+    {
+        base.hover();
+        
     }
 }

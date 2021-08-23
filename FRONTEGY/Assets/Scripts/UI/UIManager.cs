@@ -7,28 +7,40 @@ using TMPro;
 public class UIManager
 {
     public static UIManager Instance { get; private set; }
+    public Transive transive { get => _transive; }
     [System.NonSerialized] private GameMaster gm;
 
     [System.NonSerialized] private UILinker linker;
-    [SerializeField] private Transive transive;
+    [SerializeReference] private Transive _transive;
     [SerializeReference] private UICaard uiCaard;
-    [SerializeField] private float canvasDistance;
+    private GFX _gfx;
+    private static float canvasDistance = 1f;
+    private static Scale scale = new Scale(0.1f, 0.1f, 0.1f);
+    //private static Scale scale = Scale.identity;
     private Cam cam => Cam.Instance;
 
 
 
-    public UIManager(float canvasDistance)
+    public UIManager()
     {
         Instance = this;
         gm = GameMaster.GetGM();
-        this.canvasDistance = canvasDistance;
 
         GameObject go = Object.Instantiate(getPrefab());
         if (go == null) Debug.LogError("WhatException: WHat the actual fuck");
         linker = go.GetComponent<UILinker>();
         if (linker == null) Debug.LogError("InspectorException: UIPrefab does not have UIController Component");
         linker.setUiManager(this);
-        transive = new Transive(linker.transform);
+        _gfx = linker.GetComponent<GFX>();
+        if (_gfx == null) Debug.LogError("InspectorException: UIManager does not have GFX component");
+        _transive = new Transive(linker.transform, cam.transive);
+        _transive.pos3p.set(new Pos3(0, 0f, canvasDistance), true);
+        //_transive.rotp.set(new Rot(Quaternion.Euler(90f, 0f, 0f)));
+        _transive.scalep.set(scale);
+        foreach (UIRect uiRect in linker.uiRects)
+        {
+            uiRect.setTransParent(_transive);
+        }
     }
 
     public void restart()
@@ -47,10 +59,6 @@ public class UIManager
     {
         return linker.getRectAtPlace(place);
     }
-    private GFX getGFX()
-    {
-        return getLinker().getGFX();
-    }
     public Canvas getCanvas()
     {
         return getLinker().getCanvas();
@@ -66,24 +74,15 @@ public class UIManager
         if (go == null) Debug.LogError("InspectorException: Remember setting UIPrefab in GameMaster");
         return go;
     }
-    private void unuizeAll()
-    {
-        if (uiCaard != null)
-        {
-            uiCaard.unuizeAll();
-        }
-    }
     public void battleStart()
     {
-        unuizeAll();
+        uiCaard.empty();
     }
     public void tacticalStart(TacticalPhase tp)
     {
         if (tp == null) Debug.LogError("IllegalArgumentException");
-        unuizeAll();
         updateHeader(tp.getPhasePlayer());
 
-        transive.pos3p.set(new Pos3());
         Debug.Log("Tacticalstart");
 
         List<Card> cards = tp.getCaardToShow();
@@ -98,15 +97,15 @@ public class UIManager
         if (player == null) Debug.LogError("IllegalArgumentException");
         TextMeshProUGUI header = getLinker().getHeader();
         header.text = player.getName();
-        getGFX().setColAtPlace(player.getMatPlace(), RendPlace.header);
+        _gfx.setColAtPlace("header", player.getMatPlace());
     }
     void showTrans()
     {
+        /*
         Transform t = linker.transform;
         Quaternion camRotation = cam.getRotation();
         Vector3 camPos = cam.getV3();
-        t.rotation = camRotation;
-        t.position = camPos + t.forward * canvasDistance;
-
+        t.SetPositionAndRotation(camPos + t.forward * canvasDistance, camRotation);
+        */
     }
 }

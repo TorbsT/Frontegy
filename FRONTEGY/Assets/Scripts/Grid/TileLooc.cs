@@ -17,7 +17,6 @@ public class TileLooc
         foreach (TileLoc loc in locs)
         {
             Tile t = loc.findTile();
-            Debug.Log("Loc "+loc+" has tile : "+(t != null));
             if (t != null) tiles.Add(t);
         }
         validTiile = new Tiile(tiles);

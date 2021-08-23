@@ -23,8 +23,10 @@ public struct Breadcrumb
     public Tile getTile() { if (isInvalid()) Debug.LogError("TRIED USING INVALID BREADCRUMB"); return tile; }
     public bool isInvalid() { return !isValid(); }  
     public bool isValid() { return tile != null; } // don't use getTile() here
-    public void showMark() { getTile().showMark(this); }
-    public void hideMark() { getTile().hideMark(); }
+    public void showPrimaryMark() { getTile().showPrimaryMark(this); }
+    public void showSecondaryMark() { getTile().showSecondaryMark(this); }
+    public void hidePrimaryMark() { getTile().hidePrimaryMark(); }
+    public void hideSecondaryMark() { getTile().hideSecondaryMark(this); }
 
     public static Breadcrumb makeInvalid()
     {

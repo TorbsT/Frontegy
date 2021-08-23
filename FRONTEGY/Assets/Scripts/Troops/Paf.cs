@@ -4,36 +4,43 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Paf
-{
-    public static bool infiBacktrack = false;
+{  // Path was used, sorry
+    private static bool showDoublePreview = true;
 
     public int count { get => _breadcrumbs.Count; }
     public Tile lastTile { get => lastBreadcrumb.tile; }
     public Breadcrumb lastBreadcrumb { get => getBreadcrumb(_breadcrumbs.Count - 1); }
     public Breadcrumb secondLastBreadcrumb { get => getBreadcrumb(_breadcrumbs.Count - 2); }
     public List<Breadcrumb> breadcrumbs { get => _breadcrumbs; }
+    public List<Breadcrumb> availableNext { get => _availableNext; }
 
 
     private List<Breadcrumb> _breadcrumbs;
+    private List<Breadcrumb> _availableNext = new List<Breadcrumb>();
+    private List<PafStepChy> _stepChies = new List<PafStepChy>();  // "CHIES" LMAO
+    private List<PafStepChy> _previewStepChies = new List<PafStepChy>();
 
 
+    public Paf(TroopState state)
+    {
+        if (state == null) Debug.LogError("You fucking orange");
+        _breadcrumbs = new List<Breadcrumb> { state.startBreadcrumb };
+        computeAvailableNext();
+    }
     public Paf(Breadcrumb start)
     {
         _breadcrumbs = new List<Breadcrumb> { start };
+        computeAvailableNext();
     }
 
     public void add(Tile tile)
     {
-        if (_breadcrumbs.Count >= 2)
+        bool pred(Breadcrumb bc) => bc.tile.Equals(tile);
+        if (_availableNext.Exists(pred))
         {
-            Predicate<Breadcrumb> pred = bc => bc.tile.Equals(tile);
-            if (_breadcrumbs.Exists(pred))
-            {
-                add(_breadcrumbs.Find(pred));
-                return;
-            }
+            add(_availableNext.Find(pred));
         }
-        add(new Breadcrumb(tile, lastBreadcrumb.stepsRemaining - 1));
+        else Debug.LogError("NO");
     }
     public void add(Breadcrumb breadcrumb)
     {
@@ -50,37 +57,124 @@ public class Paf
         // if going back, remove all breadcrumbs after this
         if (goingBack)
         {
-            while (_breadcrumbs.Count >= goingBackToStep)
+            while (_breadcrumbs.Count > goingBackToStep+1)
             {
+                Debug.Log(_breadcrumbs.Count + " " + goingBackToStep);
                 _breadcrumbs.RemoveAt(goingBackToStep + 1);
             }
         } else
         {
             _breadcrumbs.Add(breadcrumb);
         }
-    }
-    public List<Breadcrumb> availableNextSteps()
-    {
-        List<Breadcrumb> available = new List<Breadcrumb>();
-        if (infiBacktrack)
-        for (int i = 0; i < _breadcrumbs.Count-1; i++)
+
+        computeAvailableNext();
+        showAvailableNext();
+
+        // Reset arrow visuals
+        foreach (PafStepChy chy in _stepChies)
         {
-            available.Add(getBreadcrumb(i));
+            chy.unstage();
+        }
+
+        _stepChies = new List<PafStepChy>();
+        
+        int index = 0;
+        for (index = 0; index < _breadcrumbs.Count; index++)
+        {
+            PafStepChy chy = new PafStepChy(this, index);
+            chy.createRoadStep();
+            _stepChies.Add(chy);
+        }
+    }
+    public void showMarks()
+    {
+        foreach (Breadcrumb bc in _availableNext)
+        {
+            bc.showSecondaryMark();
+        }
+        // Show marks on road
+        foreach (PafStepChy chy in _stepChies)
+        {
+            chy.showMark();
+        }
+        showAvailableNext();
+    }
+    public void hideMarks()
+    {
+        foreach (PafStepChy chy in _stepChies)
+        {
+            chy.hideMark();
+        }
+        foreach (PafStepChy chy in _previewStepChies)
+        {
+            chy.hideMark();
+            chy.unstage();
+        }
+        foreach (Breadcrumb bc in _availableNext)
+        {
+            bc.hideSecondaryMark();
+        }
+    }
+    private void computeAvailableNext()
+    {
+        _availableNext = new List<Breadcrumb>();
+        if (_breadcrumbs.Count >= 2)
+        {  // Add backtracking as an option
+            _availableNext.Add(secondLastBreadcrumb);
         }
 
         List<Breadcrumb> neigsOfLast = lastBreadcrumb.getValidNeigBreadcrumbs();
         foreach (Breadcrumb a in neigsOfLast)
         {
-            foreach (Breadcrumb b in available)
-            {
-                if (a <= b) continue;
-                available.Add(a);
-            }
+            if (_availableNext.Exists(match => match >= a)) continue;
+            _availableNext.Add(a);
         }
 
-        return available;
-    }
 
+
+
+    }
+    private void showAvailableNext()
+    {
+        // Show visuals
+        foreach (PafStepChy chy in _previewStepChies)
+        {
+            if (chy.staged)
+            chy.unstage();
+        }
+        _previewStepChies = new List<PafStepChy>();
+        int index = _breadcrumbs.Count-1;
+        foreach (Breadcrumb bc in _availableNext)
+        {
+            PafStepChy chy1 = new PafStepChy(this, index);
+            if (bc.stepsRemaining > lastBreadcrumb.stepsRemaining)
+            {  // Backtracking
+                chy1.createBacktrackPreview(bc, lastBreadcrumb);
+            }
+            else
+            {  // Further preview
+                chy1.createFurtherPreview(bc, lastBreadcrumb);
+            }
+            _previewStepChies.Add(chy1);
+
+            if (showDoublePreview)
+            {
+                PafStepChy chy2 = new PafStepChy(this, index);
+                if (bc.stepsRemaining > lastBreadcrumb.stepsRemaining)
+                {  // Backtracking
+                    chy2.createBacktrackPreview(lastBreadcrumb, bc);
+                }
+                else
+                {  // Further preview
+                    chy2.createFurtherPreview(lastBreadcrumb, bc);
+                }
+                _previewStepChies.Add(chy2);
+            } 
+        }
+        PafStepChy circle = new PafStepChy(this, index);
+        circle.createCircle();
+        _previewStepChies.Add(circle);
+    }
     
     public Tile getTile(int step) => getBreadcrumb(step).tile;
     public Breadcrumb getBreadcrumb(int step)
@@ -98,10 +192,23 @@ public class Paf
         return ft;
     }
 
-    public bool isValidNext(Tile tile) => availableNextSteps().Find(bc => bc.tile.Equals(tile)) != null;
+    public bool isValidNext(Tile tile)
+    {
+        bool valid = _availableNext.Exists(bc => bc.tile.Equals(tile));
+        return valid;
+    }
 
     public void reverse()
     {  // meaningless to have this as a Breadcruumb method, it has no order
         _breadcrumbs.Reverse();
+    }
+
+    public override string ToString()
+    {
+        string inPaf = "in paf: [";
+        string available = "], available: [";
+        foreach (Breadcrumb bc in _breadcrumbs) inPaf += bc;
+        foreach (Breadcrumb bc in _availableNext) available += bc;
+        return inPaf + available + "]";
     }
 }

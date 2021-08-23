@@ -4,19 +4,10 @@ using UnityEngine;
 [System.Serializable]
 public class Col
 {  // Wrapper for Color that makes it nullable
-    [SerializeField] private MatPlace place;
-    [SerializeField] private Color color;
 
-    public Color getColor()
-    {
-        return color;
-    }
-    public bool isPlace(MatPlace place)
-    {
-        return place == this.place;
-    }
-    public MatPlace getPlace()
-    {
-        return place;
-    }
+    public string place { get => _place; }
+    public Color color { get => _color; }
+
+    [SerializeField] private string _place;
+    [SerializeField] private Color _color;
 }

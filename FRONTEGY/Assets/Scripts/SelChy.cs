@@ -19,23 +19,23 @@ public abstract class SelChy : Chy, IPlayerOwned
     }
     protected virtual void uninteract()
     {
-        setMat(getInitialSelMat(), RendPlace.selectable);
+        setMat("selectable", getInitialSelMatPlace());
     }
     public virtual void hover()
     {
-        setMat(MatPlace.hover, RendPlace.selectable);
+        setMat("selectable", "hover");
     }
     public virtual void primarySelect()
     {
-        setMat(MatPlace.select, RendPlace.selectable);
+        setMat("selectable", "select");
     }
     public virtual bool canSecondarySelectOn(SelChy selChy) => false;
     public virtual void secondarySelectOn(SelChy selChy) { }
 
-    protected MatPlace getPlayerMatPlace()
+    protected string getPlayerMatPlace()
     {
         if (owner == null) Debug.LogError(this + " tried accessing playerMatPlace, but owner was null");
         return owner.getMatPlace();
     }
-    protected abstract MatPlace getInitialSelMat();  // Not necessarily single mat, may be playerMat
+    protected abstract string getInitialSelMatPlace();  // Not necessarily single mat, may be playerMat
 }

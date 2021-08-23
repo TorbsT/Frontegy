@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: TwoSummon
   m_EditorClassIdentifier: 
   _role: {fileID: 11400000, guid: 974f9546158341d43b9aedc9de4d3f5b, type: 2}
-  _frontFGMatPlace: 10
+  _frontFGMatPlace: twoFG

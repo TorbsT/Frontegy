@@ -3,68 +3,47 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //[System.Serializable]
-public class UICaard : Caard
+public class UICaard
 {
-    private UIManager manager;
-    private Quaternion rotation;
+    public List<Card> cards { get => _cards; }
 
-    public UICaard() : base()
+
+    private static Rot rot = new Rot(Quaternion.Euler(90f, 180f, 0f));
+    private List<Card> _cards = new List<Card>();
+
+    public void empty()
     {
-        manager = UIManager.Instance;
+        setCards(new List<Card>());
     }
-
-    private void setUICaardPos()
+    public void setCards(List<Card> cards)
     {
-        // called once
-        rotation = Quaternion.identity;
-        //rotation *= Quaternion.Euler(90, 0, 0);
-        for (int index = 0; index < getCount(); index++)
+        foreach (Card c in _cards)
         {
-            Card c = getCard(index);
+            c.transive.setParent(null, false);
+            c.transive.pos3p.set(Pos3.identity);
+        }
+        _cards = cards;
+        for (int index = 0; index < _cards.Count; index++)
+        {
+            Card c = _cards[index];
 
 
             Bounds b = c.getColliderBounds();
             float cardWidth = b.size.x;
             float cardHeight = b.size.y;
             float x = cardWidth * index;
-            float y = cardHeight/2f;
+            float y = cardHeight / 2f;
 
 
-            Pos3 p3 = new Pos3(x, y, 0f);
-            Quaternion rot = rotation;
-            c.trans.setParent(manager.getTransAtPlace(UIPlace.caardBox), true);
-            c.trans.pos3p.set(p3, true);
+            //Pos3 p3 = new Pos3(x-(float)_cards.Count/2f, y, 0f);
+            Pos3 p3 = new Pos3(x - (float)_cards.Count / 2f, 0, 0f);
+            Trans trans = UIManager.Instance.getTransAtPlace(UIPlace.caardBox);
+            Debug.Log(trans);
+            c.transive.setParent(trans);
+            c.transive.pos3p.set(p3, true);
+            //if (index < rots.Length) c.trans.rotp.set(rots[index], true);
+            c.transive.rotp.set(rot, true);
+            c.transive.scalep.set(Scale.identity, false);
         }
-    }
-    public void unuizeAll()
-    {
-        foreach (Card c in getCards())
-        {
-            // suppose it's uized
-            c.unuize();
-        }
-    }
-    public void setCaard(Caard caard)
-    {
-        if (caard == null) Debug.LogError("IllegalArgumentException");
-        List<Card> cards = caard.getCards();
-        int count = caard.getCount();
-        makeEmpty();
-        
-        for (int i = count-1; i >= 0; i--)
-        {
-            Card c = cards[i];
-            add(c);
-
-        }
-        setUICaardPos();
-
-        /*
-        foreach (Card c in caard.getCards())
-        {
-            add(c);
-            c.display(UIPlace.caardBox);
-        }
-        */
     }
 }

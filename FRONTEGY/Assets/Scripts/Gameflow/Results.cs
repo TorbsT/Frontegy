@@ -26,13 +26,24 @@ public class Results
         _roundId = roundId;
         allCoonflict = new Coonflict();
         _involvedTroopStates = Grid.Instance.troopStates.FindAll(match => match.roundId == roundId);
+        foreach (TroopState state in Grid.Instance.troopStates)
+        {
+            Debug.Log(state.roundId);
+        }
+        Debug.Log("There were " + _involvedTroopStates.Count + " states with round " + roundId);
 
         // check for colliding pafs.
         // do this by going step for step and look for collisions
         int step = 0;
         while (true)
         {
+            foreach (TroopState state in _involvedTroopStates)
+            {
+                state.prepareStepState(step);
+            }
+
             if (everyoneDone()) break;
+            Debug.Log("computing step " + step);
 
             // Every step, this checks for coonflict that appears during that step.
             // When calculating coonflict on a step, these parameters are necessary:
@@ -50,6 +61,7 @@ public class Results
             step++;
         }
         _maxSteps = step;
+        Debug.Log("Max steps is " + _maxSteps);
     }
     private bool everyoneDone()
     {
@@ -61,6 +73,7 @@ public class Results
             Tile goalTile = state.paf.lastBreadcrumb.tile;
             bool arrived = currentTile == goalTile;
 
+            Debug.Log("This troop is dead and arrived: " + dead + ", " + arrived);
             if (!dead && !arrived) return false;
         }
         return true;

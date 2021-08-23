@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class TroopStepStates
 {
-    
+    public int count { get => _stepStates.Count; }
     public bool currentDead { get => currentState.dead; }
     public Breadcrumb currentBreadcrumb { get => currentState.currentBreadcrumb; }
     public TroopStepState currentState { get => _stepStates[currentStep]; }

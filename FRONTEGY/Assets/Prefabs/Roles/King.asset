@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _id: 2
   _baseStats:
-    POW: 0
-    RANGE: 0
+    POW: 13
+    RANGE: 6
   trumpRole: {fileID: 0}

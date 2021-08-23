@@ -6,10 +6,13 @@ using UnityEngine;
 [System.Serializable]
 public class Tile : SelChy
 {
+    public static readonly float primaryMarkHeight = 0f;
+
     public override Player owner { get => _state.owner; }
     public TileState state { get => _state; }
     public TileLoc loc { get { return _loc; } }
     public Transform surfaceTransform { get { return getHost().surfaceTransform; } }
+    public Transtatic surfaceTranstatic { get => getHost().surfaceTranstatic; }
 
     [SerializeField] private TileLoc _loc;
     
@@ -21,7 +24,7 @@ public class Tile : SelChy
         _loc = loc;
         stage();
         initMats();
-        trans.pos3p.set(getPos3(), true);
+        transive.pos3p.set(getPos3(), true);
     }
 
     public Pos3 getPos3()
@@ -30,17 +33,31 @@ public class Tile : SelChy
     }
     public bool isNeigOfTile(Tile t) { return isNeigOfTileLoc(t.loc); }
     public bool isNeigOfTileLoc(TileLoc tl) { return TileLoc.areNeigs(loc, tl); }
-    public void showMark(Breadcrumb bc)
+    public void showPrimaryMark(Breadcrumb bc)
     {
-        setMat(MatPlace.breadcrumb, RendPlace.top);
+        /*setMat("top", "mark");
 
         float timeMod = Mathf.Pow(2, bc.stepsRemaining);
         float timeOffset = (float)bc.stepsRemaining * 0.3f;
-        //setFloat(RendPlace.top, "TimeMod", timeMod);
-        setFloat(RendPlace.top, "TimeOffset", timeOffset);
-
+        setFloat("top", "TimeOffset", timeOffset);
+        transive.scalep.set(new Scale(1f, 1f+primaryMarkHeight, 1f));
+        */
     }
-    public void hideMark() { setMat(owner.getMatPlace(), RendPlace.top); }//hehehehe
+    public void showSecondaryMark(Breadcrumb bc)
+    {
+        /*setMat("top", "select");
+
+        float timeMod = Mathf.Pow(2, bc.stepsRemaining);
+        float timeOffset = (float)bc.stepsRemaining * 0.3f;
+        setFloat("top", "TimeOffset", timeOffset);
+        */
+    }
+    public void hidePrimaryMark()
+    {
+        setMat("top", owner.getMatPlace());
+        transive.scalep.set(Scale.identity);
+    }//hehehehe
+    public void hideSecondaryMark(Breadcrumb bc) { showPrimaryMark(bc); }// what is wrong with you
 
     public TilePhy getHost()
     {
@@ -61,14 +78,14 @@ public class Tile : SelChy
     {
         TilePool.Instance.unstage(this);
     }
-    protected override MatPlace getInitialSelMat()
+    protected override string getInitialSelMatPlace()
     {
         return getPlayerMatPlace();
     }
     public override void initMats()
     {
-        setMat(getPlayerMatPlace(), RendPlace.top);
-        setMat(getInitialSelMat(), RendPlace.selectable);
+        setMat("top", getPlayerMatPlace());
+        setMat("selectable", getInitialSelMatPlace());
     }
 
 

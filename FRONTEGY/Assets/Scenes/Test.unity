@@ -223,14 +223,14 @@ MonoBehaviour:
     seed: 0
     size: {x: 9, y: 8}
     tileWeights:
-    - {x: -1, y: 5}
+    - {x: -1, y: 1}
     - {x: 0, y: 2}
     - {x: 1, y: 3}
     cardWeights:
     - {x: 0, y: 1}
     - {x: 1, y: 5}
     - {x: 2, y: 2}
-    startCardCount: 10
+    startCardCount: 16
     giveSameCards: 1
     roole:
       _roles:
@@ -261,7 +261,7 @@ MonoBehaviour:
   buildingPrefab: {fileID: 0}
   tileGOPrefab: {fileID: 3898236102231413406, guid: c23a1cb9cbf0efa48a3e3befa623247d,
     type: 3}
-  cardGOPrefab: {fileID: 5407895529541383545, guid: 3a193e34215176e42b0d0847c25310fa,
+  cardGOPrefab: {fileID: 3128357671093214248, guid: 1e8486877235c604693fa67e8e320ffe,
     type: 3}
   lineGOPrefab: {fileID: 7648600365356990817, guid: ebd2a8db3738d3f4194d613e25033ae5,
     type: 3}
@@ -273,6 +273,8 @@ MonoBehaviour:
       verAngleLimits: {x: 0, y: 0}
       horSpeed: 0
       verSpeed: 0
+    _transive:
+      id: 0
     horAngleDeg:
       x: 0
     verAngleDeg:
@@ -283,17 +285,15 @@ MonoBehaviour:
       x: 0
     circleRadius: 0
     focus:
-      _p2:
-        _v2: {x: 0, y: 0}
-      _y: 0
+      _v3: {x: 0, y: 0, z: 0}
   pools:
     tilePrefab: {fileID: 3898236102231413406, guid: c23a1cb9cbf0efa48a3e3befa623247d,
       type: 3}
-    cardPrefab: {fileID: 5407895529541383545, guid: 3a193e34215176e42b0d0847c25310fa,
+    cardPrefab: {fileID: 3128357671093214248, guid: 1e8486877235c604693fa67e8e320ffe,
       type: 3}
     troopPrefab: {fileID: 8680780199558192526, guid: 03de2358d8424fc4bbcf6f0c0f56d9d0,
       type: 3}
-    pafPrefab: {fileID: 7648600365356990817, guid: ebd2a8db3738d3f4194d613e25033ae5,
+    pafPrefab: {fileID: 8182245277471706774, guid: 57a8bb64259eec84199f4ab83a7574c9,
       type: 3}
   coontrol:
     id: 0
@@ -419,13 +419,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1067102728}
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 7.57, y: 11, z: -11.06}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+  m_Father: {fileID: 1362506142}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1353482312
 GameObject:
   m_ObjectHideFlags: 0
@@ -454,7 +454,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1362506139
 GameObject:
@@ -507,7 +507,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 1
+  near clip plane: 0.01
   far clip plane: 1000
   field of view: 60
   orthographic: 0
@@ -537,9 +537,10 @@ Transform:
   m_LocalRotation: {x: 0.54927415, y: 0.1687306, z: -0.11436231, w: 0.81040066}
   m_LocalPosition: {x: 7.57, y: 11, z: -11.06}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 1067102730}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 68.257, y: 23.523, z: 0}
 --- !u!114 &1362506143
 MonoBehaviour:

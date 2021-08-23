@@ -6,6 +6,11 @@ public struct FromTo
 {
     public TileLoc from { get; private set; }
     public TileLoc to { get; private set; }
+    public FromTo(Breadcrumb from, Breadcrumb to)
+    {
+        this.from = from.tile.loc;
+        this.to = to.tile.loc;
+    }
     public FromTo(TileLoc from, TileLoc to)
     {
         this.from = from;

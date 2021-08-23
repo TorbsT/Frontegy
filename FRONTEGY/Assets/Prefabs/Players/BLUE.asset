@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _id: 1
   mat:
-    place: 6
-    material: {fileID: 2100000, guid: 5982d0e2dc3341d46b0e7792055645a7, type: 2}
+    _place: BLUE
+    _material: {fileID: 0}
