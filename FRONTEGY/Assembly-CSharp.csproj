@@ -102,6 +102,7 @@
     <Compile Include="Assets\Scripts\BattlePhase\RoundManager.cs" />
     <Compile Include="Assets\Scripts\Troops\Roster.cs" />
     <Compile Include="Assets\Scripts\Pool\IPool.cs" />
+    <Compile Include="Assets\Scripts\Small\ITransProperty.cs" />
     <Compile Include="Assets\Scripts\Cards\CastType.cs" />
     <Compile Include="Assets\Scripts\Pool\IPoolHost.cs" />
     <Compile Include="Assets\Scripts\Global\PhaseType.cs" />
@@ -126,6 +127,7 @@
     <Compile Include="Assets\Scripts\IKolider.cs" />
     <Compile Include="Assets\Scripts\Grid\TilePhy.cs" />
     <Compile Include="Assets\Scripts\Gameflow\SelectAction.cs" />
+    <Compile Include="Assets\Scripts\Small\Rekt.cs" />
     <Compile Include="Assets\Scripts\Grid\Slid.cs" />
     <Compile Include="Assets\Scripts\Grid\TroopRoster.cs" />
     <Compile Include="Assets\Scripts\UI\Cam.cs" />
@@ -209,6 +211,7 @@
     <Compile Include="Assets\Scripts\Troops\TroopPhy.cs" />
     <Compile Include="Assets\Scripts\Small\Degree.cs" />
     <Compile Include="Assets\Scripts\Grid\AllCaard.cs" />
+    <Compile Include="Assets\Scripts\UI\UICam.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\Concept\weiter.txt" />

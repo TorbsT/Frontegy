@@ -21,7 +21,7 @@ public class PafStepPhy : Phy
     protected override void Awake()
     {
         base.Awake();
-        if (_endGO == null) Debug.LogError("InspectorException: assign PafStep.endGO");
+        if (_endGO == null) Debug.LogError("InspectorExc1eption: assign PafStep.endGO");
         if (_turnGO == null) Debug.LogError("InspectorException: assign PafStep.turnGO");
         if (_circleGO == null) Debug.LogError("InspectorException: assign PafStep.circleGO");
         if (_straightGO == null) Debug.LogError("InspectorException: assign PafStep.straightGO");

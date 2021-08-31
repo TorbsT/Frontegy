@@ -24,7 +24,6 @@ public class GameMaster : MonoBehaviour
     [Header("System")]
     public int displayHistory = 0;
     [SerializeField] public GameObject troopGOPrefab;
-    [SerializeField] private GameObject uiPrefab;
     [SerializeField] GameObject buildingPrefab;
     [SerializeField] public GameObject tileGOPrefab;
     [SerializeField] public GameObject cardGOPrefab;
@@ -42,7 +41,7 @@ public class GameMaster : MonoBehaviour
     public List<Merge> merges = new List<Merge>();
     [SerializeField] private Playyer playyer;
     [SerializeField] private Roster _roster;
-    [SerializeReference] private UIManager uiManager;
+    private UIManager uiManager { get => UIManager.Instance; }
 
     GridPivotConfig gridNone;
     GridPivotConfig gridAnchored;
@@ -53,11 +52,6 @@ public class GameMaster : MonoBehaviour
     {
         if (cam == null) Debug.LogError("IllegalStateException");
         return cam;
-    }
-    public GameObject getUIPrefab()
-    {
-        if (uiPrefab == null) Debug.LogError("InspectorException: Set uiPrefab in gm");
-        return uiPrefab;
     }
 
 
@@ -84,7 +78,6 @@ public class GameMaster : MonoBehaviour
     {
         //Application.targetFrameRate = 2;
         cam = new Cam(getCamera(), getCamConfig());
-        uiManager = new UIManager();
         playyer.init();
         pools.init();
         Restart();

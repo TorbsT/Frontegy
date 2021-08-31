@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class UILinker : MonoBehaviour
 {
+    /*
     // provides a reference to UIGOs for UIManager.
     // Also displays internal state of UIManager to inspector.
     public List<UIRect> uiRects { get => _uiRects; }
@@ -23,11 +24,7 @@ public class UILinker : MonoBehaviour
         if (this.uiManager != null) Debug.LogError("IllegalStateException");
         this.uiManager = uiManager;
     }
-    public Trans getTransAtPlace(UIPlace place)
-    {
-        return getUIRectAtPlace(place).trans;
-    }
-    public RectTransform getRectAtPlace(UIPlace place)
+    public RectTransform getRectTransformAtPlace(UIPlace place)
     {
         return getUIRectAtPlace(place).rect;
     }
@@ -51,4 +48,5 @@ public class UILinker : MonoBehaviour
         if (header == null) Debug.LogError("InspectorException: Set UILinker.header");
         return header;
     }
+    */
 }

@@ -6,11 +6,6 @@ using UnityEngine;
 public abstract class Trans
 {  // May be Transive or Transtatic
     public Transform transform { get { if (_transform == null) Debug.LogError("IllegalStateException: "+GetType()+" without transform"); return _transform; } }
-
-
-
-    public Transform parentTransform { get { return parent.transform; } }
-    public Trans parent { get { return _parent; } }
     public string name { get => _name; }
 
 
@@ -25,8 +20,8 @@ public abstract class Trans
     [SerializeReference] protected Pos3Property _pos3p;
     [SerializeReference] protected RotProperty _rotp;
     [SerializeReference] protected ScaleProperty _scalep;
+    protected List<ITransProperty> _properties;
     private Transform _transform;
-    [System.NonSerialized] private Trans _parent;  // may be null
 
 
 
@@ -41,6 +36,7 @@ public abstract class Trans
         _rotp.set(Rot.identity);
         _scalep = new ScaleProperty(this);
         _scalep.set(Scale.identity);
+        _properties = new List<ITransProperty>() { _pos3p, _rotp, _scalep };
     }
 
     public void setParent(Trans parent, bool keepWorldSpace = false)
@@ -48,12 +44,17 @@ public abstract class Trans
         //if (parent == null) Debug.LogError("IllegalArgumentException");
 
         // if keepWorldSpace, showTrans = false
-        if (parent == this.parent) { Debug.LogWarning("IllegalStateException: '" + parent + "' is already the parent of '" + this + "'"); return; }
+
+        _properties.ForEach(p => p.setParent(parent, keepWorldSpace));
+
+
+        /*
         if (_parent != null) _parent.unsubscribe(this);
         if (parent != null) parent.subscribe(this);
         _parent = parent;
         if (keepWorldSpace) computeLocal();
         else { computeWorld(); recursiveComputeWorld(); }
+        */
     }
     public void recursiveComputeWorld()
     {
@@ -67,11 +68,11 @@ public abstract class Trans
     }
     public void subscribe(Trans observer)
     {
-        children.Add(observer);
+        if (!children.Contains(observer)) children.Add(observer);
     }
     public void unsubscribe(Trans observer)
     {
-        children.Remove(observer);
+        if (children.Contains(observer)) children.Remove(observer);
     }
     protected abstract void computeWorld();
     protected abstract void computeLocal();

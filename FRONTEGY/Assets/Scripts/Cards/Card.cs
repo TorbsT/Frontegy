@@ -23,8 +23,7 @@ public class Card : SelChy  // changed to class since i didn't know why it shoul
 
     public override bool canSecondarySelectOn(SelChy selChy)
     {
-        Tile tile = (Tile)selChy;
-        if (tile != null)
+        if (selChy is Tile tile)
         {
             if (tile.state.ownerId == state.ownerId) return true;
         }

@@ -10,7 +10,27 @@ public class UICaard
 
     private static Rot rot = new Rot(Quaternion.Euler(90f, 180f, 0f));
     private List<Card> _cards = new List<Card>();
+    private UIRect _caardBox;
 
+    private Rect _rect;
+    private Rect _lastRect;
+    public bool showTransNecessary { private get; set; }
+
+    public UICaard()
+    {
+        _caardBox = UIManager.Instance.getUIRectAtPlace(UIPlace.caardBox);
+    }
+    public void fixedUpdate()
+    {
+        _rect = _caardBox.getRect();
+        bool rectChanged = _rect != _lastRect;
+        showTransNecessary = showTransNecessary || rectChanged;
+
+        if (showTransNecessary) updatePoses();
+
+        _lastRect = _rect;
+        showTransNecessary = false;
+    }
     public void empty()
     {
         setCards(new List<Card>());
@@ -19,29 +39,48 @@ public class UICaard
     {
         foreach (Card c in _cards)
         {
-            c.transive.setParent(null, false);
+            c.transive.unuize();
             c.transive.pos3p.set(Pos3.identity);
         }
         _cards = cards;
         for (int index = 0; index < _cards.Count; index++)
         {
             Card c = _cards[index];
+            c.transive.uize();
+            c.transive.setParent(UIManager.Instance.transive);
 
 
+            
+
+            /*
+            ct.pos3p.setParent(trans);
+            ct.pos3p.set(p3, true);
+            ct.rotp.setParent(trans);
+            ct.rotp.set(rot, true);
+            */
+        }
+        showTransNecessary = true;
+    }
+    private void updatePoses()
+    {
+        // TODO
+        Pos3 boxCenter = _caardBox.center+new Pos3(0f, _rect.height/2f, 0f);
+        for (int i = 0; i < _cards.Count; i++)
+        {
+            Card c = _cards[i];
             Bounds b = c.getColliderBounds();
             float cardWidth = b.size.x;
             float cardHeight = b.size.y;
-            float x = cardWidth * index;
-            float y = cardHeight / 2f;
+            Debug.Log(cardWidth);
+            float x = cardWidth * (i-_cards.Count/2f) * 100;
+            float y = 0;//cardHeight / 2f;
+            float z = i*10;
 
 
             //Pos3 p3 = new Pos3(x-(float)_cards.Count/2f, y, 0f);
-            Pos3 p3 = new Pos3(x - (float)_cards.Count / 2f, 0, 0f);
-            Trans trans = UIManager.Instance.getTransAtPlace(UIPlace.caardBox);
-            Debug.Log(trans);
-            c.transive.setParent(trans);
+            //Pos3 p3 = new Pos3(x - (float)_cards.Count / 2f, 0, 0f);
+            Pos3 p3 = boxCenter+new Pos3(x, y, z);
             c.transive.pos3p.set(p3, true);
-            //if (index < rots.Length) c.trans.rotp.set(rots[index], true);
             c.transive.rotp.set(rot, true);
             c.transive.scalep.set(Scale.identity, false);
         }

@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class UIRect
+public class UIRect : MonoBehaviour
 {
     public UIPlace place { get { return _place; } }
-    public RectTransform rect { get { return _rect; } }
-    public Transtatic trans { get { if (_transtatic == null) _transtatic = new Transtatic(rect, UIManager.Instance.transive); return _transtatic; } }
+    public RectTransform rectTransform { get { return _rectTransform; } }
 
     [SerializeField] private UIPlace _place;
-    [SerializeField] private RectTransform _rect;
-    [SerializeReference] private Transtatic _transtatic;
-    [System.NonSerialized] private Trans parentTrans;
+    [SerializeField] private RectTransform _rectTransform;
 
-    public void setTransParent(Trans trans)
+    void Awake()
     {
-        // TODOthis.trans.  // ACTUALLY, finding _world for transtatic may be necessary as well?
+        _rectTransform = GetComponent<RectTransform>();
+
     }
+
+    public Rect getRect() => _rectTransform.rect;
+    public Pos3 center => new Pos3(_rectTransform.localPosition);
 }

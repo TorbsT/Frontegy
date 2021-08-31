@@ -40,4 +40,12 @@ public class Transive : Trans
         _rotp.computeWorld();
         _scalep.computeWorld();
     }
+    public void uize()
+    {
+        UIManager.Instance.uize(this);
+    }
+    public void unuize()
+    {
+        UIManager.Instance.unuize(this);
+    }
 }

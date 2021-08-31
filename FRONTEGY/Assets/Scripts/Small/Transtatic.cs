@@ -9,6 +9,7 @@ public class Transtatic : Trans
     // Local properties are by definition constant, but not world.
     public Transponent transponent { get => _transponent; }
     private Transponent _transponent;
+    private bool _transformExternallyChanged = true;
     public Transtatic(Transform transform, Trans parent) : base(transform)
     {
         if (parent == null) Debug.LogError("IllegalArgumentException");
@@ -20,14 +21,16 @@ public class Transtatic : Trans
     }
     protected override void computeWorld()
     {
-        _pos3p.computeWorld();
-        _rotp.computeWorld();
-        _scalep.computeWorld();
+        if (_transformExternallyChanged) computeLocalByTransformProperty();
+        _properties.ForEach(p => p.computeWorld());
     }
     protected override void computeLocal()
     {
-        _pos3p.computeLocalByTransformProperty();
-        _rotp.computeLocalByTransformProperty();
-        _scalep.computeLocalByTransformProperty();
+        computeLocalByTransformProperty();   
+    }
+    private void computeLocalByTransformProperty()
+    {
+        _transformExternallyChanged = false;
+        _properties.ForEach(p => p.computeLocalByTransformProperty());
     }
 }

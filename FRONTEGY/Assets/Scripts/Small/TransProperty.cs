@@ -3,19 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public abstract class TransProperty<T>// where T : ITransPropertyField<T>  // bruh
+public abstract class TransProperty<T> : ITransProperty
 {
     // whenever local changes, world gets outdated
     // whenever world changes, local gets outdates
     // whenever parent changes, you may choose which gets outdated
     public Transform transform { get { return trans.transform; } }
-    public Transform parentTransform { get { return trans.parentTransform; } }
-    public Trans parent { get { return trans.parent; } }
+    public Transform parentTransform { get => parent.transform; }
+    public Trans parent { get => _parent; }
     private bool transformOutdated { get => !_world.Equals(_lastWorld); }
     public Trans trans { get; private set; }
     public string name { get => trans.name; }
 
-    [SerializeField] protected float _lastComputation = -1;
+    [SerializeReference] private Trans _parent;
+    [SerializeField] private float _lastComputation = -1;
+    [SerializeField] private float _lastComputationType = -1;
     [SerializeField] private T _local;
     [SerializeField] private T _world;
     [SerializeField] private T _lastLocal;
@@ -26,12 +28,20 @@ public abstract class TransProperty<T>// where T : ITransPropertyField<T>  // br
         if (trans == null) Debug.LogError("IllegalArgumentException");
         this.trans = trans;
     }
-
+    public void setParent(Trans parent, bool keepWorldSpace = false)
+    {
+        if (_parent != null) _parent.unsubscribe(trans);
+        if (parent != null) parent.subscribe(trans);
+        _parent = parent;
+        if (keepWorldSpace) computeLocal();
+        else { computeWorld(); trans.recursiveComputeWorld(); }
+    }
     public void computeLocalByTransformProperty()
     {
         if (parent == null) Debug.LogError("very wrong");
         else _local = getLocalPropertyFromTransform();
         _lastComputation = Time.time;
+        _lastComputationType = 0;
     }
     public void computeLocal()
     {
@@ -41,6 +51,7 @@ public abstract class TransProperty<T>// where T : ITransPropertyField<T>  // br
             _local = computeLocalWithParentWorld();
         }
         _lastComputation = Time.time;
+        _lastComputationType = 1;
     }
     public void computeWorld()
     {
@@ -50,6 +61,7 @@ public abstract class TransProperty<T>// where T : ITransPropertyField<T>  // br
             _world = computeWorldWithParentWorld();
         }
         _lastComputation = Time.time;
+        _lastComputationType = 2;
     }
 
 

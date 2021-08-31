@@ -8,6 +8,7 @@ public class SelMan
     public static SelMan Instance { get; private set; }
 
     [SerializeField] private Cam cam;
+    [SerializeField] private UICam _uiCam { get => UICam.Instance; }
     [SerializeField] private SelChy hovered;
     [SerializeField] private SelChy selected;
     [SerializeField] private GameObject hoveredGO;
@@ -72,7 +73,10 @@ public class SelMan
     }
     private GameObject getMousedGO(Control control)
     {
-        return getCam().getMousedGO(control);
+        GameObject go;
+        go = _uiCam.getMousedGO(control);  // First check if UI collides
+        if (go == null) go = getCam().getMousedGO(control);
+        return go;
     }
     private Cam getCam()
     {
