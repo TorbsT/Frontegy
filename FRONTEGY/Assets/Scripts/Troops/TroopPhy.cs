@@ -104,14 +104,16 @@ public class TroopPhy : SelPhy
     {
         _isRagdoll = true;
         if (_crownRb != null) _crownRb.isKinematic = false;
-        _troopRb.constraints = RigidbodyConstraints.None;
+        //_troopRb.constraints = RigidbodyConstraints.None;
+        _troopRb.isKinematic = false;
         return true;
     }
     public override bool tryUnragdollMode()
     {
         _isRagdoll = false;
         if (_crownRb != null) _crownRb.isKinematic = true;
-        _troopRb.constraints = RigidbodyConstraints.None; //RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
+        _troopRb.isKinematic = true;
+        //_troopRb.constraints = RigidbodyConstraints.None; //RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
         return true;
     }
 
