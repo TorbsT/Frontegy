@@ -64,15 +64,17 @@ public class UICaard
     private void updatePoses()
     {
         // TODO
-        Pos3 boxCenter = _caardBox.center+new Pos3(0f, _rect.height/2f, 0f);
+        Pos3 boxCenter = _caardBox.center+new Pos3(0f, 0f, 0f);
         for (int i = 0; i < _cards.Count; i++)
         {
             Card c = _cards[i];
+            c.transive.scalep.set(Scale.identity, false);
+
             Bounds b = c.getColliderBounds();
-            float cardWidth = b.size.x;
-            float cardHeight = b.size.y;
-            Debug.Log(cardWidth);
-            float x = cardWidth * (i-_cards.Count/2f) * 100;
+            float cardWidth = 4.5f;// b.size.x;
+            float cardHeight = b.size.z;
+            Debug.Log("HEY "+ cardWidth + " " + cardHeight);
+            float x = cardWidth * (i-_cards.Count/2f) * 20;
             float y = 0;//cardHeight / 2f;
             float z = i*10;
 
@@ -82,7 +84,7 @@ public class UICaard
             Pos3 p3 = boxCenter+new Pos3(x, y, z);
             c.transive.pos3p.set(p3, true);
             c.transive.rotp.set(rot, true);
-            c.transive.scalep.set(Scale.identity, false);
+            
         }
     }
 }

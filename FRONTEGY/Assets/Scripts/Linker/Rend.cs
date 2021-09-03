@@ -36,14 +36,15 @@ public class Rend
 
     private void refresh()
     {
-        if (hasMat()) _renderers.ForEach(r => r.material = getMat().material);
+        if (hasMat()) doForAllActive(r => r.material = getMat().material);
         //else getRenderer().material = null;
-        if (hasCol()) _renderers.ForEach(r => r.material.color = getCol().color);
+        if (hasCol()) doForAllActive(r => r.material.color = getCol().color);
         foreach (string name in _floats.Keys)
         {
-            _renderers.ForEach(r => r.material.SetFloat(name, _floats[name]));
+            doForAllActive(r => r.material.SetFloat(name, _floats[name]));
         }
     }
+    private void doForAllActive(System.Action<MeshRenderer> action) { _renderers.ForEach(r => { if (r.gameObject.activeInHierarchy) action(r); }); }
     private bool hasMat() { return _mat != null; }
     private bool hasCol() { return _col != null; }
     private Mat getMat() { return _mat; }

@@ -8,7 +8,7 @@ public abstract class Phy : MonoBehaviour, IPoolHost
 {
     // Properties
 
-    public bool staged { get { return _staged; } }
+    public bool staged { get { return _staged; } set { _staged = value; } }
     public IPoolClient chy { set { _chy = value; } }
     public Transive transive { get => _transive; }
     public Bounds colliderBounds { get { if (hasBounds) return _colliderBounds; else
@@ -47,14 +47,6 @@ public abstract class Phy : MonoBehaviour, IPoolHost
         _gfx = GetComponent<GFX>();
         if (_gfx == null) Debug.LogError("InspectorException: " + this + " has no GFX component");
     }
-    private void OnEnable()
-    {
-        _staged = true;
-    }
-    private void OnDisable()
-    {
-        _staged = false;
-    }
     public void setMat(string rendPlace, string matPlace)
     {
         gfx.setMatAtPlace(rendPlace, matPlace);
@@ -67,6 +59,8 @@ public abstract class Phy : MonoBehaviour, IPoolHost
     {
         gfx.setFloat(rendPlace, name, f);
     }
+    public virtual bool tryRagdollMode() => false;
+    public virtual bool tryUnragdollMode() => false;
 
     protected abstract Chy getChy();
     public abstract void unstage();

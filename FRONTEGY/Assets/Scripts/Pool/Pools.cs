@@ -5,6 +5,8 @@ using UnityEngine;
 [System.Serializable]
 public class Pools
 {
+    public static bool ragdollWhenUnstagingAll = true;
+
     [SerializeField] private GameObject tilePrefab;
     [SerializeField] private GameObject cardPrefab;
     [SerializeField] private GameObject troopPrefab;
@@ -26,6 +28,10 @@ public class Pools
     {
         foreach (IPool pool in pools)
         {
+            if (ragdollWhenUnstagingAll)  // fix this you pineapple. Is there a way around?
+            {
+                pool.ragdollifyAll();
+            }
             pool.unstageAll();
         }
     }

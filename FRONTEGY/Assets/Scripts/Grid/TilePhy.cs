@@ -10,6 +10,7 @@ public class TilePhy : SelPhy
 
     [Header("Variables")]
     [SerializeField] Transform _surfaceTransform;
+    [SerializeField] Rigidbody _rb;
     private Transtatic _surfaceTranstatic;
 
     protected override void Awake()
@@ -30,6 +31,18 @@ public class TilePhy : SelPhy
     public override SelChy getSelChy()
     {
         return getTile();
+    }
+    public override bool tryRagdollMode()
+    {
+        _rb.isKinematic = false;
+        _rb.AddForce(new Vector3(0f, 1000f, 0f));
+        return true;
+    }
+    public override bool tryUnragdollMode()
+    {
+        _rb.isKinematic = true;
+        transive.transformExternallyChanged();
+        return true;
     }
 
 }

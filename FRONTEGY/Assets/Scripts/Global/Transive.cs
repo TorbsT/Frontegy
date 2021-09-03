@@ -24,21 +24,19 @@ public class Transive : Trans
     public void showTransIfNecessary()
     {
         _lastTransShow = Time.time;
-        _pos3p.showTransIfNecessary();
-        _rotp.showTransIfNecessary();
-        _scalep.showTransIfNecessary();
+        _properties.ForEach(p => p.showTransIfNecessary());
     }
     protected override void computeLocal()
     {
-        _pos3p.computeLocal();
-        _rotp.computeLocal();
-        _scalep.computeLocal();
+        _properties.ForEach(p => p.computeLocal());
     }
     protected override void computeWorld()
     {
-        _pos3p.computeWorld();
-        _rotp.computeWorld();
-        _scalep.computeWorld();
+        _properties.ForEach(p => p.computeWorld());
+    }
+    public void transformExternallyChanged()
+    {
+        _properties.ForEach(p => p.transformExternallyChanged());
     }
     public void uize()
     {

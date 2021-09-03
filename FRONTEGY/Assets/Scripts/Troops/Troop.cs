@@ -22,7 +22,7 @@ public class Troop : SelChy  // "Must" be class since SetStats() should be able 
         Grid.Instance.allGroop.add(this);
         stage();
         initMats();
-        transive.scalep.set(new Scale(0.5f, 1f, 0.5f));
+        transive.scalep.set(new Scale(0.5f, 0.5f, 0.5f));
         tacticalDisplay();
     }
     public Player getOwner()

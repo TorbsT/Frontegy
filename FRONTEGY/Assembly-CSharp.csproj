@@ -166,6 +166,7 @@
     <Compile Include="Assets\Scripts\UI\UIManager.cs" />
     <Compile Include="Assets\Scripts\Global\SelLinker.cs" />
     <Compile Include="Assets\Scripts\Grid\TileRoster.cs" />
+    <Compile Include="Assets\Scripts\UI\UICam.cs" />
     <Compile Include="Assets\Scripts\Gameflow\Results.cs" />
     <Compile Include="Assets\ZZZManure\TutorialInfo\Scripts\Readme.cs" />
     <Compile Include="Assets\Scripts\BattlePhase\Chy.cs" />
@@ -211,7 +212,6 @@
     <Compile Include="Assets\Scripts\Troops\TroopPhy.cs" />
     <Compile Include="Assets\Scripts\Small\Degree.cs" />
     <Compile Include="Assets\Scripts\Grid\AllCaard.cs" />
-    <Compile Include="Assets\Scripts\UI\UICam.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\Concept\weiter.txt" />

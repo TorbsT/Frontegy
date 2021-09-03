@@ -10,6 +10,9 @@ public class TroopPhy : SelPhy
 
     [Header("Variables")]
     [SerializeField] private Troop troop;
+    [SerializeField] private Rigidbody _troopRb;
+    [SerializeField] private Rigidbody _crownRb;
+    [SerializeField] private bool _isRagdoll;
 
     [Header("System/Debug")]
     [SerializeField] MeshRenderer rndrr;
@@ -69,7 +72,24 @@ public class TroopPhy : SelPhy
     {
         //getGO().transform.position += Vector3.up * getGO().transform.localScale[1];
     }
+    private void FixedUpdate()
+    {
+        //var rot = Quaternion.FromToRotation(transform.up, Vector3.up);
+        //_troopRb.AddTorque(new Vector3(rot.x, rot.y, rot.z) * 1500*Time.fixedDeltaTime);
+        if (!staged) return;
+        Quaternion deltaQuat = Quaternion.FromToRotation(_troopRb.transform.up, Vector3.up);
 
+        Vector3 axis;
+        float angle;
+        deltaQuat.ToAngleAxis(out angle, out axis);
+        if (angle > 10f) angle = 100f;
+
+        float dampenFactor = 10f; // this value requires tuning
+        _troopRb.AddTorque(-_troopRb.angularVelocity * dampenFactor, ForceMode.Acceleration);
+
+        float adjustFactor = 1f; // this value requires tuning
+        _troopRb.AddTorque(axis.normalized * angle * adjustFactor, ForceMode.Acceleration);
+    }
 
     protected Troop getTroop() { return TroopPool.Instance.getClient(this); }
     public override SelChy getSelChy()
@@ -80,4 +100,19 @@ public class TroopPhy : SelPhy
     {
         TroopPool.Instance.unstage(this);
     }
+    public override bool tryRagdollMode()
+    {
+        _isRagdoll = true;
+        if (_crownRb != null) _crownRb.isKinematic = false;
+        _troopRb.constraints = RigidbodyConstraints.None;
+        return true;
+    }
+    public override bool tryUnragdollMode()
+    {
+        _isRagdoll = false;
+        if (_crownRb != null) _crownRb.isKinematic = true;
+        _troopRb.constraints = RigidbodyConstraints.None; //RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
+        return true;
+    }
+
 }

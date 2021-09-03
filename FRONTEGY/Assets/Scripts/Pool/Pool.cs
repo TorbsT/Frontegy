@@ -5,15 +5,17 @@ using UnityEngine;
 [System.Serializable]
 public abstract class Pool<Client, Host> : IPool where Client : IPoolClient where Host : Component, IPoolHost
 {
+    private static int _maxRagdollCount = 100;
     [SerializeField] private GameObject prefab;
 
     public static Pool<Client, Host> Instance { get; private set; }
     private Queue<Host> queue = new Queue<Host>();
+    private Queue<Host> _activeRagdolls = new Queue<Host>();
 
     // used for keeping track of piss and shit
     private Dictionary<Client, Host>   hostDict = new Dictionary<Client, Host>();
     private Dictionary<Host, Client> clientDict = new Dictionary<Host, Client>();
-    private List<Host> allHosts = new List<Host>();
+    protected List<Host> allHosts = new List<Host>();
 
     public Pool(GameObject go)
     {
@@ -30,20 +32,22 @@ public abstract class Pool<Client, Host> : IPool where Client : IPoolClient wher
         hostDict.Add(client, host);
         clientDict.Add(host, client);
         client.staged = true;
+        host.staged = true;
         allHosts.Add(host);
         host.gameObject.SetActive(true);
+        host.tryUnragdollMode();
         host.chy = (IPoolClient)client;
         //return host;
     }
     public void unstage(Client client)
     {
-        Host host = getHost(client);
-        disconnect(client, host);
+        unstage(getHost(client));
     }
     public void unstage(Host host)
     {
         Client client = getClient(host);
         disconnect(client, host);
+        moveToUnstaged(host);
     }
     public void unstageAll()
     {
@@ -52,15 +56,50 @@ public abstract class Pool<Client, Host> : IPool where Client : IPoolClient wher
             unstage(allHosts[i]);
         }
     }
-    private void disconnect(Client client, Host host)
+    public void ragdollifyAll()
     {
+        for (int i = allHosts.Count-1; i >= 0; i--)
+        {
+            ragdollify(allHosts[i]);
+        }
+    }
+    public void ragdollify(Client client)
+    {
+        ragdollify(getHost(client));
+    }
+    public void ragdollify(Host host)
+    {
+        Client client = getClient(host);
+        disconnect(client, host);
+        
+        
+        if (host.tryRagdollMode())
+        {
+            _activeRagdolls.Enqueue(host);
+            if (_activeRagdolls.Count > _maxRagdollCount)
+            {
+                Host despawnedRagdoll = _activeRagdolls.Dequeue();
+                //despawnedRagdoll.tryUnragdollMode();  // Do this when staging
+                moveToUnstaged(despawnedRagdoll);
+            }
+        } else
+        {
+            moveToUnstaged(host);  // Can't be ragdolled, just unstage
+        }
+    }
+    protected void disconnect(Client client, Host host)
+    {  // Does NOT disable game object or move it to ready. Use moveToUnstaged for that.
         if (!client.staged) Debug.LogError("Tried disconnecting unstaged client '"+client+"'");
         if (!host.staged) Debug.LogError("Tried disconnecting unstaged host '"+host+"'");
-        queue.Enqueue(host);
         hostDict.Remove(client);
         clientDict.Remove(host);
         allHosts.Remove(host);
         client.staged = false;
+        host.staged = false;
+    }
+    protected void moveToUnstaged(Host host)
+    {  // Supposes already disconnected.
+        queue.Enqueue(host);
         host.gameObject.SetActive(false);
     }
     public Host getHost(Client client)

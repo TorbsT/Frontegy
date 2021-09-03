@@ -403,6 +403,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 985c450b07e0a0e4fa0ed3c6b621fc43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _position:
+    _v3: {x: 0, y: 0, z: 0}
   _uiRects:
   - {fileID: 858869595633667112}
   _canvas: {fileID: 3042128529179042352}

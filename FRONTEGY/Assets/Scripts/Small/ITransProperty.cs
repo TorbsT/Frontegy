@@ -7,4 +7,7 @@ public interface ITransProperty
     void setParent(Trans parent, bool keepWorldSpace = false);
     void computeLocalByTransformProperty();
     void computeWorld();
+    void computeLocal();
+    void showTransIfNecessary(bool force = false);
+    void transformExternallyChanged();  // Reapplies world
 }

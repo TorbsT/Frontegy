@@ -63,7 +63,11 @@ public abstract class TransProperty<T> : ITransProperty
         _lastComputation = Time.time;
         _lastComputationType = 2;
     }
-
+    public void transformExternallyChanged()
+    {  // Transform externally modified (e.g. with a rigidbody), which this property didn't notice.
+        // Update transform to match this property
+        showTransIfNecessary(true);
+    }
 
     /// <summary>
     /// Sets the value.
@@ -106,13 +110,13 @@ public abstract class TransProperty<T> : ITransProperty
             else return _world;
         }
     }
-    public void showTransIfNecessary()
+    public void showTransIfNecessary(bool force = false)
     {
         // Does no actual computing.
         // If transform already matches _world, no update is needed.
         // transform always matches _lastWorld.
         // Therefore, if _world == _lastWorld, _world == transform.
-        if (!transformOutdated)
+        if (!transformOutdated && !force)
         {
             // Already up-to-date.
         } else
