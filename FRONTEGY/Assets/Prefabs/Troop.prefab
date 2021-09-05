@@ -120,7 +120,7 @@ MonoBehaviour:
     - {fileID: 961981505535259243}
   _mats:
   - _place: RED
-    _material: {fileID: 2100000, guid: f638397c18abe4f4d8e289b13c151605, type: 2}
+    _material: {fileID: 2100000, guid: 5c41654410656924c9eec4c1b75f642a, type: 2}
   - _place: BLUE
     _material: {fileID: 2100000, guid: 5982d0e2dc3341d46b0e7792055645a7, type: 2}
   _cols: []
@@ -315,6 +315,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Crown
       objectReference: {fileID: 0}
+    - target: {fileID: 3600780175197401481, guid: 0a9d45786a3c22543bd3a88dfef04849,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 3fdd2917fdf87f745bfaef9217577553, type: 2}
+    - target: {fileID: 7640575629648568210, guid: 0a9d45786a3c22543bd3a88dfef04849,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 3fdd2917fdf87f745bfaef9217577553, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0a9d45786a3c22543bd3a88dfef04849, type: 3}
 --- !u!1 &1676334911494362408 stripped

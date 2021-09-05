@@ -4,7 +4,7 @@ using UnityEngine;
 
 public interface IPoolClient
 {
-    bool staged { get; set; }
+    bool connected { get; set; }
     void stage();
     void unstage();
 }

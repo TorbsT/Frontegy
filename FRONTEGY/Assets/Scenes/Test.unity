@@ -764,5 +764,10 @@ PrefabInstance:
       propertyPath: m_Cameras.Array.data[0]
       value: 
       objectReference: {fileID: 614496462}
+    - target: {fileID: 8645159473007765096, guid: be4a1c94d02a33b469922210fb95cb92,
+        type: 3}
+      propertyPath: m_RenderPostProcessing
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: be4a1c94d02a33b469922210fb95cb92, type: 3}

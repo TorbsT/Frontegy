@@ -21,7 +21,7 @@ public class TroopStepStates
     {
         if (_stepStates.Count == 0) Debug.LogError("Troop has 0 step states but tried accessing");
         if (step < 0) step = 0;
-        if (step >= _stepStates.Count) step = _stepStates.Count - 1;
+        if (step >= _stepStates.Count) { step = _stepStates.Count - 1; Debug.Log("Step was over stepcount"); }
         return _stepStates[step];
     }
     public void addConsequence(Consequence consequence)
@@ -31,11 +31,15 @@ public class TroopStepStates
         if (consequence.dies)
         {
             currentState.dead = true;
+            Debug.Log("Set dead on stepstate "+currentState);
         }
+            Debug.Log("yASdhasdhdh");
     }
     public void prepareStep(int step)
     {
         if (step != currentStep + 1) Debug.LogError("Wrong step");
-        _stepStates.Add(new TroopStepState(_state.paf.getBreadcrumb(step)));
+        Breadcrumb bc = _state.paf.getBreadcrumb(step);
+        Debug.Log("Prepared step " + step + ", " + bc);
+        _stepStates.Add(new TroopStepState(bc));
     }
 }

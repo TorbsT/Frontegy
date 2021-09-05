@@ -38,19 +38,25 @@ public class Results
         int step = 0;
         while (true)
         {
+            if (step == 0)
             foreach (TroopState state in _involvedTroopStates)
             {
                 state.prepareStepState(step);
             }
-
             if (everyoneDone()) break;
+            foreach (TroopState state in _involvedTroopStates)
+            {
+                state.prepareStepState(step+1);
+            }
+
+            
             Debug.Log("computing step " + step);
 
             // Every step, this checks for coonflict that appears during that step.
             // When calculating coonflict on a step, these parameters are necessary:
             // step: all coonflict on the same step happen simultaneously and can therefore be calculated simultaneously.
             // consequi: information on what has happened previous steps. on first step, this is an empty Consequi.
-            Coonflict coonflict = getCoonflict(step);
+            Coonflict coonflict = getCoonflict(step+1);
             foreach (Conflict conflict in coonflict.getConflicts())
             {
                 Debug.Log("I CAME");
@@ -75,7 +81,7 @@ public class Results
             Tile goalTile = state.paf.lastBreadcrumb.tile;
             bool arrived = currentTile == goalTile;
 
-            Debug.Log("This troop is dead and arrived: " + dead + ", " + arrived);
+            Debug.Log("This troop is dead and arrived: " + dead + ", " + arrived + ", stepstate "+state.stepStates.currentState);
             if (!dead && !arrived) return false;
         }
         return true;

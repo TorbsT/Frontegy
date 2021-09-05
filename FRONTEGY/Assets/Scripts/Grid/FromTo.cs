@@ -30,6 +30,9 @@ public struct FromTo
     }
     public static bool pass(FromTo a, FromTo b)
     {
+        if (a.to == b.from) Debug.Log("Part1");
+        if (b.to == a.from) Debug.Log("Part2");
         return a.to == b.from && a.from == b.to;
     }
+    public override string ToString() => "ft{"+from+"->"+to+"}";
 }

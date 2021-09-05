@@ -18,9 +18,11 @@ public class Duel
         _involvedWrappers = involvedWrappers;
         _involvedWrappers.Sort(TroopState.defaultTroopComparison);
         _winner = _involvedWrappers[0];
+        _losers = new List<TroopState>();
         for (int i = 1; i < _involvedWrappers.Count; i++)
         {
             _losers.Add(_involvedWrappers[i]);
         }
+        Debug.Log("Winner: " + _winner + ", loser0: " + _losers[0]);
     }
 }

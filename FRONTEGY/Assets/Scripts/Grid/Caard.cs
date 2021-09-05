@@ -40,7 +40,7 @@ public class Caard
     {
         foreach (Card c in getCards())
         {
-            if (c.staged) continue;
+            if (c.connected) continue;
             c.stage();
         }
     }

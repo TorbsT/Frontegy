@@ -147,7 +147,7 @@ MonoBehaviour:
     - {fileID: 525436779752349138}
   _mats:
   - _place: NONE
-    _material: {fileID: 2100000, guid: f638397c18abe4f4d8e289b13c151605, type: 2}
+    _material: {fileID: 2100000, guid: 336b8f39c584ea54f904181e587f0399, type: 2}
   - _place: RED
     _material: {fileID: 2100000, guid: 5c41654410656924c9eec4c1b75f642a, type: 2}
   - _place: BLUE

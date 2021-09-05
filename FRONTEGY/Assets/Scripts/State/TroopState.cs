@@ -72,4 +72,6 @@ public class TroopState
     {
         _stepStates.prepareStep(step);
     }
+
+    public override string ToString() => "TroopState{id "+id+" round"+roundId + " owner"+ownerId+"}";
 }

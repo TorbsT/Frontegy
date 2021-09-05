@@ -123,7 +123,7 @@ public class Paf
         }
         foreach (PafStepChy chy in _previewStepChies)
         {
-            if (chy.staged) chy.unstage();
+            if (chy.connected) chy.unstage();
         }
     }
     private void computeAvailableNext()
@@ -150,7 +150,7 @@ public class Paf
         // Show visuals
         foreach (PafStepChy chy in _previewStepChies)
         {
-            if (chy.staged)
+            if (chy.connected)
             chy.unstage();
         }
         _previewStepChies = new List<PafStepChy>();

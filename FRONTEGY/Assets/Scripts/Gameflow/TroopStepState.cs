@@ -14,4 +14,5 @@ public class TroopStepState
     {
         _currentBreadcrumb = breadcrumb;
     }
+    public override string ToString() => "StepState{dead"+_dead+" bc"+_currentBreadcrumb+"}";
 }

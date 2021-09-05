@@ -6,7 +6,7 @@ public abstract class Conflict
     public int step { get => _step; }
     public int roundId { get => _roundId; }
 
-    private List<Duel> _duels;
+    private List<Duel> _duels = new List<Duel>();
     private List<TroopState> _winners = new List<TroopState>();
     private List<TroopState> _losers = new List<TroopState>();
     private bool _computed = false;
@@ -185,16 +185,20 @@ public abstract class Conflict
     public abstract bool sameLoc(Conflict c);
     public static Conflict makeConflict(int roundId, int stepId, TroopState a, TroopState b)
     {
+        Debug.Log("Make conflict with step " + stepId);
         if (stepId < 0) Debug.LogError("step should start at 0");
-        Tile af = a.stepStates.getStepState(stepId).currentBreadcrumb.tile;
-        Tile at = a.stepStates.getStepState(stepId + 1).currentBreadcrumb.tile;
-        Tile bf = b.stepStates.getStepState(stepId).currentBreadcrumb.tile;
-        Tile bt = b.stepStates.getStepState(stepId + 1).currentBreadcrumb.tile;
+        Tile af = a.stepStates.getStepState(stepId - 1).currentBreadcrumb.tile;
+        Tile at = a.stepStates.getStepState(stepId).currentBreadcrumb.tile;
+        Tile bf = b.stepStates.getStepState(stepId - 1).currentBreadcrumb.tile;
+        Tile bt = b.stepStates.getStepState(stepId).currentBreadcrumb.tile;
         FromTo aft = new FromTo(af, at);
         FromTo bft = new FromTo(bf, bt);
         int aId = a.id;
         int bId = b.id;
 
+        Debug.Log("Trying to make conflict stepId " + stepId + ", " + aft + " " + bft);
+
+        if (FromTo.pass(aft, bft)) Debug.Log("SDASSDSDDDDDDDDDDDDDDDD");
         if (FromTo.meet(aft, bft)) return new TileConflict(roundId, stepId, new List<int> { aId, bId });
         if (FromTo.pass(aft, bft)) return new BorderConflict(roundId, stepId, new List<int> { aId, bId });
         return null;  // No appropriate conflict found for the two troops

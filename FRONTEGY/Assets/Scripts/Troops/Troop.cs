@@ -45,6 +45,7 @@ public class Troop : SelChy  // "Must" be class since SetStats() should be able 
     
     public void tacticalStart()
     {
+        if (!connected) return;
         Debug.Log("penIS");
         displayOnParent();
     }
@@ -72,20 +73,31 @@ public class Troop : SelChy  // "Must" be class since SetStats() should be able 
     */
     public void weiterViewStart(WeiterView wv)
     {
+        if (!connected) return;
         int step = wv.step;
-        Debug.Log(_state.stepStates.getStepState(step));
-        Tile tile = _state.stepStates.getStepState(step).currentBreadcrumb.tile;
+        TroopStepState stepState = _state.stepStates.getStepState(step);
+        Debug.Log(stepState);
+        Tile tile = stepState.currentBreadcrumb.tile;
         transive.setParent(tile.surfaceTranstatic);
         transive.pos3p.set(Pos3.identity);
         Debug.Log(step + " " + tile);
+
+        if (stepState.dead && connected) TroopPool.Instance.ragdollify(this);
     }
     public void weiterViewUpdate(WeiterView wv)
     {
+        if (!connected) return;
         int step = wv.step;
         Slid slid = wv.slid;
 
-        Tile from = _state.stepStates.getStepState(step).currentBreadcrumb.tile;
-        Tile to = _state.stepStates.getStepState(step+1).currentBreadcrumb.tile;
+        TroopStepStates stepStates = _state.stepStates;
+        TroopStepState nowState = stepStates.getStepState(step);
+        TroopStepState nextState = stepStates.getStepState(step+1);
+
+        if (nowState.dead) return;
+
+        Tile from = nowState.currentBreadcrumb.tile;
+        Tile to = nextState.currentBreadcrumb.tile;
 
         Pos3 diff = to.transive.pos3p.get(false) - from.transive.pos3p.get(false);
         diff *= slid;

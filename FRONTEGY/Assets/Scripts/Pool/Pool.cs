@@ -25,13 +25,13 @@ public abstract class Pool<Client, Host> : IPool where Client : IPoolClient wher
     }
     public void stage(Client client)
     {
-        if (client.staged) Debug.LogError("Tried connecting staged client '" + client + "'");
+        if (client.connected) Debug.LogError("Tried connecting staged client '" + client + "'");
 
         if (queue.Count == 0) addObjects(1);
         Host host = queue.Dequeue();
         hostDict.Add(client, host);
         clientDict.Add(host, client);
-        client.staged = true;
+        client.connected = true;
         host.staged = true;
         allHosts.Add(host);
         host.gameObject.SetActive(true);
@@ -91,12 +91,12 @@ public abstract class Pool<Client, Host> : IPool where Client : IPoolClient wher
     }
     protected void disconnect(Client client, Host host)
     {  // Does NOT disable game object or move it to ready. Use moveToUnstaged for that.
-        if (!client.staged) Debug.LogError("Tried disconnecting unstaged client '"+client+"'");
+        if (!client.connected) Debug.LogError("Tried disconnecting unstaged client '"+client+"'");
         if (!host.staged) Debug.LogError("Tried disconnecting unstaged host '"+host+"'");
         hostDict.Remove(client);
         clientDict.Remove(host);
         allHosts.Remove(host);
-        client.staged = false;
+        client.connected = false;
         host.staged = false;
     }
     protected void moveToUnstaged(Host host)
