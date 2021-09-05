@@ -4,6 +4,7 @@ using UnityEngine;
 [System.Serializable]
 public class Troop : SelChy  // "Must" be class since SetStats() should be able to modify these values
 {
+    public static int nextId { get; private set; }
     public override Player owner { get => _state.owner; }
     public int id { get => _id; }
     public Paf paf { get => _state.paf; }
@@ -17,13 +18,17 @@ public class Troop : SelChy  // "Must" be class since SetStats() should be able 
 
     public Troop(TroopState state)
     {
+        if (state == null) Debug.LogError("Hell fucking no");
         _state = state;
-        Grid.Instance.troopStates.Add(state);
-        Grid.Instance.allGroop.add(this);
+        _id = nextId;
+        nextId++;
+        _state.id = _id;
+
+        Grid.Instance.allTroops.Add(this);
         stage();
         initMats();
         transive.scalep.set(new Scale(0.5f, 0.5f, 0.5f));
-        tacticalDisplay();
+        displayOnParent();
     }
     public Player getOwner()
     {
@@ -41,12 +46,12 @@ public class Troop : SelChy  // "Must" be class since SetStats() should be able 
     public void tacticalStart()
     {
         Debug.Log("penIS");
-        tacticalDisplay();
+        displayOnParent();
     }
-    private void tacticalDisplay()
+    private void displayOnParent()
     {
         transive.setParent(state.parentTile.surfaceTranstatic, true);
-        transive.pos3p.set(heightAdjustment, true);
+        transive.pos3p.set(Pos3.identity, true);
     }
     public bool isThisTroop(Troop compareAgainst)
     {
@@ -68,6 +73,7 @@ public class Troop : SelChy  // "Must" be class since SetStats() should be able 
     public void weiterViewStart(WeiterView wv)
     {
         int step = wv.step;
+        Debug.Log(_state.stepStates.getStepState(step));
         Tile tile = _state.stepStates.getStepState(step).currentBreadcrumb.tile;
         transive.setParent(tile.surfaceTranstatic);
         transive.pos3p.set(Pos3.identity);
@@ -83,7 +89,7 @@ public class Troop : SelChy  // "Must" be class since SetStats() should be able 
 
         Pos3 diff = to.transive.pos3p.get(false) - from.transive.pos3p.get(false);
         diff *= slid;
-        transive.pos3p.set(diff+heightAdjustment, true);
+        transive.pos3p.set(diff, true);
     }
     public override void primarySelect()
     {

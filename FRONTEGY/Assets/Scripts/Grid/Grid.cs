@@ -23,7 +23,7 @@ public class Grid
 
     public AllTiile allTiile { get => _allTiile; }
     public AllCaard allCaard { get => _allCaard; }
-    public AllGroop allGroop { get => _allGroop; }
+    public List<Troop> allTroops { get => _allTroops; }
     public List<TacticalHistory> tacticalHistories { get => _tacticalHistories; }
 
     private List<TileState> _tileStates = new List<TileState>();
@@ -33,7 +33,7 @@ public class Grid
     [SerializeReference] private List<TacticalHistory> _tacticalHistories = new List<TacticalHistory>();
     private AllTiile _allTiile;
     private AllCaard _allCaard;
-    private AllGroop _allGroop;
+    private List<Troop> _allTroops;
     private RoundManager pm;
     private ActionManager _actionManager;
     public Grid(GameMaster gm, GridConfig config)
@@ -49,7 +49,7 @@ public class Grid
         pm = new RoundManager(this);
         rds = new Rds(config.getSeed());
         _allTiile = genRectTiile();
-        _allGroop = new AllGroop();
+        _allTroops = new List<Troop>();
         _actionManager = new ActionManager();
 
         //allCaard = new AllCaard();  // temp
@@ -80,20 +80,21 @@ public class Grid
         }
         foreach (TroopState troopState in _troopStates.FindAll(state => state.roundId == oldRound.roundId))
         {
-            TroopState newState = troopState.copy();
-            newState.roundId++;
-            Breadcrumb startBreadcrumb = new Breadcrumb(newState.parentTile, newState.role.baseStats.getRANGE());
-            newState.djikstra = new Djikstra(startBreadcrumb);
-            newState.paf = new Paf(startBreadcrumb);
-            if (!troopState.stepStates.currentDead)
-            {
-                Tile newParentTile = troopState.stepStates.currentBreadcrumb.tile;
-                newState.parentTile = newParentTile;
-                //TileState newParentTileState = tileStates.Find(state => state.roundId == newState.roundId && state.loc == newParentTile.loc);
-                //newParentTileState.ownerId = troopState.ownerId;
-            }
+            troopState.paf.unstageAll();
 
-            _troopStates.Add(newState);
+            Tile newParentTile = troopState.stepStates.currentBreadcrumb.tile;
+            Role role = troopState.role;
+
+            TroopState newState = new TroopState(newParentTile, role)
+            {
+                id = troopState.id,
+                owner = troopState.owner,
+                dead = troopState.stepStates.currentDead,
+            };
+
+            // Updates the troop to display the correct troopState
+            Troop troop = _allTroops.Find(match => match.id == troopState.id);
+            troop.state = newState;
         }
 
     }

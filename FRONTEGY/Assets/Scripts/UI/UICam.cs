@@ -31,10 +31,9 @@ public class UICam : MonoBehaviour
         Ray ray = _camera.ScreenPointToRay(control.getMousePosition());
         //Debug.DrawRay(_transive.pos3p.get().v3, ray.direction, Color.red, 1f);
 
-        Debug.Log("trying");
         if (Physics.Raycast(ray, out hit))
         {
-            Debug.Log("Found " +hit.transform.gameObject);
+            //Debug.Log("Found " +hit.transform.gameObject);
             return hit.transform.gameObject;
         }
         else

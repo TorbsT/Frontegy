@@ -128,7 +128,7 @@ public class Breadcruumb
         Debug.Log(this);
         foreach (Breadcrumb bc in getBreadcrumbs())
         {
-            Debug.Log("Show mark for me!");
+            //Debug.Log("Show mark for me!");
             //bc.showPrimaryMark();
         }
     }

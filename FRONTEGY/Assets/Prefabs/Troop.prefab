@@ -120,7 +120,7 @@ MonoBehaviour:
     - {fileID: 961981505535259243}
   _mats:
   - _place: RED
-    _material: {fileID: 2100000, guid: 5c41654410656924c9eec4c1b75f642a, type: 2}
+    _material: {fileID: 2100000, guid: f638397c18abe4f4d8e289b13c151605, type: 2}
   - _place: BLUE
     _material: {fileID: 2100000, guid: 5982d0e2dc3341d46b0e7792055645a7, type: 2}
   _cols: []

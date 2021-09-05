@@ -9,7 +9,7 @@ public class TroopState
     public int ownerId { get => _ownerId; set { _ownerId = value; _owner = Playyer.Instance.getPlayer(value); } }
     public TileLoc parentTileLoc { get => _parentTileLoc; set { _parentTileLoc = value; _parentTile = AllTiile.Instance.find(value); } }
     public Tile parentTile { get => _parentTile; set { _parentTile = value; _parentTileLoc = value.loc; } }
-    public bool dead { get => _dead; }
+    public bool dead { get => _dead; set { _dead = value; } }
     public Role role { get => _role; set { _role = value; _roleId = value.id; } }
     public int roleId { get => _roleId; set { _roleId = value; _role = Roole.Instance.getRole(value); } }
     public int id { get => _id; set { _id = value; } }
@@ -25,9 +25,9 @@ public class TroopState
     private Tile _parentTile;
     private bool _dead;
     [SerializeReference] private Role _role;
-    private int _roleId;
-    private int _id;
-    private int _roundId;
+    private int _roleId = -1;
+    private int _id = -1;
+    private int _roundId = -1;
     private Djikstra _djikstra;
     private TroopStepStates _stepStates;
     private Paf _paf;
@@ -38,22 +38,13 @@ public class TroopState
         if (parentTile == null) Debug.LogError("You monkey");
         if (role == null) Debug.LogError("stupod");
         _parentTile = parentTile;
-        _role = role;
+        this.role = role;
         _djikstra = new Djikstra(this);
         _paf = new Paf(this);
-    }
-    public TroopState copy()
-    {
-        TroopState t = new TroopState(_parentTile, role);
-        t.owner = _owner;
-        t._dead = _dead;
-        t.role = _role;
-        t._id = _id;
-        t._roundId = _roundId;
-        t._djikstra = null;
-        t._stepStates = null;
-        t._paf = null;
-        return t;
+        _stepStates = new TroopStepStates(this);
+        Grid.Instance.troopStates.Add(this);
+        roundId = RoundManager.Instance.roundId;
+        Debug.Log("Created a new TroopState with roundId " + roundId);
     }
 
     public static int defaultTroopComparison(TroopState a, TroopState b)
@@ -79,7 +70,6 @@ public class TroopState
     }
     public void prepareStepState(int step)
     {
-        if (_stepStates == null) _stepStates = new TroopStepStates(this);
         _stepStates.prepareStep(step);
     }
 }

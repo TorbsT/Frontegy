@@ -107,12 +107,23 @@ public class Paf
         }
         foreach (PafStepChy chy in _previewStepChies)
         {
-            chy.hideMark();
+            //chy.hideMark();
             chy.unstage();
         }
         foreach (Breadcrumb bc in _availableNext)
         {
             bc.hideSecondaryMark();
+        }
+    }
+    public void unstageAll()
+    {
+        foreach (PafStepChy chy in _stepChies)
+        {
+            chy.unstage();
+        }
+        foreach (PafStepChy chy in _previewStepChies)
+        {
+            if (chy.staged) chy.unstage();
         }
     }
     private void computeAvailableNext()

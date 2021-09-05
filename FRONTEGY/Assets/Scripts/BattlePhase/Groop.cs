@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Groop
 {  // group of troops
+    /*
     // TODO make AllGroop
     private List<Troop> troops;
 
@@ -53,4 +54,5 @@ public class Groop
             t.weiterViewUpdate(wv);
         }
     }
+    */
 }

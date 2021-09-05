@@ -41,10 +41,12 @@ public abstract class Pool<Client, Host> : IPool where Client : IPoolClient wher
     }
     public void unstage(Client client)
     {
+        if (client == null) Debug.LogWarning("Tried unstaging '" + client + "' but it had no Host");
         unstage(getHost(client));
     }
     public void unstage(Host host)
     {
+        if (host == null) Debug.LogWarning("Tried unstaging '" + host + "' but it had no Client");
         Client client = getClient(host);
         disconnect(client, host);
         moveToUnstaged(host);

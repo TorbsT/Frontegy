@@ -17,19 +17,19 @@ public class WeiterView : View
         _slid = new Slid(0f);
         _coonflict = bp.getStepCoonflict(step);
 
-        Debug.Log("YEP");
-        foreach (Troop troop in AllGroop.Instance.get())
+        //Debug.Log("YEP");
+        foreach (Troop troop in Grid.Instance.allTroops)
         {
             troop.weiterViewStart(this);
         }
     }
     protected override bool bupdateVirtual(Control c)
     {
-        Debug.Log("YEP2");
+        //Debug.Log("YEP2");
         addTime(0.01f);
-        foreach (Troop troop in AllGroop.Instance.get())
+        foreach (Troop troop in Grid.Instance.allTroops)
         {
-            Debug.Log("YEP3");
+            //Debug.Log("YEP3");
             troop.weiterViewUpdate(this);
         }
         return isDone();

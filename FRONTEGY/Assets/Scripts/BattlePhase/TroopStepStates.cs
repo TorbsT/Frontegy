@@ -13,14 +13,15 @@ public class TroopStepStates
     private List<TroopStepState> _stepStates = new List<TroopStepState>();
     private TroopState _state;
 
-    public TroopStepStates(TroopState wrapper)
+    public TroopStepStates(TroopState state)
     {
-        _state = wrapper;
+        _state = state;
     }
     public TroopStepState getStepState(int step)
     {
-        if (step < 0) return getStepState(0);
-        if (step >= _stepStates.Count) return getStepState(_stepStates.Count - 1);
+        if (_stepStates.Count == 0) Debug.LogError("Troop has 0 step states but tried accessing");
+        if (step < 0) step = 0;
+        if (step >= _stepStates.Count) step = _stepStates.Count - 1;
         return _stepStates[step];
     }
     public void addConsequence(Consequence consequence)

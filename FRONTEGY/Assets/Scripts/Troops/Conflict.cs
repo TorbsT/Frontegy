@@ -185,11 +185,11 @@ public abstract class Conflict
     public abstract bool sameLoc(Conflict c);
     public static Conflict makeConflict(int roundId, int stepId, TroopState a, TroopState b)
     {
-        if (stepId <= 0) Debug.LogError("step should start at 1");
-        Tile af = a.stepStates.getStepState(stepId - 1).currentBreadcrumb.tile;
-        Tile at = a.stepStates.getStepState(stepId).currentBreadcrumb.tile;
-        Tile bf = b.stepStates.getStepState(stepId - 1).currentBreadcrumb.tile;
-        Tile bt = b.stepStates.getStepState(stepId).currentBreadcrumb.tile;
+        if (stepId < 0) Debug.LogError("step should start at 0");
+        Tile af = a.stepStates.getStepState(stepId).currentBreadcrumb.tile;
+        Tile at = a.stepStates.getStepState(stepId + 1).currentBreadcrumb.tile;
+        Tile bf = b.stepStates.getStepState(stepId).currentBreadcrumb.tile;
+        Tile bt = b.stepStates.getStepState(stepId + 1).currentBreadcrumb.tile;
         FromTo aft = new FromTo(af, at);
         FromTo bft = new FromTo(bf, bt);
         int aId = a.id;

@@ -27,7 +27,10 @@ public class TacticalPhase : Phase
     protected override void startAbstra()
     {
         UIManager.Instance.tacticalStart(this);
-        Grid.Instance.allGroop.tacticalStart();
+        foreach (Troop troop in Grid.Instance.allTroops)
+        {
+            troop.tacticalStart();
+        }
     }
     protected override bool bupdateAbstra(Control c)
     {

@@ -73,7 +73,7 @@ public class UICaard
             Bounds b = c.getColliderBounds();
             float cardWidth = 4.5f;// b.size.x;
             float cardHeight = b.size.z;
-            Debug.Log("HEY "+ cardWidth + " " + cardHeight);
+            //Debug.Log("HEY "+ cardWidth + " " + cardHeight);
             float x = cardWidth * (i-_cards.Count/2f) * 20;
             float y = 0;//cardHeight / 2f;
             float z = i*10;

@@ -104,13 +104,13 @@ public class PafStepChy : Chy
             setFloat("selectable", "TimeOffset", _step * -0.3f);
         } else if (_isFurther)
         {
-            Debug.Log(_tile + " is further");
+            //Debug.Log(_tile + " is further");
             transive.pos3p.set(furtherPos);
             setMat("selectable", "further");
             setFloat("selectable", "TimeOffset", _step * -0.3f);
         } else if (_isBacktrack)
         {
-            Debug.Log(_tile + " is backtrack");
+            //Debug.Log(_tile + " is backtrack");
             transive.pos3p.set(backtrackPos);
             setMat("selectable", "backtrack");
             setFloat("selectable", "TimeOffset", _step * -0.3f);

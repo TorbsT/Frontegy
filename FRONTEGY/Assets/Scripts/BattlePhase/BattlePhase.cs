@@ -24,7 +24,7 @@ public class BattlePhase : Phase
         bool done = false;
 
         bool stepDone = v.bupdate(c);
-        Debug.Log(stepDone + " cock");
+        //Debug.Log(stepDone + " cock");
 
         if (stepDone)
         {

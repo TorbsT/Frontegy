@@ -26,6 +26,7 @@ public class Results
         _roundId = roundId;
         allCoonflict = new Coonflict();
         _involvedTroopStates = Grid.Instance.troopStates.FindAll(match => match.roundId == roundId);
+
         foreach (TroopState state in Grid.Instance.troopStates)
         {
             Debug.Log(state.roundId);
@@ -52,6 +53,7 @@ public class Results
             Coonflict coonflict = getCoonflict(step);
             foreach (Conflict conflict in coonflict.getConflicts())
             {
+                Debug.Log("I CAME");
                 conflict.compute();
             }
 
@@ -83,6 +85,7 @@ public class Results
         Coonflict coonflict = new Coonflict();
 
         int troopCount = _involvedTroopStates.Count;  // doesn't change throughout this algorithm
+        Debug.Log("COCK AND BALLS "+troopCount);
         if (troopCount <= 0) Debug.LogError("This should never happen");
         for (int a = 0; a < troopCount; a++)
         {
@@ -97,7 +100,7 @@ public class Results
 
                 if (bState.stepStates.currentDead) continue;
 
-
+                Debug.Log("PEEEEDD");
                 Conflict newConflict = Conflict.makeConflict(_roundId, step, aState, bState);
                 if (newConflict == null) continue;  // no suitable conflict found
                 coonflict.mergeConflict(newConflict);  // should merge appropriately

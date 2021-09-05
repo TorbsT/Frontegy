@@ -69,7 +69,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 066d42cb4991e8943907ccd5af87f496, type: 2}
+  - {fileID: 2100000, guid: f638397c18abe4f4d8e289b13c151605, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -147,7 +147,7 @@ MonoBehaviour:
     - {fileID: 525436779752349138}
   _mats:
   - _place: NONE
-    _material: {fileID: 2100000, guid: 336b8f39c584ea54f904181e587f0399, type: 2}
+    _material: {fileID: 2100000, guid: f638397c18abe4f4d8e289b13c151605, type: 2}
   - _place: RED
     _material: {fileID: 2100000, guid: 5c41654410656924c9eec4c1b75f642a, type: 2}
   - _place: BLUE
@@ -278,7 +278,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 2b73128622c2ca244afedac596986a40, type: 2}
+  - {fileID: 2100000, guid: f638397c18abe4f4d8e289b13c151605, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
