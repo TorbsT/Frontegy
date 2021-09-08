@@ -32,11 +32,13 @@ public abstract class Pool<Client, Host> : IPool where Client : IPoolClient wher
         hostDict.Add(client, host);
         clientDict.Add(host, client);
         client.connected = true;
-        host.staged = true;
+        host.connected = true;
         allHosts.Add(host);
         host.gameObject.SetActive(true);
         host.tryUnragdollMode();
         host.chy = (IPoolClient)client;
+        client.justConnected();
+        host.justConnected();
         //return host;
     }
     public void unstage(Client client)
@@ -92,12 +94,14 @@ public abstract class Pool<Client, Host> : IPool where Client : IPoolClient wher
     protected void disconnect(Client client, Host host)
     {  // Does NOT disable game object or move it to ready. Use moveToUnstaged for that.
         if (!client.connected) Debug.LogError("Tried disconnecting unstaged client '"+client+"'");
-        if (!host.staged) Debug.LogError("Tried disconnecting unstaged host '"+host+"'");
+        if (!host.connected) Debug.LogError("Tried disconnecting unstaged host '"+host+"'");
         hostDict.Remove(client);
         clientDict.Remove(host);
         allHosts.Remove(host);
         client.connected = false;
-        host.staged = false;
+        host.connected = false;
+        client.justDisconnected();
+        host.justDisconnected();
     }
     protected void moveToUnstaged(Host host)
     {  // Supposes already disconnected.
@@ -126,5 +130,6 @@ public abstract class Pool<Client, Host> : IPool where Client : IPoolClient wher
 }
 public class TilePool : Pool<Tile, TilePhy>  { public TilePool(GameObject go) : base(go) { } }
 public class CardPool : Pool<Card, CardPhy> { public CardPool(GameObject go) : base(go) { } }
-public class TroopPool : Pool<Troop, TroopPhy> { public TroopPool(GameObject go) : base(go) { } }
+public class TroopPool : Pool<Troop, TroopPhy> {
+    public TroopPool(GameObject go) : base(go) { } }
 public class PafStepPool : Pool<PafStepChy, PafStepPhy> { public PafStepPool(GameObject go) : base(go) { } }

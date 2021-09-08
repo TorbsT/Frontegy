@@ -7,4 +7,6 @@ public interface IPoolClient
     bool connected { get; set; }
     void stage();
     void unstage();
+    void justConnected();
+    void justDisconnected();
 }

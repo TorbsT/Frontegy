@@ -73,11 +73,13 @@ public class GameMaster : MonoBehaviour
         if (coontrol == null) Debug.LogError("IllegalStateException");
         return coontrol;
     }
-
+    private void Awake()
+    {
+        cam = new Cam(getCamera(), getCamConfig());
+    }
     void Start()
     {
         //Application.targetFrameRate = 2;
-        cam = new Cam(getCamera(), getCamConfig());
         playyer.init();
         pools.init();
         Restart();

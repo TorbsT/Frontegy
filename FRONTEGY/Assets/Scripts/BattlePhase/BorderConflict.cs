@@ -5,7 +5,7 @@ public class BorderConflict : Conflict
 {
     public BorderLoc borderLoc { get => _borderLoc; }
     private BorderLoc _borderLoc;
-    public BorderConflict(int roundId, int stepId, List<int> involvedTroops) : base(roundId, stepId, involvedTroops) { }
+    public BorderConflict(BorderLoc bloc, int roundId, int stepId, List<int> involvedTroops) : base(roundId, stepId, involvedTroops) { _borderLoc = bloc; }
 
     public override bool sameLoc(Conflict compare)
     {

@@ -90,7 +90,7 @@ public class SelMan
         if (go == null) return null;
         SelPhy s = go.GetComponent<SelPhy>();  // Selectable is attached to the GO that has meshcollider.
         if (s == null) return null;  // go is not selectable
-        if (!s.staged) return null;  // Phy is not staged, nothing should happen
+        if (!s.connected) return null;  // Phy is not staged, nothing should happen
         SelChy selChy = s.getSelChy();
         if (selChy == null) Debug.LogError("A SelPhy is staged but it has no SelChy");
         return selChy;

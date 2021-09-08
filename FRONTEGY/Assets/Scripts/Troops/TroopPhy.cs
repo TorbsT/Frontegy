@@ -3,16 +3,18 @@ using UnityEngine;
 
 public class TroopPhy : SelPhy
 {  // never delete a Troop object, reuse.
-    public TroopPhy()
-    {
 
-    }
+    public Transform tooltipTransform { get => _tooltipTransform; }
+    public SpriteRenderer roleTooltipRenderer { get => _roleTooltipRenderer; }
 
     [Header("Variables")]
     [SerializeField] private Troop troop;
     [SerializeField] private Rigidbody _troopRb;
     [SerializeField] private Rigidbody _crownRb;
+    [SerializeField] private Transform _tooltipTransform;
     [SerializeField] private bool _isRagdoll;
+    [SerializeField] private SpriteRenderer _roleTooltipRenderer;
+    [SerializeField] private Transive _roleTooltipTransive;
 
     [Header("System/Debug")]
     [SerializeField] MeshRenderer rndrr;
@@ -21,6 +23,18 @@ public class TroopPhy : SelPhy
     [SerializeField] int defaultLayer = 0;
     [SerializeField] int ignoreRaycastLayer = 2;
 
+
+    protected override void Awake()
+    {
+        base.Awake();
+        _roleTooltipTransive = new Transive(_roleTooltipRenderer.transform);
+        
+    }
+    private void Start()
+    {
+        Transive t = Cam.Instance.transive;
+        _roleTooltipTransive.rotp.setParent(t);
+    }
 
     /*
     public void ManualUpdate()
@@ -76,7 +90,7 @@ public class TroopPhy : SelPhy
     {
         //var rot = Quaternion.FromToRotation(transform.up, Vector3.up);
         //_troopRb.AddTorque(new Vector3(rot.x, rot.y, rot.z) * 1500*Time.fixedDeltaTime);
-        if (!staged) return;
+        if (!connected) return;
         Quaternion deltaQuat = Quaternion.FromToRotation(_troopRb.transform.up, Vector3.up);
 
         Vector3 axis;

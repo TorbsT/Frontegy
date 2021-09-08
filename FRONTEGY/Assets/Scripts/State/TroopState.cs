@@ -49,9 +49,12 @@ public class TroopState
 
     public static int defaultTroopComparison(TroopState a, TroopState b)
     {
-        if (a._role.trumps(b._role)) return 100;
-        if (b.role.trumps(a._role)) return -100;
-        return a.getPOW() - b.getPOW();
+        int result;
+        if (a._role.trumps(b._role)) return -100;
+        else if (b.role.trumps(a._role)) return 100;
+        else result = b.getPOW() - a.getPOW();
+        //Debug.Log(a.role + " " + b.role + ": " + result);
+        return result;
     }
     public int getPOW()
     {

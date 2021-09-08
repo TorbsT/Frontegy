@@ -198,9 +198,16 @@ public abstract class Conflict
 
         Debug.Log("Trying to make conflict stepId " + stepId + ", " + aft + " " + bft);
 
-        if (FromTo.pass(aft, bft)) Debug.Log("SDASSDSDDDDDDDDDDDDDDDD");
-        if (FromTo.meet(aft, bft)) return new TileConflict(roundId, stepId, new List<int> { aId, bId });
-        if (FromTo.pass(aft, bft)) return new BorderConflict(roundId, stepId, new List<int> { aId, bId });
+        if (FromTo.meet(aft, bft))
+        {
+            TileLoc tloc = at.loc;
+            return new TileConflict(tloc, roundId, stepId, new List<int> { aId, bId });
+        }
+        if (FromTo.pass(aft, bft))
+        {
+            BorderLoc bloc = new BorderLoc(af.loc, bf.loc);
+            return new BorderConflict(bloc, roundId, stepId, new List<int> { aId, bId });
+        }
         return null;  // No appropriate conflict found for the two troops
     }
 }

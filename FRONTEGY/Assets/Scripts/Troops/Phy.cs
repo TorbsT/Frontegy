@@ -8,7 +8,7 @@ public abstract class Phy : MonoBehaviour, IPoolHost
 {
     // Properties
 
-    public bool staged { get { return _staged; } set { _staged = value; } }
+    public bool connected { get { return _staged; } set { _staged = value; } }
     public IPoolClient chy { set { _chy = value; } }
     public Transive transive { get => _transive; }
     public Bounds colliderBounds { get { if (hasBounds) return _colliderBounds; else
@@ -61,6 +61,8 @@ public abstract class Phy : MonoBehaviour, IPoolHost
     }
     public virtual bool tryRagdollMode() => false;
     public virtual bool tryUnragdollMode() => false;
+    public virtual void justConnected() { }
+    public virtual void justDisconnected() { }
 
     protected abstract Chy getChy();
     public abstract void unstage();

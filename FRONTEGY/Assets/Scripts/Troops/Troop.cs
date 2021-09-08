@@ -11,6 +11,8 @@ public class Troop : SelChy  // "Must" be class since SetStats() should be able 
     public Djikstra djikstra { get => _state.djikstra; }
     public TroopState state { get => _state; set { _state = value; } }
     public Pos3 heightAdjustment { get => new Pos3(0f, getColliderBounds().extents.y, 0f); }
+    public SpriteRenderer roleTooltipRenderer { get => getTroopPhy().roleTooltipRenderer; }
+    public Role role { get => _state.role; }
 
     
     [SerializeField] private int _id = -1;
@@ -128,6 +130,10 @@ public class Troop : SelChy  // "Must" be class since SetStats() should be able 
             paf.add(t);
             paf.showMarks();
         }
+    }
+    public override void justConnected()
+    {
+        roleTooltipRenderer.sprite = role.tooltipSprite;
     }
 
     public TroopPhy getTroopPhy() { return TroopPool.Instance.getHost(this); }

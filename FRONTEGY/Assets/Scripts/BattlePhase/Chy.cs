@@ -43,6 +43,8 @@ public abstract class Chy : IPoolClient  // Connector-Phy
 
 
     public virtual void initMats() { }
+    public virtual void justConnected() { }
+    public virtual void justDisconnected() { }
     public abstract Phy getPhy();
     public abstract void stage();
     public abstract void unstage();

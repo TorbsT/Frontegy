@@ -117,6 +117,26 @@ MonoBehaviour:
     _material: {fileID: 2100000, guid: e70a674e88321da45a0a3ceaa9d0155a, type: 2}
   - _place: twoFG
     _material: {fileID: 2100000, guid: 9ac8b5114591e8f4aae3bbec6c9cc32a, type: 2}
+  - _place: threeFG
+    _material: {fileID: 2100000, guid: 90b176cd9b823794db9a0cf24479e561, type: 2}
+  - _place: fourFG
+    _material: {fileID: 2100000, guid: 9c25476544dcf5749bd060d87716670d, type: 2}
+  - _place: fiveFG
+    _material: {fileID: 2100000, guid: 47181d4e25f6e6749bab04fc4d45bac1, type: 2}
+  - _place: sixFG
+    _material: {fileID: 2100000, guid: 414614d8b9fa92b44aa6050c1bdf4af4, type: 2}
+  - _place: sevenFG
+    _material: {fileID: 2100000, guid: 4d9c777670e1d674aa310cd26547dfc1, type: 2}
+  - _place: eightFG
+    _material: {fileID: 2100000, guid: a89482b5d945650469793fffde47aed1, type: 2}
+  - _place: nineFG
+    _material: {fileID: 2100000, guid: 88de2b3994f25424c97e93f82adbac82, type: 2}
+  - _place: tenFG
+    _material: {fileID: 2100000, guid: 1f5f69b480fa2174b875c36a5af48037, type: 2}
+  - _place: jackFG
+    _material: {fileID: 2100000, guid: 3ab71f0162a22bd4597ee75c7858cf02, type: 2}
+  - _place: queenFG
+    _material: {fileID: 2100000, guid: 05c7951d1e9246e4b8d429a734b662f7, type: 2}
   - _place: kingFG
     _material: {fileID: 2100000, guid: c0787e68a4c16b645acc3350f8f6fd14, type: 2}
   _cols:

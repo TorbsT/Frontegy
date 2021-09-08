@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb9e6f46729695e4c813cf87a63e7f09, type: 3}
   m_Name: King
   m_EditorClassIdentifier: 
-  _id: 2
+  _id: 13
   _baseStats:
     POW: 13
     RANGE: 6
+  _tooltipSprite: {fileID: 21300000, guid: 965e81322ee9cbd46b94d6f923a9e23a, type: 3}
   trumpRole: {fileID: 0}

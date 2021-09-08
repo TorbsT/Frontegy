@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb9e6f46729695e4c813cf87a63e7f09, type: 3}
   m_Name: Two
   m_EditorClassIdentifier: 
-  _id: 1
+  _id: 2
   _baseStats:
     POW: 2
-    RANGE: 8
+    RANGE: 3
+  _tooltipSprite: {fileID: 21300000, guid: 82546dc65adb50c4d8454b980bdbc7c9, type: 3}
   trumpRole: {fileID: 0}

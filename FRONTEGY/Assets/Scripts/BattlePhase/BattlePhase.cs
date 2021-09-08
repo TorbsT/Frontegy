@@ -30,7 +30,7 @@ public class BattlePhase : Phase
         {
             UnityEngine.Debug.Log("Done with step " + _stepId+" out of "+_totalSteps);
             _stepId++;
-            done = _stepId >= _totalSteps;
+            done = _stepId > _totalSteps;
             if (!done) makeWeiterView();
         }
 
