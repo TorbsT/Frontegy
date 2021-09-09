@@ -9,6 +9,7 @@ public class UIManager : MonoBehaviour
     public static UIManager Instance { get; private set; }
     public Transive transive { get => _transive; }
     private Transform canvasTransform { get => _canvas.transform; }
+    private Transive camTransive { get => Cam.Instance.transive; }
     public static Pos3 position { get => Instance._position; }
     [System.NonSerialized] private GameMaster gm;
     private Vector2Int _resolution;

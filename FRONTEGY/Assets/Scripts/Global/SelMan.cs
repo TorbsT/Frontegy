@@ -100,7 +100,7 @@ public class SelMan
 
     public void select(SelChy selChy)
     {
-        if (selected != null)
+        if (selected != null && selected.connected)
         {
             selected.unselect();
         }

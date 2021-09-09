@@ -9,9 +9,14 @@ public class Cam
     public static Cam Instance { get; private set; }
 
     public Transive transive { get => _transive; }
+    public Transive mixedUITransive { get => _mixedUITransive; }
     private Camera camera;
+    [SerializeField] private float _fov = 60f;
     [SerializeField] private CamConfig config;
+    [SerializeField] private Transform _mixedUITransform;
     [SerializeReference] private Transive _transive;
+    private Transive _mixedUITransive;
+    private Camera _mixedCamera;
 
     public void eagleView(Control c)
     {
@@ -33,14 +38,29 @@ public class Cam
         this.config = config;
         if (camera == null) Debug.LogError("IllegalArgumentException");
         this.camera = camera;
-        camera.orthographic = true;
         CamLinker linker = camera.GetComponent<CamLinker>();
         if (linker == null) Debug.LogError("InspectorException: Camera has no CamLinker");
         linker.setCam(this);
         _transive = new Transive(camera.transform);
+        _mixedUITransform = new GameObject("").transform;
+        _mixedUITransive = new Transive(_mixedUITransform, _transive);
+        _mixedCamera = _transive.transform.GetChild(0).GetComponent<Camera>();
+
 
         horAngleDeg = new Degree(0f);
         verAngleDeg = new Degree(0f, getVerAngleLimits());
+        setFOV();
+    }
+    private void setFOV()
+    {
+        _fov = Mathf.Sin(Time.time) * 30f + 60f;
+        camera.fieldOfView = _fov;
+        _mixedCamera.fieldOfView = _fov;
+        _mixedUITransive.pos3p.set(getMixedUIDisplacement());
+    }
+    private Pos3 getMixedUIDisplacement()
+    {
+        return new Pos3(0f, 0f, 5f+1f / Mathf.Tan(_fov/180f*Mathf.PI));
     }
 
     public void focusOn(Pos3 p3)
@@ -52,6 +72,7 @@ public class Cam
         getHorAngleDeg().add(-c.getHorAxis() * getHorSpeed() * Time.deltaTime);
         getVerAngleDeg().add(c.getVerAxis() * getVerSpeed()*Time.deltaTime);
         freeViewTransform();
+        setFOV();
     }
 
     private void freeViewTransform()

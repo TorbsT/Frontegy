@@ -426,11 +426,13 @@ MonoBehaviour:
   phyContainer: {fileID: 1353482313}
   camera: {fileID: 1362506141}
   cam:
+    _fov: 0
     config:
       height: 0
       verAngleLimits: {x: 0, y: 0}
       horSpeed: 0
       verSpeed: 0
+    _mixedUITransform: {fileID: 0}
     _transive:
       id: 0
     horAngleDeg:
@@ -805,12 +807,17 @@ PrefabInstance:
     - target: {fileID: 4430835745275934005, guid: be4a1c94d02a33b469922210fb95cb92,
         type: 3}
       propertyPath: orthographic
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8645159473007765075, guid: be4a1c94d02a33b469922210fb95cb92,
         type: 3}
       propertyPath: m_Name
       value: Main Camera
+      objectReference: {fileID: 0}
+    - target: {fileID: 8645159473007765077, guid: be4a1c94d02a33b469922210fb95cb92,
+        type: 3}
+      propertyPath: orthographic
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8645159473007765078, guid: be4a1c94d02a33b469922210fb95cb92,
         type: 3}

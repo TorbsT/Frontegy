@@ -13,7 +13,11 @@ GameObject:
   - component: {fileID: 7749425631134909872}
   - component: {fileID: -8352036779500180808}
   - component: {fileID: 7763324363371250904}
-  m_Layer: 5
+  - component: {fileID: 3185386082965345860}
+  - component: {fileID: 2586172103727178751}
+  - component: {fileID: 4922231049135966030}
+  - component: {fileID: 7787652429245175209}
+  m_Layer: 10
   m_Name: Card
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -71,11 +75,11 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3128357671093214248}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: d11bfbc5d219fda48861a523c4637c0f, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 0.1, z: 1.4}
+  m_Size: {x: 1, y: 0.05, z: 1.3}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &-8352036779500180808
 MonoBehaviour:
@@ -160,6 +164,62 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!136 &3185386082965345860
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3128357671093214248}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.05
+  m_Height: 1.4
+  m_Direction: 2
+  m_Center: {x: 0.5, y: 0, z: 0}
+--- !u!136 &2586172103727178751
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3128357671093214248}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.05
+  m_Height: 1.4
+  m_Direction: 2
+  m_Center: {x: -0.5, y: 0, z: 0}
+--- !u!136 &4922231049135966030
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3128357671093214248}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.05
+  m_Height: 1
+  m_Direction: 0
+  m_Center: {x: 0, y: 0, z: -0.7}
+--- !u!136 &7787652429245175209
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3128357671093214248}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.05
+  m_Height: 1
+  m_Direction: 0
+  m_Center: {x: 0, y: 0, z: 0.7}
 --- !u!1001 &2101432404968362169
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -250,12 +310,12 @@ PrefabInstance:
     - target: {fileID: -3889583860079797639, guid: dc4ba162a6c34f947875e8932488861e,
         type: 3}
       propertyPath: m_Layer
-      value: 5
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: -3698142687468185365, guid: dc4ba162a6c34f947875e8932488861e,
         type: 3}
       propertyPath: m_Layer
-      value: 5
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: -2483361812272490179, guid: dc4ba162a6c34f947875e8932488861e,
         type: 3}
@@ -275,17 +335,17 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: dc4ba162a6c34f947875e8932488861e,
         type: 3}
       propertyPath: m_Layer
-      value: 5
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 924539410511241976, guid: dc4ba162a6c34f947875e8932488861e,
         type: 3}
       propertyPath: m_Layer
-      value: 5
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 1739580833737366906, guid: dc4ba162a6c34f947875e8932488861e,
         type: 3}
       propertyPath: m_Layer
-      value: 5
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 5110355696108470299, guid: dc4ba162a6c34f947875e8932488861e,
         type: 3}

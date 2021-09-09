@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 2679597466629613065}
   - component: {fileID: -2375258339016779334}
   - component: {fileID: 4864164616872951660}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Tile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -179,7 +179,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2726650670003682463}
   - component: {fileID: 6599455402028959213}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Surface
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -230,7 +230,7 @@ GameObject:
   - component: {fileID: 3233743479850838084}
   - component: {fileID: 6207877395350167664}
   - component: {fileID: 525436779752349138}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}

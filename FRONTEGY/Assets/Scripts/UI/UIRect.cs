@@ -18,5 +18,5 @@ public class UIRect : MonoBehaviour
     }
 
     public Rect getRect() => _rectTransform.rect;
-    public Pos3 center => new Pos3(_rectTransform.localPosition);
+    public Pos3 center => new Pos3(_rectTransform.localPosition)+new Pos3(getRect().center);
 }

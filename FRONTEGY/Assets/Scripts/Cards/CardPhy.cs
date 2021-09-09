@@ -5,6 +5,8 @@ using UnityEngine;
 [System.Serializable]
 public class CardPhy : SelPhy
 {
+    public Rigidbody rb { get => _rb; }
+
     [Header("Variables")]
     [SerializeReference] private Card cardChy;
     [SerializeField] private Rigidbody _rb;
